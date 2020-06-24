@@ -81,13 +81,15 @@ public class IntList {
      */
 
     public static IntList dcatenate(IntList A, IntList B) {
-
-        /*if (A == null){
+        /* recursion way.
+        if (A == null){
             return B;
         }else{
             A.rest = dcatenate(A.rest, B);
             return A;
         }*/
+
+        /* iteration way. */
         IntList Q = A;
         while (Q.rest != null) {
             Q = Q.rest;
@@ -101,13 +103,17 @@ public class IntList {
      * * elements of B.  May NOT modify items of A.  Use 'new'.
      */
     public static IntList catenate(IntList A, IntList B) {
-        if (A == null){
+        /* recusion way. */
+        if (A == null) {
             return new IntList(B.first, B.rest);
-        }else{
+        } else {
             IntList rest = catenate(A.rest, B);
             return new IntList(A.first, rest);
         }
-        /*IntList P = new IntList(A.first, null);
+
+
+        /* iteration way.
+        IntList P = new IntList(A.first, null);
         IntList Q = P;
         while (A.rest != null) {
             A = A.rest;
@@ -115,31 +121,12 @@ public class IntList {
             P = P.rest;
         }
         P.rest = B;
-        return Q;*/
+        return Q;
+        */
+
     }
-}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * DO NOT MODIFY ANYTHING BELOW THIS LINE! Many of the concepts below here
-     * will be introduced later in the course or feature some form of advanced
-     * trickery which we implemented to help make your life a little easier for
-     * the lab.
-     */
 
     @Override
     public int hashCode() {
@@ -256,4 +243,3 @@ public class IntList {
         return out.toString();
     }
 }
-
