@@ -90,6 +90,9 @@ public class IntList {
         }*/
 
         /* iteration way. */
+        if (A == null){
+            return B;
+        }
         IntList Q = A;
         while (Q.rest != null) {
             Q = Q.rest;
@@ -105,7 +108,7 @@ public class IntList {
     public static IntList catenate(IntList A, IntList B) {
         /* recusion way. */
         if (A == null) {
-            return new IntList(B.first, B.rest);
+            return B;
         } else {
             IntList rest = catenate(A.rest, B);
             return new IntList(A.first, rest);
