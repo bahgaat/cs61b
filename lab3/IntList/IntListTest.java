@@ -27,6 +27,29 @@ public class IntListTest {
         assertEquals(IntList.of(1, 4, 9), L);
     }
 
+
+    @Test
+    public void testreverse() {
+        IntList input = IntList.of(1, 2, 3, 4);
+        IntList expected = IntList.of(4, 3, 2, 1);
+        IntList actual = IntList.reverse(input);
+        assertEquals(expected, actual);
+        assertEquals(expected, actual);
+
+        IntList input2 = null;
+        IntList expected2 = input2;
+        IntList actual2 = IntList.reverse(input2);
+        assertEquals(expected2, actual2);
+        assertEquals(expected2, input2);
+
+        IntList input3 = IntList.of(1);
+        IntList expected3 = input3;
+        IntList actaul3 =  IntList.reverse(input3);
+        assertEquals(expected3, actaul3);
+        assertEquals(expected3, input3);
+    }
+
+
     /**
      * Do not use the new keyword in your tests. You can create
      * lists using the handy IntList.of method.
@@ -69,5 +92,10 @@ public class IntListTest {
     /** If you're running this from the command line, you'll need
       * to add a main method. See ArithmeticTest.java for an
       * example. */
+
+    /* Run the unit tests in this file. */
+    public static void main(String... args) {
+        jh61b.junit.TestRunner.runTests("failed", IntListTest.class);
+    }
 
 }
