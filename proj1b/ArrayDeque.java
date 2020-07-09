@@ -1,4 +1,3 @@
-/*import java.util.Deque;*/
 
 public class ArrayDeque<Type> implements Deque<Type> {
     private Type[] items;
@@ -46,7 +45,7 @@ public class ArrayDeque<Type> implements Deque<Type> {
     /* check if the array is empty. */
     @Override
     public boolean isEmpty() {
-        size > 0;
+        return size == 0;
     }
 
     /* Return the size of the array deque. */

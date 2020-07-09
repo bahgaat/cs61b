@@ -1,4 +1,3 @@
-/*import java.util.Deque;*/
 
 public class LinkedListDeque<Type> implements Deque<Type> {
     private class StuffNode {
@@ -55,7 +54,7 @@ public class LinkedListDeque<Type> implements Deque<Type> {
     /* Return true if linkedlist is empty, false otherwise, */
     @Override
     public boolean isEmpty() {
-        return size() > 0;
+        return size() == 0;
     }
 
     /* Return the size of the linkedlist. */
@@ -85,7 +84,7 @@ public class LinkedListDeque<Type> implements Deque<Type> {
             sentinel.next.previous = null;
         } else {
             sentinel.next = sentinel.next.next;
-            sentinel.next.next.previous = sentinel;
+            sentinel.next.previous = sentinel;
             oldFirstSentinel.next = null;
             oldFirstSentinel.previous = null;
         }

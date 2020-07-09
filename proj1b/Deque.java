@@ -1,4 +1,17 @@
-package PACKAGE_NAME;
+public interface Deque<type> {
+    void addFirst(type item);
 
-public interface Deque {
+    void addLast(type item);
+
+    boolean isEmpty();
+
+    int size();
+
+    void printDeque();
+
+    type removeFirst();
+
+    type removeLast();
+
+    type get(int index);
 }
