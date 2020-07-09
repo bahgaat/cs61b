@@ -85,7 +85,7 @@ public class LinkedListDeque<Type> implements Deque<Type> {
             sentinel.next.previous = null;
         } else {
             sentinel.next = sentinel.next.next;
-            sentinel.next.previous = sentinel;
+            sentinel.next.next.previous = sentinel;
             oldFirstSentinel.next = null;
             oldFirstSentinel.previous = null;
         }
