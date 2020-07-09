@@ -1,7 +1,7 @@
-public interface Deque<type> {
-    void addFirst(type item);
+public interface Deque<Type> {
+    void addFirst(Type item);
 
-    void addLast(type item);
+    void addLast(Type item);
 
     boolean isEmpty();
 
@@ -9,9 +9,9 @@ public interface Deque<type> {
 
     void printDeque();
 
-    type removeFirst();
+    Type removeFirst();
 
-    type removeLast();
+    Type removeLast();
 
-    type get(int index);
+    Type get(int index);
 }
