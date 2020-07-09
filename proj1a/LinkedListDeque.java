@@ -1,12 +1,12 @@
 /*import java.util.Deque;*/
 
-public class LinkedListDeque<Type> implements Deque<Type> {
+public class LinkedListDeque<T> implements Deque<T> {
     private class StuffNode {
-        private Type item;
+        private T item;
         private StuffNode previous;
         private StuffNode next;
 
-        public StuffNode(StuffNode p, Type i, StuffNode n) {
+        public StuffNode(StuffNode p, T i, StuffNode n) {
             item = i;
             previous = p;
             next = n;
@@ -28,7 +28,7 @@ public class LinkedListDeque<Type> implements Deque<Type> {
 
 
     /* Create LinkedListDeque. */
-    public LinkedListDeque(Type item) {
+    public LinkedListDeque(T item) {
         sentinel = new StuffNode(last, null, sentinel);
         sentinel.next = new StuffNode(sentinel, item, sentinel);
         last = sentinel.next;
@@ -38,14 +38,14 @@ public class LinkedListDeque<Type> implements Deque<Type> {
 
     /* Add to the front of LinkedListDeque. */
     @Override
-    public void addFirst(Type item) {
+    public void addFirst(T item) {
         sentinel.next = new StuffNode(sentinel, item, sentinel.next);
         size += 1;
     }
 
     /* Add to the back of the LinkedList. */
     @Override
-    public void addLast(Type item) {
+    public void addLast(T item) {
         last.next = new StuffNode(last, item, sentinel);
         last = last.next;
         sentinel.previous = last;
@@ -55,7 +55,11 @@ public class LinkedListDeque<Type> implements Deque<Type> {
     /* Return true if linkedlist is empty, false otherwise, */
     @Override
     public boolean isEmpty() {
-        return size() > 0;
+        if (size == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /* Return the size of the linkedlist. */
@@ -76,7 +80,7 @@ public class LinkedListDeque<Type> implements Deque<Type> {
 
     /* Remove first element in the linkedlist and return it. */
     @Override
-    public Type removeFirst() {
+    public T removeFirst() {
         StuffNode oldFirstSentinel = sentinel.next;
         if (size == 0) {
             return null;
@@ -95,7 +99,7 @@ public class LinkedListDeque<Type> implements Deque<Type> {
 
     /* Remove last element of the LinkedList and return it. */
     @Override
-    public Type removeLast() {
+    public T removeLast() {
         if (size == 0) {
             return null;
         } else {
@@ -115,7 +119,7 @@ public class LinkedListDeque<Type> implements Deque<Type> {
     /* Get the specific index of the linkedlist where 0 is the front,
      1 is the next, and so forth. */
     @Override
-    public Type get(int index) {
+    public T get(int index) {
         StuffNode helperSentinel3 = sentinel;
         while (helperSentinel3.next != sentinel) {
             helperSentinel3 = helperSentinel3.next;
@@ -131,7 +135,7 @@ public class LinkedListDeque<Type> implements Deque<Type> {
 
     /* Get the specific index of the linkedlist where 0 is the front,
     1 is the next, and so forth, but this time by using recurion. */
-    public Type getRecursive(int index) {
+    public T getRecursive(int index) {
         if (size == 0) {
             return null;
         } else if (index == 0) {

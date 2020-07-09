@@ -1,7 +1,7 @@
 /*import java.util.Deque;*/
 
-public class ArrayDeque<Type> implements Deque<Type> {
-    private Type[] items;
+public class ArrayDeque<T> implements Deque<T> {
+    private T[] items;
     private int size;
     private int nextFirst;
     private int numOfElemInUnderlyingArray;
@@ -11,7 +11,7 @@ public class ArrayDeque<Type> implements Deque<Type> {
     /* Create an empty array deque. */
     public ArrayDeque() {
         numOfElemInUnderlyingArray = 8;
-        items = (Type[]) new Object[numOfElemInUnderlyingArray];
+        items = (T[]) new Object[numOfElemInUnderlyingArray];
         size = 0;
         nextFirst = 0;
         nextLast = 0;
@@ -19,7 +19,7 @@ public class ArrayDeque<Type> implements Deque<Type> {
 
     /*  Add to the front of the array deque. */
     @Override
-    public void addFirst(Type item) {
+    public void addFirst(T item) {
         checkIfUnderlyingArrayNeededToBeResized();
         if (nextFirst < 0) {
             items[numOfElemInUnderlyingArray + nextFirst] = item;
@@ -33,7 +33,7 @@ public class ArrayDeque<Type> implements Deque<Type> {
 
     /* Add to the back of the array deque. */
     @Override
-    public void addLast(Type item) {
+    public void addLast(T item) {
         checkIfUnderlyingArrayNeededToBeResized();
         items[nextLast] = item;
         size += 1;
@@ -46,7 +46,11 @@ public class ArrayDeque<Type> implements Deque<Type> {
     /* check if the array is empty. */
     @Override
     public boolean isEmpty() {
-        size > 0;
+        if (size == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /* Return the size of the array deque. */
@@ -73,9 +77,9 @@ public class ArrayDeque<Type> implements Deque<Type> {
 
     /* Remove first item in the array deque and return it. */
     @Override
-    public Type removeFirst() {
+    public T removeFirst() {
         int first = nextFirst + 1;
-        Type firstItem = null;
+        T firstItem = null;
         if (size == 0) {
             return firstItem;
         } else if (first < 0) {
@@ -92,9 +96,9 @@ public class ArrayDeque<Type> implements Deque<Type> {
 
     /* Remove last item in the array deque and return it. */
     @Override
-    public Type removeLast() {
+    public T removeLast() {
         int last = nextLast - 1;
-        Type lastItem = items[last];
+        T lastItem = items[last];
         if (size == 0) {
             return null;
         } else {
@@ -107,7 +111,7 @@ public class ArrayDeque<Type> implements Deque<Type> {
 
     /* Get the item at the specific index from the array deque. */
     @Override
-    public Type get(int index) {
+    public T get(int index) {
         int first = nextFirst + 1;
         int indexOfUnderlyingArray = index + first;
         if (size == 0) {
@@ -121,7 +125,7 @@ public class ArrayDeque<Type> implements Deque<Type> {
 
     /* Resize the underlying array to the target capacity. */
     public void resize(int capacity) {
-        Type[] resizedArray = (Type[]) new Object[capacity];
+        T[] resizedArray = (T[]) new Object[capacity];
         int numOfElemInResizedArray = capacity;
         int index = nextFirst + 1;
         helperSize = size;
