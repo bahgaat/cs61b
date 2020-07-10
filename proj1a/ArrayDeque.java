@@ -1,6 +1,6 @@
-/*import java.util.Deque;*/
+import java.util.Deque;
 
-public class ArrayDeque<T> implements Deque<T> {
+public class ArrayDeque<T> {
     private T[] items;
     private int size;
     private int nextFirst;
@@ -18,7 +18,6 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     /*  Add to the front of the array deque. */
-    @Override
     public void addFirst(T item) {
         checkIfUnderlyingArrayNeededToBeResized();
         if (nextFirst < 0) {
@@ -32,7 +31,6 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     /* Add to the back of the array deque. */
-    @Override
     public void addLast(T item) {
         checkIfUnderlyingArrayNeededToBeResized();
         items[nextLast] = item;
@@ -44,7 +42,6 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     /* check if the array is empty. */
-    @Override
     public boolean isEmpty() {
         if (size == 0) {
             return true;
@@ -54,13 +51,11 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     /* Return the size of the array deque. */
-    @Override
     public int size() {
         return size;
     }
 
     /* print every element of the array deque. */
-    @Override
     public void printDeque() {
         int index = nextFirst + 1;
         helperSize = size;
@@ -76,16 +71,17 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     /* Remove first item in the array deque and return it. */
-    @Override
     public T removeFirst() {
-        int first = nextFirst + 1;
+        int first;
         T firstItem = null;
         if (size == 0) {
             return firstItem;
-        } else if (first < 0) {
+        } else if (nextFirst + 1 < 0) {
+            first = nextFirst + 1;
             firstItem = items[numOfElemInUnderlyingArray + first];
             items[numOfElemInUnderlyingArray + first] = null;
         } else {
+            first = nextFirst + 1;
             firstItem = items[first];
             items[first] = null;
         }
@@ -95,13 +91,12 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     /* Remove last item in the array deque and return it. */
-    @Override
     public T removeLast() {
-        int last = nextLast - 1;
-        T lastItem = items[last];
         if (size == 0) {
             return null;
         } else {
+            int last = nextLast - 1;
+            T lastItem = items[last];
             items[last] = null;
             size -= 1;
             nextLast = last;
@@ -110,7 +105,6 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     /* Get the item at the specific index from the array deque. */
-    @Override
     public T get(int index) {
         int first = nextFirst + 1;
         int indexOfUnderlyingArray = index + first;
@@ -131,7 +125,7 @@ public class ArrayDeque<T> implements Deque<T> {
         helperSize = size;
         while (helperSize != 0) {
             if (index < 0) {
-                resizedArray[numOfElemInResizedArray + index] = items[numOfElemInResizedArray + index];
+                resizedArray[numOfElemInResizedArray + index] = items[numOfElemInUnderlyingArray + index];
             } else {
                 resizedArray[index] = items[index];
             }
@@ -139,10 +133,11 @@ public class ArrayDeque<T> implements Deque<T> {
             index += 1;
         }
         items = resizedArray;
+        numOfElemInUnderlyingArray = numOfElemInResizedArray;
     }
 
     /* Check if the underlying array need to be resized. */
-    public void checkIfUnderlyingArrayNeededToBeResized() {
+    private void checkIfUnderlyingArrayNeededToBeResized() {
         double itemsLength = items.length;
         if (items.length == size) {
             resize(items.length * 2);
@@ -150,4 +145,21 @@ public class ArrayDeque<T> implements Deque<T> {
             resize(items.length / 2);
         }
     }
+    /*
+    public static void main(String[] args)  {
+        ArrayDeque<Integer> ArrayDeque = new ArrayDeque<>();
+        ArrayDeque.size();
+        ArrayDeque.addFirst(1);
+        ArrayDeque.size();
+        ArrayDeque.addFirst(3);
+        ArrayDeque.addFirst(4);
+        ArrayDeque.addLast(5);
+        ArrayDeque.addLast(6);
+        ArrayDeque.addLast(7);
+        ArrayDeque.addFirst(8);
+        ArrayDeque.addLast(9);
+        ArrayDeque.size();
+        ArrayDeque.addLast(11);
+        System.out.println(ArrayDeque.get(2));
+    }*/
 }
