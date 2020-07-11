@@ -130,7 +130,7 @@ public class LinkedListDeque<T> {
     /* Get the specific index of the linkedlist where 0 is the front,
     1 is the next, and so forth, but this time by using recurion. */
     public T getRecursive(int index) {
-        if (size == 0) {
+        if (size == 0 || index >= size) {
             return null;
         } else if (index == 0) {
             return helperSentintel.next.item;
@@ -155,8 +155,8 @@ public class LinkedListDeque<T> {
         LinkedListDeque.addFirst(8);
         LinkedListDeque.addLast(1);
         LinkedListDeque.removeLast();
-        System.out.println(LinkedListDeque.getRecursive(1));
-    }*/
-
+        System.out.println(LinkedListDeque.getRecursive(8));
+    }
+   */
 
 }
