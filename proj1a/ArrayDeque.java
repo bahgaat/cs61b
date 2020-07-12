@@ -138,7 +138,7 @@ public class ArrayDeque<T> {
         }
     }
 
-
+    /*
     public static void main(String[] args)  {
         ArrayDeque<Integer> ArrayDeque = new ArrayDeque<>();
         ArrayDeque.addFirst(0);
@@ -154,4 +154,5 @@ public class ArrayDeque<T> {
         ArrayDeque.addFirst(10);
         ArrayDeque.get(1);
     }
+     */
 }
