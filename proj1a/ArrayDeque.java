@@ -22,7 +22,7 @@ public class ArrayDeque<T> {
         size += 1;
         nextFirst -= 1;
         if (nextFirst < 0) {
-            nextFirst = size - 1;
+            nextFirst = numOfElemInUnderlyingArray - 1;
         }
     }
 
@@ -138,33 +138,20 @@ public class ArrayDeque<T> {
         }
     }
 
-    /*
+
     public static void main(String[] args)  {
         ArrayDeque<Integer> ArrayDeque = new ArrayDeque<>();
-        ArrayDeque.addLast(0);
-        System.out.println(ArrayDeque.removeLast());
-        ArrayDeque.addLast(2);
-        System.out.println(ArrayDeque.removeFirst());
-        ArrayDeque.addLast(4);
-        ArrayDeque.addFirst(5);
-        ArrayDeque.addLast(6);
+        ArrayDeque.addFirst(0);
+        ArrayDeque.addFirst(1);
+        ArrayDeque.addFirst(2);
+        ArrayDeque.removeFirst();
+        ArrayDeque.removeLast();
+        ArrayDeque.removeLast();
+        ArrayDeque.addFirst(6);
         ArrayDeque.addLast(7);
-        System.out.println(ArrayDeque.removeLast());
-        ArrayDeque.addLast(9);
-        ArrayDeque.addLast(10);
-        ArrayDeque.addFirst(11);
-        System.out.println(ArrayDeque.get(3));
-        ArrayDeque.addLast(13);
-        System.out.println(ArrayDeque.removeFirst());
-        System.out.println(ArrayDeque.removeFirst());
-        ArrayDeque.addLast(16);
-        ArrayDeque.addFirst(17);
-        System.out.println(ArrayDeque.removeFirst());
-        ArrayDeque.addLast(19);
-        ArrayDeque.addLast(20);
-        System.out.println(ArrayDeque.removeFirst());
-        System.out.println(ArrayDeque.get(0));
-
+        ArrayDeque.addFirst(8);
+        ArrayDeque.removeLast();
+        ArrayDeque.addFirst(10);
+        ArrayDeque.get(1);
     }
-*/
 }
