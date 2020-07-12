@@ -107,6 +107,9 @@ public class ArrayDeque<T> {
         items[last] = null;
         size -= 1;
         nextLast = last;
+        if (size == 0) {
+            nextFirst = 0;
+        }
         return  lastItem;
     }
 
@@ -155,10 +158,30 @@ public class ArrayDeque<T> {
     /*
     public static void main(String[] args)  {
         ArrayDeque<Integer> ArrayDeque = new ArrayDeque<>();
-        ArrayDeque.addFirst(0);
-        ArrayDeque.addLast(1);
+        ArrayDeque.addLast(0);
+        System.out.println(ArrayDeque.removeLast());
         ArrayDeque.addLast(2);
-        System.out.println( ArrayDeque.removeFirst());
+        System.out.println(ArrayDeque.removeFirst());
+        ArrayDeque.addLast(4);
+        ArrayDeque.addFirst(5);
+        ArrayDeque.addLast(6);
+        ArrayDeque.addLast(7);
+        System.out.println(ArrayDeque.removeLast());
+        ArrayDeque.addLast(9);
+        ArrayDeque.addLast(10);
+        ArrayDeque.addFirst(11);
+        System.out.println(ArrayDeque.get(3));
+        ArrayDeque.addLast(13);
+        System.out.println(ArrayDeque.removeFirst());
+        System.out.println(ArrayDeque.removeFirst());
+        ArrayDeque.addLast(16);
+        ArrayDeque.addFirst(17);
+        System.out.println(ArrayDeque.removeFirst());
+        ArrayDeque.addLast(19);
+        ArrayDeque.addLast(20);
+        System.out.println(ArrayDeque.removeFirst());
+        System.out.println(ArrayDeque.get(0));
+
     }
-    */
+*/
 }
