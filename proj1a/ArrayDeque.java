@@ -102,7 +102,7 @@ public class ArrayDeque<T> {
         int indexOfUnderlyingArray = index + first;
         if (size == 0) {
             return null;
-        } else if (indexOfUnderlyingArray < 0) {
+        } else if (indexOfUnderlyingArray >= numOfElemInUnderlyingArray) {
             return items[indexOfUnderlyingArray - numOfElemInUnderlyingArray];
         } else {
             return items[indexOfUnderlyingArray];
@@ -142,17 +142,30 @@ public class ArrayDeque<T> {
     public static void main(String[] args)  {
         ArrayDeque<Integer> ArrayDeque = new ArrayDeque<>();
         ArrayDeque.addFirst(0);
-        ArrayDeque.addFirst(1);
-        ArrayDeque.addFirst(2);
+        ArrayDeque.removeFirst();
+        ArrayDeque.addLast(2);
+        ArrayDeque.removeFirst();
+        ArrayDeque.addLast(4);
+        ArrayDeque.removeFirst();
+        ArrayDeque.addLast(6);
+        ArrayDeque.addFirst(7);
+        ArrayDeque.addFirst(8);
         ArrayDeque.removeFirst();
         ArrayDeque.removeLast();
+        ArrayDeque.addFirst(11);
+        ArrayDeque.addLast(12);
+        ArrayDeque.get(0);
         ArrayDeque.removeLast();
-        ArrayDeque.addFirst(6);
-        ArrayDeque.addLast(7);
-        ArrayDeque.addFirst(8);
+        ArrayDeque.addLast(15);
+        ArrayDeque.removeFirst();
+        ArrayDeque.removeFirst();
+        ArrayDeque.get(0);
+        ArrayDeque.addLast(19);
         ArrayDeque.removeLast();
-        ArrayDeque.addFirst(10);
-        ArrayDeque.get(1);
+        ArrayDeque.addLast(21);
+        System.out.println(ArrayDeque.get(1));
     }
-     */
+    */
+
+
 }
