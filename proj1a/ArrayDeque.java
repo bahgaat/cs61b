@@ -11,41 +11,30 @@ public class ArrayDeque<T> {
         numOfElemInUnderlyingArray = 8;
         items = (T[]) new Object[numOfElemInUnderlyingArray];
         size = 0;
-        nextFirst = 0;
-        nextLast = 0;
+        nextFirst = 4;
+        nextLast = 5;
     }
 
     /*  Add to the front of the array deque. */
     public void addFirst(T item) {
         checkIfUnderlyingArrayNeededToBeResized();
-        if (nextFirst < 0) {
-            items[numOfElemInUnderlyingArray + nextFirst] = item;
-        } else {
-            items[nextFirst] = item;
-            /*nextLast += 1;*/
-        }
-        if (nextLast == 0 && items[0] != null) {
-            nextLast += 1;
-        }
+        items[nextFirst] = item;
         size += 1;
         nextFirst -= 1;
+        if (nextFirst < 0) {
+            nextFirst = size - 1;
+        }
     }
 
     /* Add to the back of the array deque. */
     public void addLast(T item) {
         checkIfUnderlyingArrayNeededToBeResized();
-        if (nextLast >= numOfElemInUnderlyingArray) {
-            int last_index = nextLast - numOfElemInUnderlyingArray;
-            items[last_index] = item;
-            nextLast = last_index + 1;
-        } else {
-            items[nextLast] = item;
-            nextLast += 1;
-        }
-        if (nextFirst == 0 && items[0] != null) {
-            nextFirst = -1;
-        }
+        items[nextLast] = item;
         size += 1;
+        nextLast += 1;
+        if (nextLast == numOfElemInUnderlyingArray) {
+            nextLast = 0;
+        }
     }
 
     /* check if the array is empty. */
@@ -76,18 +65,15 @@ public class ArrayDeque<T> {
     /* Remove first item in the array deque and return it. */
     public T removeFirst() {
         int first;
-        T firstItem = null;
         if (size == 0) {
-            return firstItem;
-        } else if (nextFirst + 1 < 0) {
-            first = nextFirst + 1;
-            firstItem = items[numOfElemInUnderlyingArray + first];
-            items[numOfElemInUnderlyingArray + first] = null;
+            return null;
+        } else if (nextFirst == numOfElemInUnderlyingArray - 1) {
+            first = 0;
         } else {
             first = nextFirst + 1;
-            firstItem = items[first];
-            items[first] = null;
         }
+        T firstItem = items[first];
+        items[first] = null;
         size -= 1;
         nextFirst = first;
         return firstItem;
@@ -107,9 +93,6 @@ public class ArrayDeque<T> {
         items[last] = null;
         size -= 1;
         nextLast = last;
-        if (size == 0) {
-            nextFirst = 0;
-        }
         return  lastItem;
     }
 
@@ -120,7 +103,7 @@ public class ArrayDeque<T> {
         if (size == 0) {
             return null;
         } else if (indexOfUnderlyingArray < 0) {
-            return items[numOfElemInUnderlyingArray + indexOfUnderlyingArray];
+            return items[indexOfUnderlyingArray - numOfElemInUnderlyingArray];
         } else {
             return items[indexOfUnderlyingArray];
         }
