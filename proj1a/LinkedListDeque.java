@@ -128,9 +128,9 @@ public class LinkedListDeque<T> {
 
 
     /* Get the specific index of the linkedlist where 0 is the front,
-    1 is the next, and so forth, but this time by using recurion. */
+    1 is the next, and so forth, but this time by using recursion. */
     public T getRecursive(int index) {
-        if (size == 0 || index >= size) {
+        if (helperSentintel.next == sentinel) {
             return null;
         } else if (index == 0) {
             return helperSentintel.next.item;

@@ -138,6 +138,12 @@ public class ArrayDeque<T> {
         items = resizedArray;
         numOfElemInUnderlyingArray = numOfElemInResizedArray;
         nextLast = indexOfResizedArray;
+        if (nextLast == numOfElemInUnderlyingArray) {
+            nextLast = 0;
+        }
+        if (nextFirst < 0) {
+            nextFirst = numOfElemInUnderlyingArray - 1;
+        }
     }
 
     /* Resize the underlying array to a smaller array. */
@@ -166,6 +172,12 @@ public class ArrayDeque<T> {
         items = resizedArray;
         numOfElemInUnderlyingArray = numOfElemInResizedArray;
         nextLast = indexOfResizedArray;
+        if (nextLast == numOfElemInUnderlyingArray) {
+            nextLast = 0;
+        }
+        if (nextFirst < 0) {
+            nextFirst = numOfElemInUnderlyingArray - 1;
+        }
     }
 
     /* Check if the underlying array need to be resized. */
