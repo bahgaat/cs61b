@@ -52,11 +52,10 @@ public class ArrayDeque<T> {
         int index = nextFirst + 1;
         helperSize = size;
         while (helperSize != 0) {
-            if (index < 0) {
-                System.out.println(items[numOfElemInUnderlyingArray + index]);
-            } else {
-                System.out.println(items[index]);
+            if (index >= numOfElemInUnderlyingArray) {
+                index = 0;
             }
+            System.out.println(items[index]);
             helperSize -= 1;
             index += 1;
         }
@@ -114,15 +113,26 @@ public class ArrayDeque<T> {
         }
     }
 
-    /* Resize the underlying array to a bigger array */
-    private void resizeToBiggerArray(int capacity) {
+    /* Resize the underlying array to the target capacity. */
+    private void resize(int capacity) {
         T[] resizedArray = (T[]) new Object[capacity];
         int numOfElemInResizedArray = capacity;
         int indexOfOriginalArray = nextFirst + 1;
-        int helper = numOfElemInUnderlyingArray - indexOfOriginalArray;
-        int indexOfResizedArray = numOfElemInResizedArray - helper;
-        nextFirst = indexOfResizedArray - 1;
+        int indexOfResizedArray;
         helperSize = size;
+
+        if (capacity > numOfElemInUnderlyingArray) {
+            int helper = numOfElemInUnderlyingArray - indexOfOriginalArray;
+            indexOfResizedArray = numOfElemInResizedArray - helper;
+            nextFirst = indexOfResizedArray - 1;
+        } else {
+            indexOfResizedArray = indexOfOriginalArray;
+            if (indexOfOriginalArray >= numOfElemInResizedArray) {
+                indexOfResizedArray = indexOfOriginalArray - numOfElemInResizedArray;
+                nextFirst = indexOfResizedArray - 1;
+            }
+        }
+
         while (helperSize != 0) {
             if (indexOfOriginalArray >= numOfElemInUnderlyingArray) {
                 indexOfOriginalArray = 0;
@@ -135,6 +145,7 @@ public class ArrayDeque<T> {
             indexOfOriginalArray += 1;
             indexOfResizedArray += 1;
         }
+
         items = resizedArray;
         numOfElemInUnderlyingArray = numOfElemInResizedArray;
         nextLast = indexOfResizedArray;
@@ -146,76 +157,15 @@ public class ArrayDeque<T> {
         }
     }
 
-    /* Resize the underlying array to a smaller array. */
-    private void resizeToSmallerArray(int capacity){
-        T[] resizedArray = (T[]) new Object[capacity];
-        int numOfElemInResizedArray = capacity;
-        int indexOfOriginalArray = nextFirst + 1;
-        int indexOfResizedArray = indexOfOriginalArray;
-        if (indexOfOriginalArray >= numOfElemInResizedArray) {
-            indexOfResizedArray = indexOfOriginalArray - numOfElemInResizedArray;
-            nextFirst = indexOfResizedArray - 1;
-        }
-        helperSize = size;
-        while (helperSize != 0) {
-            if (indexOfOriginalArray >= numOfElemInUnderlyingArray) {
-                indexOfOriginalArray = 0;
-            }
-            if (indexOfResizedArray >= numOfElemInResizedArray) {
-                indexOfResizedArray = 0;
-            }
-            resizedArray[indexOfResizedArray] = items[indexOfOriginalArray];
-            helperSize -= 1;
-            indexOfOriginalArray += 1;
-            indexOfResizedArray += 1;
-        }
-        items = resizedArray;
-        numOfElemInUnderlyingArray = numOfElemInResizedArray;
-        nextLast = indexOfResizedArray;
-        if (nextLast == numOfElemInUnderlyingArray) {
-            nextLast = 0;
-        }
-        if (nextFirst < 0) {
-            nextFirst = numOfElemInUnderlyingArray - 1;
-        }
-    }
 
     /* Check if the underlying array need to be resized. */
     private void checkIfUnderlyingArrayNeededToBeResized() {
         double itemsLength = items.length;
         if (items.length == size) {
-            resizeToBiggerArray(items.length * 2);
+            resize(items.length * 2);
         } else if (items.length >= 16 && size / itemsLength < 0.25) {
-            resizeToSmallerArray(items.length / 2);
+            resize(items.length / 2);
         }
     }
-
-
-    /*
-    public static void main(String[] args) {
-        ArrayDeque<Integer> ArrayDeque = new ArrayDeque<>();
-        ArrayDeque.addFirst(1);
-        ArrayDeque.addFirst(2);
-        ArrayDeque.addFirst(4);
-        ArrayDeque.addFirst(7);
-        ArrayDeque.addFirst(9);
-        ArrayDeque.addFirst(1);
-        ArrayDeque.addFirst(2);
-        ArrayDeque.addFirst(4);
-        ArrayDeque.addFirst(7);
-        ArrayDeque.addFirst(9);
-        ArrayDeque.removeFirst();
-        ArrayDeque.removeFirst();
-        ArrayDeque.removeFirst();
-        ArrayDeque.removeFirst();
-        ArrayDeque.removeFirst();
-        ArrayDeque.removeFirst();
-        ArrayDeque.removeFirst();
-        ArrayDeque.removeFirst();
-        ArrayDeque.removeFirst();
-        ArrayDeque.get(0);
-    }
-     */
-
 }
 
