@@ -76,6 +76,7 @@ public class ArrayDeque<T> {
         items[first] = null;
         size -= 1;
         nextFirst = first;
+        checkIfUnderlyingArrayNeededToBeResized();
         return firstItem;
     }
 
@@ -93,11 +94,15 @@ public class ArrayDeque<T> {
         items[last] = null;
         size -= 1;
         nextLast = last;
+        checkIfUnderlyingArrayNeededToBeResized();
         return  lastItem;
     }
 
     /* Get the item at the specific index from the array deque. */
     public T get(int index) {
+        if (index >= numOfElemInUnderlyingArray) {
+            return null;
+        }
         int first = nextFirst + 1;
         int indexOfUnderlyingArray = index + first;
         if (size == 0) {
@@ -194,22 +199,11 @@ public class ArrayDeque<T> {
         ArrayDeque.removeFirst();
         ArrayDeque.removeFirst();
         ArrayDeque.removeFirst();
-        ArrayDeque.addFirst(1);
-        ArrayDeque.addFirst(2);
-        ArrayDeque.addFirst(4);
-        ArrayDeque.addFirst(7);
-        ArrayDeque.addFirst(9);
-        ArrayDeque.addFirst(1);
-        ArrayDeque.addFirst(2);
-        ArrayDeque.addFirst(4);
-        ArrayDeque.addFirst(7);
-        ArrayDeque.addFirst(9);
-
+        ArrayDeque.removeFirst();
+        ArrayDeque.removeFirst();
+        ArrayDeque.get(0);
     }
-
      */
 
-
-
-
 }
+
