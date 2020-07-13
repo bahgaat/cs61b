@@ -113,19 +113,26 @@ public class ArrayDeque<T> {
     private void resize(int capacity) {
         T[] resizedArray = (T[]) new Object[capacity];
         int numOfElemInResizedArray = capacity;
-        int index = nextFirst + 1;
+        int indexOfOriginalArray = nextFirst + 1;
+        int helper = numOfElemInUnderlyingArray - indexOfOriginalArray;
+        int indexOfResizedArray = numOfElemInResizedArray - helper;
+        nextFirst = indexOfResizedArray - 1;
         helperSize = size;
         while (helperSize != 0) {
-            if (index < 0) {
-                resizedArray[numOfElemInResizedArray + index] = items[numOfElemInUnderlyingArray + index];
-            } else {
-                resizedArray[index] = items[index];
+            if (indexOfOriginalArray >= numOfElemInUnderlyingArray) {
+                indexOfOriginalArray = 0;
             }
+            if (indexOfResizedArray >= numOfElemInResizedArray) {
+                indexOfResizedArray = 0;
+            }
+            resizedArray[indexOfResizedArray] = items[indexOfOriginalArray];
             helperSize -= 1;
-            index += 1;
+            indexOfOriginalArray += 1;
+            indexOfResizedArray += 1;
         }
         items = resizedArray;
         numOfElemInUnderlyingArray = numOfElemInResizedArray;
+        nextLast = indexOfResizedArray;
     }
 
     /* Check if the underlying array need to be resized. */
@@ -139,33 +146,22 @@ public class ArrayDeque<T> {
     }
 
     /*
-    public static void main(String[] args)  {
+
+    public static void main(String[] args) {
         ArrayDeque<Integer> ArrayDeque = new ArrayDeque<>();
-        ArrayDeque.addFirst(0);
-        ArrayDeque.removeFirst();
-        ArrayDeque.addLast(2);
-        ArrayDeque.removeFirst();
-        ArrayDeque.addLast(4);
-        ArrayDeque.removeFirst();
-        ArrayDeque.addLast(6);
+        ArrayDeque.addLast(0);
+        ArrayDeque.addFirst(1);
+        ArrayDeque.addFirst(2);
+        ArrayDeque.addLast(3);
+        ArrayDeque.addFirst(4);
+        ArrayDeque.addLast(5);
+        ArrayDeque.size();
         ArrayDeque.addFirst(7);
-        ArrayDeque.addFirst(8);
-        ArrayDeque.removeFirst();
-        ArrayDeque.removeLast();
-        ArrayDeque.addFirst(11);
-        ArrayDeque.addLast(12);
-        ArrayDeque.get(0);
-        ArrayDeque.removeLast();
-        ArrayDeque.addLast(15);
-        ArrayDeque.removeFirst();
-        ArrayDeque.removeFirst();
-        ArrayDeque.get(0);
-        ArrayDeque.addLast(19);
-        ArrayDeque.removeLast();
-        ArrayDeque.addLast(21);
-        System.out.println(ArrayDeque.get(1));
+        ArrayDeque.addLast(8);
+        ArrayDeque.addFirst(9);
     }
-    */
+
+*/
 
 
 }
