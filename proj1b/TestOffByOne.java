@@ -15,11 +15,13 @@ public class TestOffByOne {
         assertTrue(offByOne.equalChars('&', '%'));
         assertTrue(offByOne.equalChars('v', 'u'));
         assertTrue(offByOne.equalChars('z', 'y'));
+        assertTrue(offByOne.equalChars('Z', 'Y'));
         assertFalse(offByOne.equalChars('a', 'a'));
         assertFalse(offByOne.equalChars('a', 'e'));
         assertFalse(offByOne.equalChars('x', 'z'));
         assertFalse(offByOne.equalChars('e', 'e'));
         assertFalse(offByOne.equalChars('e', 'i'));
+        assertFalse(offByOne.equalChars('a', 'B'));
     }
 
 
