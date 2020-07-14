@@ -1,6 +1,5 @@
-
-public class ArrayDeque<Type> implements Deque<Type> {
-    private Type[] items;
+public class ArrayDeque<T> implements Deque<T> {
+    private T[] items;
     private int size;
     private int nextFirst;
     private int numOfElemInUnderlyingArray;
@@ -10,42 +9,40 @@ public class ArrayDeque<Type> implements Deque<Type> {
     /* Create an empty array deque. */
     public ArrayDeque() {
         numOfElemInUnderlyingArray = 8;
-        items = (Type[]) new Object[numOfElemInUnderlyingArray];
+        items = (T[]) new Object[numOfElemInUnderlyingArray];
         size = 0;
-        nextFirst = 0;
-        nextLast = 0;
+        nextFirst = 4;
+        nextLast = 5;
     }
 
     /*  Add to the front of the array deque. */
     @Override
-    public void addFirst(Type item) {
+    public void addFirst(T item) {
         checkIfUnderlyingArrayNeededToBeResized();
-        if (nextFirst < 0) {
-            items[numOfElemInUnderlyingArray + nextFirst] = item;
-        } else {
-            items[nextFirst] = item;
-            nextLast += 1;
-        }
+        items[nextFirst] = item;
         size += 1;
         nextFirst -= 1;
+        if (nextFirst < 0) {
+            nextFirst = numOfElemInUnderlyingArray - 1;
+        }
     }
 
     /* Add to the back of the array deque. */
     @Override
-    public void addLast(Type item) {
+    public void addLast(T item) {
         checkIfUnderlyingArrayNeededToBeResized();
         items[nextLast] = item;
         size += 1;
         nextLast += 1;
-        if (nextFirst == 0 && items[0] != null) {
-            nextFirst = -1;
+        if (nextLast == numOfElemInUnderlyingArray) {
+            nextLast = 0;
         }
     }
 
     /* check if the array is empty. */
     @Override
     public boolean isEmpty() {
-        return size == 0;
+       return size == 0;
     }
 
     /* Return the size of the array deque. */
@@ -60,11 +57,10 @@ public class ArrayDeque<Type> implements Deque<Type> {
         int index = nextFirst + 1;
         helperSize = size;
         while (helperSize != 0) {
-            if (index < 0) {
-                System.out.println(items[numOfElemInUnderlyingArray + index]);
-            } else {
-                System.out.println(items[index]);
+            if (index >= numOfElemInUnderlyingArray) {
+                index = 0;
             }
+            System.out.println(items[index]);
             helperSize -= 1;
             index += 1;
         }
@@ -72,72 +68,106 @@ public class ArrayDeque<Type> implements Deque<Type> {
 
     /* Remove first item in the array deque and return it. */
     @Override
-    public Type removeFirst() {
-        int first = nextFirst + 1;
-        Type firstItem = null;
+    public T removeFirst() {
+        int first;
         if (size == 0) {
-            return firstItem;
-        } else if (first < 0) {
-            firstItem = items[numOfElemInUnderlyingArray + first];
-            items[numOfElemInUnderlyingArray + first] = null;
+            return null;
+        } else if (nextFirst == numOfElemInUnderlyingArray - 1) {
+            first = 0;
         } else {
-            firstItem = items[first];
-            items[first] = null;
+            first = nextFirst + 1;
         }
+        T firstItem = items[first];
+        items[first] = null;
         size -= 1;
         nextFirst = first;
+        checkIfUnderlyingArrayNeededToBeResized();
         return firstItem;
     }
 
     /* Remove last item in the array deque and return it. */
     @Override
-    public Type removeLast() {
-        int last = nextLast - 1;
-        Type lastItem = items[last];
+    public T removeLast() {
+        int last;
         if (size == 0) {
             return null;
-        } else {
-            items[last] = null;
-            size -= 1;
-            nextLast = last;
-            return  lastItem;
+        } else if (nextLast == 0) {
+            last = numOfElemInUnderlyingArray - 1;
+        } else  {
+            last = nextLast - 1;
         }
+        T lastItem = items[last];
+        items[last] = null;
+        size -= 1;
+        nextLast = last;
+        checkIfUnderlyingArrayNeededToBeResized();
+        return  lastItem;
     }
 
     /* Get the item at the specific index from the array deque. */
     @Override
-    public Type get(int index) {
+    public T get(int index) {
+        if (index >= numOfElemInUnderlyingArray) {
+            return null;
+        }
         int first = nextFirst + 1;
         int indexOfUnderlyingArray = index + first;
         if (size == 0) {
             return null;
-        } else if (indexOfUnderlyingArray < 0) {
-            return items[numOfElemInUnderlyingArray + indexOfUnderlyingArray];
+        } else if (indexOfUnderlyingArray >= numOfElemInUnderlyingArray) {
+            return items[indexOfUnderlyingArray - numOfElemInUnderlyingArray];
         } else {
             return items[indexOfUnderlyingArray];
         }
     }
 
     /* Resize the underlying array to the target capacity. */
-    public void resize(int capacity) {
-        Type[] resizedArray = (Type[]) new Object[capacity];
+    private void resize(int capacity) {
+        T[] resizedArray = (T[]) new Object[capacity];
         int numOfElemInResizedArray = capacity;
-        int index = nextFirst + 1;
+        int indexOfOriginalArray = nextFirst + 1;
+        int indexOfResizedArray;
         helperSize = size;
-        while (helperSize != 0) {
-            if (index < 0) {
-                resizedArray[numOfElemInResizedArray + index] = items[numOfElemInResizedArray + index];
-            } else {
-                resizedArray[index] = items[index];
+
+        if (capacity > numOfElemInUnderlyingArray) {
+            int helper = numOfElemInUnderlyingArray - indexOfOriginalArray;
+            indexOfResizedArray = numOfElemInResizedArray - helper;
+            nextFirst = indexOfResizedArray - 1;
+        } else {
+            indexOfResizedArray = indexOfOriginalArray;
+            if (indexOfOriginalArray >= numOfElemInResizedArray) {
+                indexOfResizedArray = indexOfOriginalArray - numOfElemInResizedArray;
+                nextFirst = indexOfResizedArray - 1;
             }
-            helperSize -= 1;
-            index += 1;
         }
+
+        while (helperSize != 0) {
+            if (indexOfOriginalArray >= numOfElemInUnderlyingArray) {
+                indexOfOriginalArray = 0;
+            }
+            if (indexOfResizedArray >= numOfElemInResizedArray) {
+                indexOfResizedArray = 0;
+            }
+            resizedArray[indexOfResizedArray] = items[indexOfOriginalArray];
+            helperSize -= 1;
+            indexOfOriginalArray += 1;
+            indexOfResizedArray += 1;
+        }
+
         items = resizedArray;
+        numOfElemInUnderlyingArray = numOfElemInResizedArray;
+        nextLast = indexOfResizedArray;
+        if (nextLast == numOfElemInUnderlyingArray) {
+            nextLast = 0;
+        }
+        if (nextFirst < 0) {
+            nextFirst = numOfElemInUnderlyingArray - 1;
+        }
     }
 
+
     /* Check if the underlying array need to be resized. */
-    public void checkIfUnderlyingArrayNeededToBeResized() {
+    private void checkIfUnderlyingArrayNeededToBeResized() {
         double itemsLength = items.length;
         if (items.length == size) {
             resize(items.length * 2);
@@ -146,3 +176,4 @@ public class ArrayDeque<Type> implements Deque<Type> {
         }
     }
 }
+
