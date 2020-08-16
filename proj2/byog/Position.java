@@ -1,11 +1,13 @@
 package byog;
 
-public interface Position {
-    int getYPosition();
+class Position {
+    int _x;
+    int _y;
 
-    int getXPosition();
+    Position(int x, int y) {
+        _x = x;
+        _y = y;
+    }
 
-    void updateYPosition(int newY);
 
-    void updateXPosition(int newX);
 }
