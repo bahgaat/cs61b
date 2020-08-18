@@ -11,7 +11,7 @@ import java.util.Random;
 /* row is y, column is x. */
 /* The starting position of drawing any L is from its vertical part. */
 /* I am going to divide the drawing of MyGame into 6 parts. */
-public class MyGame {
+public class MyGame<number> {
 
 
     /* draw positive vertical line, which means that the line is moving up. */
@@ -130,97 +130,94 @@ public class MyGame {
         Random r = new Random();
         int finalX;
         int h;
-        int x = RandomUtils.uniform(r, 93, 97);
-        int y = RandomUtils.uniform(r, 57, 60);
-        int x2 = RandomUtils.uniform(r, 50, 80);
+        int x = RandomUtils.uniform(r, 95, 97);
+        int y = RandomUtils.uniform(r, 58, 62);
+        int x2 = RandomUtils.uniform(r, 60, 80);
         int f = RandomUtils.uniform(r, 1, 10);
         if (f > 5) {
             finalX = x;
-            h = RandomUtils.uniform(r, 4, 8);
+            h = RandomUtils.uniform(r, 4, 7);
         } else {
             finalX = x2;
-            h = RandomUtils.uniform(r, 3, 6);
+            h = RandomUtils.uniform(r, 3, 5);
         }
         int i;
+        int number;
         Position startPosition = new Position(finalX, y);
         Position BottomPosition = new Position(finalX, y);
         Position HallWayPosition = new Position(finalX - 1, y - 1);
-        i = RandomUtils.uniform(r, 4, 6);
-        drawUpperWallOfTheGameFromTheRight(world, startPosition, h, r, i);
-        drawBottomWallOfTheGameFromTheRight(world, BottomPosition, h, r, i);
-        drawHallWayOfTheGameFromTheRight(world, HallWayPosition, h, r, i);
+        i = RandomUtils.uniform(r, 4, 7);
+        for (int j = 0; j < h; j += 1) {
+            number = r.nextInt(4);
+            drawUpperWallOfTheGameFromTheRight(world, startPosition, j, i, number);
+            drawBottomWallOfTheGameFromTheRight(world, BottomPosition, j, i, number);
+            drawHallWayOfTheGameFromTheRight(world, HallWayPosition, j, i, number);
+        }
         drawPositiveVerticalLine(world, BottomPosition, 2, Tileset.WALL);
     }
 
-    private static void drawUpperWallOfTheGameFromTheRight(TETile[][] world, Position startPosition, int h, Random r, int i) {
-        for (int j = 0; j < h; j += 1) {
-            int u = RandomUtils.uniform(r, 1, 10);
-            if (j == 0 && u > 5) {
-                drawNegativeHorizontalLine(world, startPosition, i, Tileset.WALL);
-                drawNegativeLStartFromVerticalLine(world, startPosition, i, i, Tileset.WALL);
-            } else if (j == 0 && u < 5) {
-                drawNegativeHorizontalLine(world, startPosition, i * 2, Tileset.WALL);
-            } else if (j == 1  ) {
-                drawBottomHalfSquare(world, startPosition, i + j, i + j, i + j, Tileset.WALL);
-                drawNegativeLStartFromVerticalLine(world, startPosition, i + j, i + j, Tileset.WALL);
-            } else if (j == 2 ) {
-                drawBottomHalfSquare(world, startPosition, i + j, i + j, i + j, Tileset.WALL);
-                drawPositiveHorizontalLine(world, startPosition, i, Tileset.WALL);
-                drawNegativeHorizontalLine(world, startPosition, i * 2, Tileset.WALL);
-            } else if (j == 3) {
-                drawNegativeHorizontalLine(world, startPosition, i * 4 , Tileset.WALL);
-            } else {
-                drawPositiveOppositeLStartFromVerticalLine(world, startPosition, i + j + 2, i, Tileset.WALL);
-                drawBottomHalfSquare(world, startPosition, i + j, i * 2, i + j, Tileset.WALL);
-                drawNegativeOppositeOfLStartFromHorizontalLine(world, startPosition, i - 2, i + j + 2, Tileset.WALL);
-                drawNegativeHorizontalLine(world, startPosition, i * 2, Tileset.WALL);
-
-            }
+    private static void drawUpperWallOfTheGameFromTheRight(TETile[][] world, Position startPosition, int j, int i,
+                                                           int number) {
+        if (j == 0 && number >= 2) {
+            drawNegativeHorizontalLine(world, startPosition, i, Tileset.WALL);
+            drawNegativeLStartFromVerticalLine(world, startPosition, i, i, Tileset.WALL);
+        } else if (j == 0 && number < 2) {
+            drawNegativeHorizontalLine(world, startPosition, i * 2, Tileset.WALL);
+        } else if (number == 0) {
+            drawBottomHalfSquare(world, startPosition, i + j, i + j, i + j, Tileset.WALL);
+            drawNegativeLStartFromVerticalLine(world, startPosition, i + j, i + j, Tileset.WALL);
+        } else if (number == 1) {
+            drawBottomHalfSquare(world, startPosition, i + j, i + j, i + j, Tileset.WALL);
+            drawPositiveHorizontalLine(world, startPosition, i, Tileset.WALL);
+            drawNegativeHorizontalLine(world, startPosition, i * 2, Tileset.WALL);
+        } else if (number == 2) {
+            drawNegativeHorizontalLine(world, startPosition, i * 4, Tileset.WALL);
+        } else if (number == 3) {
+            drawPositiveOppositeLStartFromVerticalLine(world, startPosition, i + j + 2, i, Tileset.WALL);
+            drawBottomHalfSquare(world, startPosition, i + j, i * 2, i + j, Tileset.WALL);
+            drawNegativeOppositeOfLStartFromHorizontalLine(world, startPosition, i - 2, i + j + 2, Tileset.WALL);
+            drawNegativeHorizontalLine(world, startPosition, i * 2, Tileset.WALL);
         }
     }
 
-    private static void drawBottomWallOfTheGameFromTheRight(TETile[][] world, Position BottomPosition, int h, Random r, int i) {
-        for (int j = 0; j < h; j += 1) {
-            if (j == 0) {
-                /*
-                drawNegativeVerticalLine(world, BottomPosition, i + 2, Tileset.WALL);
-                drawNegativeHorizontalLine(world, BottomPosition, i * 2 - 1, Tileset.WALL);
 
-                 */
-                /* other one. */
-                drawUpperHalfSquare(world, BottomPosition, i * 2, i, i * 2 - 2, Tileset.WALL);
-                drawNegativeHorizontalLine(world, BottomPosition, i + 1, Tileset.WALL);
-            } else if (j == 4) {
-                drawNegativeLStartFromVerticalLine(world, BottomPosition, i + j, (i + j) * 2 - 1, Tileset.WALL);
+    private static void drawBottomWallOfTheGameFromTheRight(TETile[][] world, Position BottomPosition, int j, int i,
+                                                            int number) {
 
-            } else if (j == 2 ) {
-                drawUpperHalfSquare(world, BottomPosition, i + j, i + j + 3, i + j, Tileset.WALL);
-                drawPositiveHorizontalLine(world, BottomPosition, i, Tileset.WALL);
-                drawNegativeHorizontalLine(world, BottomPosition, i * 2 - 3, Tileset.WALL);
-            } else if (j == 3) {
-                drawLStartFromVerticalLine(world, BottomPosition, i + j + 2, i + j + 2, Tileset.WALL);
-                drawUpperHalfSquare(world, BottomPosition, i + j + 2, i + j + 2, i + j, Tileset.WALL);
-                drawLStartFromHorizontalLine(world, BottomPosition, i, i + j + 4, Tileset.WALL);
-                drawNegativeHorizontalLine(world, BottomPosition, i * 3 + 1, Tileset.WALL);
-            } else {
-                drawNegativeHorizontalLine(world, BottomPosition, i * 2 - (i - 2) + i + 1, Tileset.WALL);
-            }
+        if (j == 0 && number >= 2) {
+            drawNegativeVerticalLine(world, BottomPosition, i + 2, Tileset.WALL);
+            drawNegativeHorizontalLine(world, BottomPosition, i * 2 - 1, Tileset.WALL);
+        } else if (j == 0 && number < 2) {
+            drawUpperHalfSquare(world, BottomPosition, i * 2, i, i * 2 - 2, Tileset.WALL);
+            drawNegativeHorizontalLine(world, BottomPosition, i + 1, Tileset.WALL);
+        } else if (number == 0) {
+            drawNegativeLStartFromVerticalLine(world, BottomPosition, i + j, (i + j) * 2 - 1, Tileset.WALL);
+        } else if (number == 1) {
+            drawUpperHalfSquare(world, BottomPosition, i + j, i + j + 3, i + j, Tileset.WALL);
+            drawPositiveHorizontalLine(world, BottomPosition, i, Tileset.WALL);
+            drawNegativeHorizontalLine(world, BottomPosition, i * 2 - 3, Tileset.WALL);
+        } else if (number == 2) {
+            drawLStartFromVerticalLine(world, BottomPosition, i + j + 2, i + j + 2, Tileset.WALL);
+            drawUpperHalfSquare(world, BottomPosition, i + j + 2, i + j + 2, i + j, Tileset.WALL);
+            drawLStartFromHorizontalLine(world, BottomPosition, i, i + j + 4, Tileset.WALL);
+            drawNegativeHorizontalLine(world, BottomPosition, i * 3 + 1, Tileset.WALL);
+        } else if (number == 3) {
+            drawNegativeHorizontalLine(world, BottomPosition, i * 2 - (i - 2) + i + 1, Tileset.WALL);
         }
+
     }
 
-    private static void drawHallWayOfTheGameFromTheRight(TETile[][] world, Position HallWayPosition, int h, Random r, int i) {
-        for (int j = 0; j < h; j += 1) {
-            if (j == 0) {
-                /*
+
+
+    private static void drawHallWayOfTheGameFromTheRight(TETile[][] world, Position HallWayPosition, int j, int i, int number) {
+
+            if (j == 0 && number >= 2) {
                 drawBottomRectangleTowardLeft(world, HallWayPosition, i, i - 2, Tileset.FLOOR);
                 drawNegativeLStartFromVerticalLine(world, HallWayPosition, i, i + 1, Tileset.FLOOR);
-
-                 */
-                /* other one. */
+            } else if (j == 0 && number < 2)  {
                 drawBottomRectangleTowardLeft(world, HallWayPosition, (i * 2) - 2, i - 2, Tileset.FLOOR);
                 drawNegativeHorizontalLine(world, HallWayPosition, i + 2, Tileset.FLOOR);
-            } else if (j == 4) {
-
+            } else if (number == 0) {
                 drawNegativeHorizontalLine(world, HallWayPosition, 2, Tileset.FLOOR);
                 drawUpperRectangleTowardLeft(world, HallWayPosition, i + j, (i + j) - 2, Tileset.FLOOR);
                 drawBottomRectangleTowardRight(world, HallWayPosition, i + j , i + j - 2, Tileset.FLOOR);
@@ -228,7 +225,7 @@ public class MyGame {
                 drawNegativeHorizontalLine(world, HallWayPosition, i + j + 1 , Tileset.FLOOR);
                 /* after . */
                 /*drawNegativeHorizontalLine(world, HallWayPosition, j + 1, Tileset.FLOOR);*/
-            } else if (j == 2) {
+            } else if (number == 1) {
                /* before
                drawLStartFromHorizontalLine(world, HallWayPosition, j, 2, Tileset.FLOOR);
                */
@@ -239,14 +236,14 @@ public class MyGame {
                 drawBottomRectangleTowardLeft(world, HallWayPosition, i + j - 1, i + j + 3 - 2, Tileset.FLOOR);
                 drawNegativeLStartFromHorizontalLine(world, HallWayPosition, i + j + 3 - 2, 2, Tileset.FLOOR);
                 drawNegativeHorizontalLine(world, HallWayPosition, (i * 2) + j - 1, Tileset.FLOOR);
-            } else if (j == 3) {
+            } else if (number == 2) {
                 drawNegativeHorizontalLine(world, HallWayPosition, 2, Tileset.FLOOR);
                 drawBottomRectangleTowardLeft(world, HallWayPosition, i + j + 4, i - 2, Tileset.FLOOR);
                 drawLStartFromVerticalLine(world, HallWayPosition, i + j + 4, i, Tileset.FLOOR);
                 drawBottomRectangleTowardRight(world, HallWayPosition, i + j, i + j, Tileset.FLOOR);
                 drawLStartFromHorizontalLine(world, HallWayPosition, (i + j + 1) + (i - 2), i + j + 4, Tileset.FLOOR);
                 drawNegativeHorizontalLine(world, HallWayPosition, i * 3 + 2, Tileset.FLOOR);
-            } else {
+            } else if (number == 3) {
                 drawNegativeHorizontalLine(world, HallWayPosition, 2 ,Tileset.FLOOR);
                 drawUpperRectangleTowardLeft(world, HallWayPosition, i + j + 3, i - (i - 2), Tileset.FLOOR);
                 drawPositiveVerticalLine(world, HallWayPosition, i + j + 4, Tileset.FLOOR);
@@ -258,9 +255,9 @@ public class MyGame {
 
             }
         }
-    }
 
-    /* draw a shape which is similar to half square, which looks to the left. Start drawing the shape from bottom */
+
+    /* draw a shape which is similar to half square, which looks to the left. Start drawing the shape from Up */
     private static void drawLeftHalfSquare(TETile[][] world, Position P, int sizeOfBottomHorizontalLine,
                                            int sizeOfVerticalLine, int sizeOfUpperHorizontalLine, TETile type) {
         drawNegativeHorizontalLine(world, P, sizeOfBottomHorizontalLine, type);
@@ -268,7 +265,7 @@ public class MyGame {
         drawPositiveHorizontalLine(world, P, sizeOfUpperHorizontalLine, type);
     }
 
-    /* draw a shape which is similar to half square, which looks to the right. Start drawing the shape from bottom */
+    /* draw a shape which is similar to half square, which looks to the right. Start drawing the shape from Up */
     private static void drawRightHalfSquare(TETile[][] world, Position P, int sizeOfBottomHorizontalLine,
                                             int sizeOfVerticalLine, int sizeOfUpperHorizontalLine, TETile type) {
         drawPositiveHorizontalLine(world, P, sizeOfBottomHorizontalLine, type);
