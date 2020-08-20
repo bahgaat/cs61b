@@ -113,7 +113,7 @@ public class MyGame {
         int h;
         int x = RandomUtils.uniform(r, 95, 97);
         int y = RandomUtils.uniform(r, 60, 65);
-        int x2 = RandomUtils.uniform(r, 50, 55);
+        int x2 = RandomUtils.uniform(r, 60, 70);
         int f = RandomUtils.uniform(r, 1, 10);
 
         finalX = x2;
