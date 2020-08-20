@@ -23,12 +23,6 @@ public class MyGame {
         int yPosition = p._y;
         int xPosition = p._x;
         for (row = yPosition; row < yPosition + size; row += 1) {
-            /*
-            if (world[xPosition][row] == Tileset.WALL) {
-                continue;
-            }
-
-             */
             try {
                 world[xPosition][row] = type;
             } catch (Exception e) {
@@ -45,12 +39,6 @@ public class MyGame {
         int yPosition = p._y;
         int xPosition = p._x;
         for (row = yPosition; row > yPosition - size; row -= 1) {
-            /*
-            if (world[xPosition][row] == Tileset.WALL) {
-                continue;
-            }
-
-             */
             try {
                 world[xPosition][row] = type;
             } catch (Exception e) {
@@ -66,12 +54,6 @@ public class MyGame {
         int yPosition = p._y;
         int xPosition = p._x;
         for (column = xPosition; column < xPosition + size; column += 1) {
-            /*
-            if (world[column][yPosition] == Tileset.WALL) {
-                continue;
-            }
-
-             */
             try {
                 world[column][yPosition] = type;
             } catch (Exception e) {
@@ -88,11 +70,6 @@ public class MyGame {
         int yPosition = p._y;
         int xPosition = p._x;
         for (column = xPosition; column > xPosition - size; column -= 1) {
-            /*
-            if (world[column][yPosition] == Tileset.WALL) {
-                continue;
-            }
-            */
 
             try {
                 world[column][yPosition] = type;
@@ -136,12 +113,13 @@ public class MyGame {
         int h;
         int x = RandomUtils.uniform(r, 95, 97);
         int y = RandomUtils.uniform(r, 60, 65);
-        int x2 = RandomUtils.uniform(r, 45, 50);
+        int x2 = RandomUtils.uniform(r, 50, 55);
         int f = RandomUtils.uniform(r, 1, 10);
 
         finalX = x2;
-        h = RandomUtils.uniform(r, 2, 5);
-        int u = RandomUtils.uniform(r, 4, 6);
+
+        h = RandomUtils.uniform(r, 4, 6);
+        int u = RandomUtils.uniform(r, 5, 7);
 
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         for (int p = 0; p < WIDTH; p += 1) {
@@ -171,7 +149,6 @@ public class MyGame {
         }
         drawPositiveHorizontalLine(world, BottomPosition, 2, Tileset.WALL);
         return world;
-
     }
 
     private void drawUpperWallOfTheGameFromTheRight(TETile[][] world, Position startPosition, int j, int i,
