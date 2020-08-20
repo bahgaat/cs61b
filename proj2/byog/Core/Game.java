@@ -1,13 +1,14 @@
 package byog.Core;
 
+import byog.MyGame;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 
 public class Game {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
-    public static final int WIDTH = 80;
-    public static final int HEIGHT = 30;
+    public static final int WIDTH = 100;
+    public static final int HEIGHT = 100;
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
@@ -32,7 +33,19 @@ public class Game {
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
 
+        /*
         TETile[][] finalWorldFrame = null;
         return finalWorldFrame;
+         */
+        long answer = 0;
+        int stringLength = input.length();
+        MyGame mygame = new MyGame();
+        String[] arrayOfInputs = input.split("");
+        for (int i = 1; i < stringLength - 1; i += 1) {
+            answer = answer * 10 + Integer.parseInt(arrayOfInputs[i]);
+        }
+        return mygame.drawGame(answer);
+
     }
+
 }
