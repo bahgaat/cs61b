@@ -17,7 +17,12 @@ public class MyGame {
     where i am standing, I have to move 2 steps because the step that i stand on is counted. */
     private void drawLine(TETile[][] world, Position p, int size, TETile type, String position, String direction) {
         while (size > 0) {
-            world[p._x][p._y] = type;
+            try {
+                world[p._x][p._y] = type;
+            } catch (Exception e) {
+                continue;
+            }
+
             if (position == "vertical" && direction == "positive" && size > 1) {
                 p._y += 1;
             } else if (position == "vertical" && direction == "negative" && size > 1) {
