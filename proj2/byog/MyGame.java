@@ -20,7 +20,7 @@ public class MyGame {
             try {
                 world[p._x][p._y] = type;
             } catch (Exception e) {
-                continue;
+                break;
             }
 
             if (position == "vertical" && direction == "positive" && size > 1) {
