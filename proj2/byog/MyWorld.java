@@ -37,10 +37,10 @@ public class MyWorld {
         return world;
     }
 
-    /* draw first part of the world. its direction is toward left. I divide drawing the first part into
-    3 parts. Upper wall, Bottom wall, Hallway. */
-    private void drawFirstPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
-                                        Position hallwayPosition, int i, Random r) {
+    /* draw first part of the world. its direction is toward left. I divide drawing the first part
+     into   3 parts. Upper wall, Bottom wall, Hallway. */
+    private void drawFirstPartOfTheWorld(TETile[][] world, Position upperPosition,
+                                         Position bottomPosition,  Position hallwayPosition, int i, Random r) {
         int h = RandomUtils.uniform(r, 4, 6);
         for (int j = 0; j < h; j += 1) {
             int randomNumber = r.nextInt(4);
@@ -51,7 +51,8 @@ public class MyWorld {
     }
 
     /* draw upper wall of the first part of the world, which moves toward left. */
-    private void drawUpperWallOfTheFirstPartOfTheWorld(TETile[][] world, Position upperPosition, int j, int i, int randomNumber) {
+    private void drawUpperWallOfTheFirstPartOfTheWorld(TETile[][] world, Position upperPosition,
+                                                       int j, int i, int randomNumber) {
         if (j == 0 && randomNumber >= 2) {
             drawLine(world, upperPosition, i, Tileset.WALL, "horizontal", "negative");
             drawLStartFromVerticalLine(world, upperPosition, i, i, Tileset.WALL, "negative");
@@ -75,7 +76,8 @@ public class MyWorld {
     }
 
     /* draw bottom wall of the first part of the world, which moves toward left. */
-    private void drawBottomWallOfTheFirstPartOfTheWorld(TETile[][] world, Position bottomPosition, int j, int i, int randomNumber) {
+    private void drawBottomWallOfTheFirstPartOfTheWorld(TETile[][] world, Position bottomPosition,
+                                                        int j, int i, int randomNumber) {
         if (j == 0 && randomNumber >= 2) {
             drawLine(world, bottomPosition, i + 2, Tileset.WALL, "vertical", "negative");
             drawLine(world, bottomPosition, i * 2 - 1, Tileset.WALL, "horizontal", "negative");
@@ -99,7 +101,8 @@ public class MyWorld {
     }
 
     /* draw hallway of the first part of the game, which moves toward left. */
-    private void drawHallWayOfTheFirstPartOfTheWorld(TETile[][] world, Position hallWayPosition, int j, int i, int randomNumber) {
+    private void drawHallWayOfTheFirstPartOfTheWorld(TETile[][] world, Position hallWayPosition,
+                                                     int j, int i, int randomNumber) {
         if (j == 0 && randomNumber >= 2) {
             drawBottomRectangle(world, hallWayPosition, i, i - 2, Tileset.FLOOR, "negative");
             drawLStartFromVerticalLine(world, hallWayPosition, i, i + 1, Tileset.FLOOR, "negative");
@@ -147,8 +150,8 @@ public class MyWorld {
 
     /* draw second part of the world. its direction is toward up. I divide drawing the second part into 3 parts
     Upper wall, Bottom wall, and hallway. */
-    private void drawSecondPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
-                                         Position hallwayPosition, int i, Random r) {
+    private void drawSecondPartOfTheWorld(TETile[][] world, Position upperPosition,
+                                          Position bottomPosition,  Position hallwayPosition, int i, Random r) {
         int h = RandomUtils.uniform(r, 5, 7);
         for (int j = 0; j < h; j += 1) {
             int randomNumber = r.nextInt(3);
@@ -177,7 +180,8 @@ public class MyWorld {
     }
 
     /* draw bottom wall of the second part of the world. which moves toward up. */
-    private void drawBottomWallOfTheSecondPartOfTheWorld(TETile[][] world, Position bottomPosition, int j, int i, int randomNumber) {
+    private void drawBottomWallOfTheSecondPartOfTheWorld(TETile[][] world, Position bottomPosition,
+                                                         int j, int i, int randomNumber) {
         if (j == 0) {
             drawLStartFromVerticalLine(world, bottomPosition, i + 8 + 4 + 1 + 4, i * 16, Tileset.WALL, "positive");
             drawLine(world, bottomPosition, i, Tileset.WALL, "vertical", "positive");
@@ -194,7 +198,8 @@ public class MyWorld {
     }
 
     /* draw hallway of the second part of the world. which moves toward up. */
-    private void drawHallWayOfTheSecondPartOfTheWorld(TETile[][] world, Position hallWayPosition, int j, int i, int randomNumber) {
+    private void drawHallWayOfTheSecondPartOfTheWorld(TETile[][] world, Position hallWayPosition,
+                                                      int j, int i, int randomNumber) {
         if (j == 0) {
             drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
             drawLStartFromVerticalLine(world, hallWayPosition, i + 8 + 8 + 1 + 2, i * 16 + 1, Tileset.FLOOR, "positive");
@@ -224,16 +229,14 @@ public class MyWorld {
     /* draw line, its position determines if it is vertical or horizontal, and its direction determines if the line is positive or negative.
     While drawing any line, we start counting from the present line. for eg, if i want to draw aline 1 step from
     where i am standing, I have to move 2 steps because the step that i stand on is counted. */
-    private void drawLine(TETile[][] world, Position p, int size, TETile type, String position, String direction) {
+    private void drawLine(TETile[][] world, Position p, int size,
+                          TETile type, String position, String direction) {
         while (size > 0) {
-            /*
             try {
                 world[p._x][p._y] = type;
             } catch (Exception e) {
                 break;
             }
-             */
-            world[p._x][p._y] = type;
 
             if (position.equals("vertical") && direction.equals("positive") && size > 1) {
                 p._y += 1;
