@@ -1,6 +1,6 @@
 package byog.Core;
 
-import byog.MyGame;
+import byog.MyWorld;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 
@@ -39,13 +39,12 @@ public class Game {
          */
         long answer = 0;
         int stringLength = input.length();
-        MyGame mygame = new MyGame();
+        MyWorld mygame = new MyWorld();
         String[] arrayOfInputs = input.split("");
         for (int i = 1; i < stringLength - 1; i += 1) {
             answer = answer * 10 + Integer.parseInt(arrayOfInputs[i]);
         }
-        return mygame.drawGame(answer);
-
+        return mygame.drawWorld(answer);
     }
 
 }
