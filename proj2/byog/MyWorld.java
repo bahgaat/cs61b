@@ -128,7 +128,8 @@ public class MyWorld {
             drawBottomRectangle(world, hallWayPosition, i + j + 4, i - 2, Tileset.FLOOR, "negative");
             drawLStartFromVerticalLine(world, hallWayPosition, i + j + 4, i, Tileset.FLOOR, "positive");
             drawBottomRectangle(world, hallWayPosition, i + j, i + j, Tileset.FLOOR, "positive");
-            drawLStartFromHorizontalLine(world, hallWayPosition, (i + j + 1) + (i - 2), i + j + 4, Tileset.FLOOR, "positive");
+            drawLStartFromHorizontalLine(world, hallWayPosition, (i + j + 1) + (i - 2), i + j + 4, Tileset.FLOOR,
+                                 "positive");
             drawLine(world, hallWayPosition, i * 3 + 2, Tileset.FLOOR, "horizontal", "negative");
         } else if (randomNumber == 3) {
             drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
@@ -138,7 +139,8 @@ public class MyWorld {
             if (i > 3) {
                 drawLine(world, hallWayPosition, i * 2 - (i - 2), Tileset.FLOOR, "horizontal", "negative");
                 drawUpperRectangle(world, hallWayPosition, i + j - 2, i - 2 - 1, Tileset.FLOOR, "negative");
-                drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, i - 2, i + j + 4, Tileset.FLOOR, "negative");
+                drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, i - 2, i + j + 4, Tileset.FLOOR,
+                                               "negative");
                 drawLine(world, hallWayPosition, i * 2 + 1, Tileset.FLOOR, "horizontal", "negative");
             } else {
                 drawLine(world, hallWayPosition, i + 1, Tileset.FLOOR, "horizontal", "negative");
@@ -162,7 +164,8 @@ public class MyWorld {
     }
 
     /* draw upper wall of the second part of the world. which moves toward up. */
-    private void drawUpperWallOfTheSecondPartOfTheWorld(TETile[][] world, Position upperPosition, int j, int i, int randomNumber) {
+    private void drawUpperWallOfTheSecondPartOfTheWorld(TETile[][] world, Position upperPosition,
+                                                        int j, int i, int randomNumber) {
         if (j == 0) {
             drawLine(world, upperPosition, 3, Tileset.WALL, "horizontal", "negative");
             drawLStartFromVerticalLine(world, upperPosition, i + 8 + 8 + 1 + 4, i * 16 + 2, Tileset.WALL, "positive");
@@ -202,7 +205,8 @@ public class MyWorld {
                                                       int j, int i, int randomNumber) {
         if (j == 0) {
             drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
-            drawLStartFromVerticalLine(world, hallWayPosition, i + 8 + 8 + 1 + 2, i * 16 + 1, Tileset.FLOOR, "positive");
+            drawLStartFromVerticalLine(world, hallWayPosition, i + 8 + 8 + 1 + 2, i * 16 + 1, Tileset.FLOOR,
+                               "positive");
             drawLStartFromHorizontalLine(world, hallWayPosition, 2, i + 1, Tileset.FLOOR, "negative");
         } else if (randomNumber == 0) {
             drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "positive");
@@ -226,8 +230,8 @@ public class MyWorld {
         }
     }
 
-    /* draw line, its position determines if it is vertical or horizontal, and its direction determines if the line is positive or negative.
-    While drawing any line, we start counting from the present line. for eg, if i want to draw aline 1 step from
+    /* draw line, its position determines if it is vertical or horizontal, and its direction determines if the line
+    is positive or negative. While drawing any line, we start counting from the present line. for eg, if i want to draw aline 1 step from
     where i am standing, I have to move 2 steps because the step that i stand on is counted. */
     private void drawLine(TETile[][] world, Position p, int size,
                           TETile type, String position, String direction) {
@@ -253,16 +257,16 @@ public class MyWorld {
 
     /* draw letter L, Start drawing from the vertical line. The direction determines if it is a typical letter L
      or a negative L, which is similar to L but looks toward the left side. */
-    private void drawLStartFromVerticalLine(TETile[][] world, Position p, int sizeOfVerticalPartOfL, int sizeOfHorizontalPartOfL,
-                                            TETile type, String direction) {
+    private void drawLStartFromVerticalLine(TETile[][] world, Position p, int sizeOfVerticalPartOfL
+                                            , int sizeOfHorizontalPartOfL,  TETile type, String direction) {
         drawLine(world, p, sizeOfVerticalPartOfL, type, "vertical", "negative");
         drawLine(world, p, sizeOfHorizontalPartOfL, type, "horizontal", direction);
     }
 
     /* draw the opposite of L, Start drawing from the vertical line. The direction determines if is a positive
     opposite of L, which looks to the right or a Negative opposite, which looks to the left.. */
-    private void drawOppositeLStartFromVerticalLine(TETile[][] world, Position p, int sizeOfVerticalPartOfOppositeL, int sizeOfHorizontalPartOfOppositeL,
-                                                    TETile type, String direction) {
+    private void drawOppositeLStartFromVerticalLine(TETile[][] world, Position p, int sizeOfVerticalPartOfOppositeL,
+                                                    int sizeOfHorizontalPartOfOppositeL,   TETile type, String direction) {
         drawLine(world, p, sizeOfVerticalPartOfOppositeL, type, "vertical", "positive");
         drawLine(world, p, sizeOfHorizontalPartOfOppositeL, type, "horizontal", direction);
     }
@@ -295,7 +299,7 @@ public class MyWorld {
         drawLine(world, p, sizeOfVerticalLine, type, "vertical", "negative");
     }
 
-    /* draw a shape which is similar to half square, which looks to the left side. Start drawing the shape from bottom  */
+    /* draw a shape which is similar to half square, which looks to the left side. Start drawing the shape from bottom.*/
     private void drawLeftHalfSquare(TETile[][] world, Position p, int sizeOfBottomHorizontalLine,
                                     int sizeOfVerticalLine, int sizeOfUpperHorizontalLine, TETile type) {
         drawLine(world, p, sizeOfBottomHorizontalLine, type, "horizontal", "positive");
