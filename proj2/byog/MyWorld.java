@@ -231,8 +231,8 @@ public class MyWorld {
     }
 
     /* draw line, its position determines if it is vertical or horizontal, and its direction determines if the line
-    is positive or negative. While drawing any line, we start counting from the present line. for eg, if i want to draw aline 1 step from
-    where i am standing, I have to move 2 steps because the step that i stand on is counted. */
+    is positive or negative. While drawing any line, we start counting from the present line. for eg, if i want to
+    draw aline 1 step from where i am standing, I have to move 2 steps because the step that i stand on is counted. */
     private void drawLine(TETile[][] world, Position p, int size,
                           TETile type, String position, String direction) {
         while (size > 0) {
@@ -257,8 +257,8 @@ public class MyWorld {
 
     /* draw letter L, Start drawing from the vertical line. The direction determines if it is a typical letter L
      or a negative L, which is similar to L but looks toward the left side. */
-    private void drawLStartFromVerticalLine(TETile[][] world, Position p, int sizeOfVerticalPartOfL
-                                            , int sizeOfHorizontalPartOfL,  TETile type, String direction) {
+    private void drawLStartFromVerticalLine(TETile[][] world, Position p, int sizeOfVerticalPartOfL,
+                                            int sizeOfHorizontalPartOfL,  TETile type, String direction) {
         drawLine(world, p, sizeOfVerticalPartOfL, type, "vertical", "negative");
         drawLine(world, p, sizeOfHorizontalPartOfL, type, "horizontal", direction);
     }
@@ -266,7 +266,7 @@ public class MyWorld {
     /* draw the opposite of L, Start drawing from the vertical line. The direction determines if is a positive
     opposite of L, which looks to the right or a Negative opposite, which looks to the left.. */
     private void drawOppositeLStartFromVerticalLine(TETile[][] world, Position p, int sizeOfVerticalPartOfOppositeL,
-                                                    int sizeOfHorizontalPartOfOppositeL,   TETile type, String direction) {
+                                                    int sizeOfHorizontalPartOfOppositeL, TETile type, String direction) {
         drawLine(world, p, sizeOfVerticalPartOfOppositeL, type, "vertical", "positive");
         drawLine(world, p, sizeOfHorizontalPartOfOppositeL, type, "horizontal", direction);
     }
