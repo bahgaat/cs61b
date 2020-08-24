@@ -35,13 +35,20 @@ public class GuitarString {
      */
     public void tic() {
         Double firstItem = buffer.dequeue();
-        Double secondItem = buffer.peek();
+        Double secondItem;
+        if (buffer.isEmpty()) {
+            secondItem = 0.0;
+        } else {
+            secondItem = buffer.peek();
+        }
         Double result = 0.996 * 1 / 2 * (firstItem + secondItem);
         buffer.enqueue(result);
     }
 
     /* Return the double at the front of the buffer. */
     public double sample() {
-        return buffer.peek();
+        if (!buffer.isEmpty()) {
+            return buffer.peek();
+        }
     }
 }
