@@ -25,7 +25,6 @@ public class GuitarString {
         int bufferCapacity = buffer.capacity();
         while (bufferCapacity > 0) {
             double r = Math.random() - 0.5;
-            buffer.dequeue();
             buffer.enqueue(r);
             bufferCapacity -= 1;
         }
