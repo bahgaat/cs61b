@@ -21,7 +21,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
         this.fillCount = 0;
     }
 
-    public class KeyIterator implements Iterator<T>{
+    public class KeyIterator implements Iterator<T> {
         private int wizardPosition;
 
         public KeyIterator() {
@@ -45,7 +45,6 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
      * covered Monday.
      */
     public void enqueue(T x) {
-        // TODO: Enqueue the item. Don't forget to increase fillCount and update last.
         if (fillCount == capacity) {
             throw new RuntimeException("Ring Buffer Overflow");
         }
@@ -66,7 +65,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
      */
     public T dequeue() {
         if (fillCount == 0) {
-            throw new RuntimeException( "Ring Buffer Underflow");
+            throw new RuntimeException("Ring Buffer Underflow");
         }
         if (first == capacity) {
             first = 0;
@@ -82,6 +81,9 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
      * Return oldest item, but don't remove it.
      */
     public T peek() {
+        if (fillCount == 0) {
+            throw new RuntimeException( "Ring Buffer Underflow");
+        }
         if (first == capacity) {
             first = 0;
         }
