@@ -21,7 +21,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
         this.fillCount = 0;
     }
 
-    public class KeyIterator implements Iterator<T> {
+    private class KeyIterator implements Iterator<T> {
         private int wizardPosition;
 
         public KeyIterator() {
