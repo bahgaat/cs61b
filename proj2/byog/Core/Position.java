@@ -1,4 +1,4 @@
-package byog;
+package byog.Core;
 
 class Position {
     int _x;

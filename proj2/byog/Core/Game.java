@@ -1,6 +1,6 @@
 package byog.Core;
+/*package byog.Core;*/
 
-import byog.MyWorld;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 

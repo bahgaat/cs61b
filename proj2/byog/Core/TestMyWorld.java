@@ -1,4 +1,4 @@
-package byog;
+package byog.Core;
 
 import byog.Core.Game;
 import byog.TileEngine.TERenderer;
@@ -11,7 +11,7 @@ public class TestMyWorld {
         MyWorld mygame = new MyWorld();
         ter.initialize(mygame.WIDTH, mygame.HEIGHT);
         Game game = new Game();
-        TETile[][] worldState = game.playWithInputString( "n654456s");
+        TETile[][] worldState = game.playWithInputString( "n89s");
         ter.renderFrame(worldState);
 
     }

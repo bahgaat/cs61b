@@ -1,6 +1,5 @@
 package byog.Core;
 
-import byog.MyWorld;
 import byog.TileEngine.TETile;
 
 public class Tryseed {
