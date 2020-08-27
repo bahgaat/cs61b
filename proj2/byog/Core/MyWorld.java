@@ -357,8 +357,8 @@ public class MyWorld {
     }
 
     /* draw the whole world, I divide the drawing into 2 parts.*/
-    TETile[][] drawWorld(long randomNumber) {
-        Random r = new Random(randomNumber);
+    TETile[][] drawWorld(long seed) {
+        Random r = new Random(seed);
         int y = RandomUtils.uniform(r, 60, 65);
         int x = RandomUtils.uniform(r, 60, 70);
 
