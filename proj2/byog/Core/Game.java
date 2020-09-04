@@ -1,10 +1,16 @@
 package byog.Core;
-/*package byog.Core;*/
 
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
+import byog.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdDraw;
 
-public class Game {
+import java.awt.*;
+import java.io.Serializable;
+
+import static byog.Core.MyWorld.*;
+
+public class Game implements Serializable {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 100;
@@ -13,8 +19,12 @@ public class Game {
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
-    public void playWithKeyboard() {
+    public void playWithKeyboard()  {
+        MyWorld world = new MyWorld();
+        world.startGame();
+
     }
+    
 
     /**
      * Method used for autograding and testing the game code. The input string will be a series

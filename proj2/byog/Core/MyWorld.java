@@ -1,24 +1,33 @@
 package byog.Core;
 
 import byog.Core.Position;
+import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdDraw;
+import org.w3c.dom.events.EventTarget;
+import org.w3c.dom.events.MouseEvent;
+import org.w3c.dom.views.AbstractView;
 
+import java.awt.*;
+import java.io.*;
 import java.util.Random;
 
 
 /**
  *  Draws a random world.
  */
-public class MyWorld {
+public class MyWorld implements Serializable {
     public static final int WIDTH = 100;
     public static final int HEIGHT = 100;
-
+    static TETile[][] world = new TETile[WIDTH][HEIGHT];
+    static Position hallWayPosition;
+    File f;
 
     /* draw line, its position determines if it is vertical or horizontal, and its direction determines if the line
     is positive or negative. While drawing any line, we start counting from the present line. for eg, if i want to
     draw aline 1 step from where i am standing, I have to move 2 steps because the step that i stand on is counted. */
-    private void drawLine(TETile[][] world, Position p, int size,
+    void drawLine(TETile[][] world, Position p, int size,
                           TETile type, String position, String direction) {
         while (size > 0) {
             try {
@@ -36,7 +45,21 @@ public class MyWorld {
             } else if (position.equals("horizontal") && direction.equals("negative") && size > 1) {
                 p._x -= 1;
             }
+            p._type = type;
             size -= 1;
+        }
+    }
+
+    private void moveOneStep(TETile[][] world, Position p,
+                             TETile type, String position, String direction) {
+        if (position.equals("vertical") && direction.equals("positive")) {
+            p._y += 1;
+        } else if (position.equals("vertical") && direction.equals("negative")) {
+            p._y -= 1;
+        } else if (position.equals("horizontal") && direction.equals("positive")) {
+            p._x += 1;
+        } else if (position.equals("horizontal") && direction.equals("negative")) {
+            p._x -= 1;
         }
     }
 
@@ -362,22 +385,202 @@ public class MyWorld {
         int y = RandomUtils.uniform(r, 60, 65);
         int x = RandomUtils.uniform(r, 60, 70);
 
-        TETile[][] world = new TETile[WIDTH][HEIGHT];
         for (int p = 0; p < WIDTH; p += 1) {
             for (int g = 0; g < HEIGHT; g += 1) {
                 world[p][g] = Tileset.NOTHING;
             }
         }
 
-        Position upperPosition = new Position(x, y);
-        Position bottomPosition = new Position(x, y);
-        Position hallWayPosition = new Position(x - 1, y - 1);
+        Position upperPosition = new Position(x, y, Tileset.WALL);
+        Position bottomPosition = new Position(x, y, Tileset.WALL);
+        hallWayPosition = new Position(x - 1, y - 1, Tileset.FLOOR);
         int i = RandomUtils.uniform(r, 3, 5);
         drawFirstPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
         drawSecondPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
         drawLine(world, bottomPosition, 2, Tileset.WALL, "horizontal", "positive");
+        double o = StdDraw.mouseX();
+        double p = StdDraw.mouseY();
+        StdDraw.setPenColor(Color.white);
         return world;
     }
+
+     void displayUi(String s) {
+
+        StdDraw.setCanvasSize(40 * 16, 40 * 16);
+        Font font = new Font("Monaco", Font.BOLD, 30);
+        StdDraw.setFont(font);
+        StdDraw.setXscale(0, 40);
+        StdDraw.setYscale(0, 40);
+        StdDraw.enableDoubleBuffering();
+        StdDraw.clear();
+        StdDraw.clear(Color.black);
+        if (s.equals("Ui")) {
+            StdDraw.setFont(font);
+            StdDraw.setPenColor(Color.white);
+            StdDraw.text(20, 20, "NewGame(N)");
+            StdDraw.text(20, 18, "LoadGame(L)");
+            StdDraw.text(20, 16, "Quit(Q)");
+            StdDraw.show();
+            StdDraw.pause(1500);
+        } else {
+            StdDraw.setFont(font);
+            StdDraw.setPenColor(Color.white);
+            StdDraw.text(20, 20, s);
+            StdDraw.show();
+            StdDraw.pause(1500);
+        }
+
+
+    }
+
+
+    private void readFromTheUserKeyboard() {
+        if (StdDraw.hasNextKeyTyped()) {
+            char answer = StdDraw.nextKeyTyped();
+            if (answer == 'N') {
+                displayUi("Enter the seed");
+                String seed = "";
+                while (true) {
+                    if (StdDraw.hasNextKeyTyped()) {
+                        char seed2 = StdDraw.nextKeyTyped();
+                        String convertCharToString = String.valueOf(seed2);
+                        if (seed2 == 'S') {
+                            TERenderer ter = new TERenderer();
+                            ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
+                            long convertStringToLong = Long.parseLong(seed);
+                            world = drawWorld(convertStringToLong);
+                            Player player1 = new Player();
+                            ter.renderFrame(world);
+                            while (true) {
+                                if (StdDraw.hasNextKeyTyped()) {
+                                    char seed3 = StdDraw.nextKeyTyped();
+                                    if (seed3 == 'W') {
+                                        player1.moveOneStep("up");
+                                        ter.renderFrame(world);
+                                    } else if (seed3 == 'A') {
+                                        player1.moveOneStep("left");
+                                        ter.renderFrame(world);
+                                    } else if (seed3 == 'S') {
+                                        player1.moveOneStep("down");
+                                        ter.renderFrame(world);
+                                    } else if (seed3 == 'D') {
+                                        player1.moveOneStep("right");
+                                        ter.renderFrame(world);
+                                    } else if (seed3 == 'Q') {
+                                        saveGameWorld(world);
+                                        saveGamePlayer(player1);
+                                    }
+
+                                }
+                            }
+                        } else {
+                            seed += convertCharToString;
+                            displayUi(seed);
+                        }
+                    }
+
+                }
+
+            } else if (answer == 'L') {
+                TERenderer ter = new TERenderer();
+                ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
+                world = loadGameFile(f);
+                ter.renderFrame(world);
+                Player player1 = loadGamePlayer(f);
+                while (true) {
+                    if (StdDraw.hasNextKeyTyped()) {
+                        char seed3 = StdDraw.nextKeyTyped();
+                        if (seed3 == 'W') {
+                            player1.moveOneStep("up");
+                        } else if (seed3 == 'A') {
+                            player1.moveOneStep("left");
+                        } else if (seed3 == 'S') {
+                            player1.moveOneStep("down");
+                        } else if (seed3 == 'D') {
+                            player1.moveOneStep("right");
+                        } else if (seed3 == 'Q') {
+                            saveGameWorld(world);
+                            saveGamePlayer(player1);
+                        }
+                        ter.renderFrame(world);
+                    }
+                }
+
+            }
+        }
+    }
+
+
+
+
+    private void saveGameWorld(TETile[][] world)  {
+        try {
+            /*f = new File("world.txt");*/
+            FileOutputStream fos = new FileOutputStream("world.txt");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(world);
+            oos.close();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void saveGamePlayer(Player player1) {
+        try {
+            FileOutputStream fns = new FileOutputStream("player1.txt");
+            ObjectOutputStream ons = new ObjectOutputStream(fns);
+            ons.writeObject(player1);
+            ons.close();
+            fns.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private TETile[][] loadGameFile(File f)  {
+        try {
+            FileInputStream fis = new FileInputStream("world.txt");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            TETile[][] world2 = (TETile[][]) ois.readObject();
+            ois.close();
+            fis.close();
+            return world2;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new TETile[2][3];
+        }
+    }
+
+    private Player loadGamePlayer(File f) {
+        try {
+            FileInputStream frs = new FileInputStream("player1.txt");
+            ObjectInputStream ors = new ObjectInputStream(frs);
+            Player player2 = (Player) ors.readObject();
+            ors.close();
+            frs.close();
+            return player2;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Player();
+        }
+    }
+
+
+
+    void startGame() {
+        try {
+            displayUi("Ui");
+            readFromTheUserKeyboard();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
 }
 
 
