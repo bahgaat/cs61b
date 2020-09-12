@@ -11,7 +11,7 @@ class Player implements Serializable {
 
 
     public Player() {
-        Position position = new Position(MyWorld.hallWayPosition._x, MyWorld.hallWayPosition._y - 1, Tileset.PLAYER);
+        Position position = new Position(MyWorld.hallWayPosition._x, MyWorld.hallWayPosition._y , Tileset.PLAYER);
         positionX = position._x;
         positionY = position._y;
         MyWorld.world[positionX][positionY] = Tileset.PLAYER;
@@ -21,7 +21,7 @@ class Player implements Serializable {
         if (direction.equals("up")) {
             if (MyWorld.world[positionX][positionY + 1].description().equals("floor")) {
                 MyWorld.world[positionX][positionY] = Tileset.FLOOR;
-                MyWorld.world[positionX][positionY] = Tileset.PLAYER;
+                MyWorld.world[positionX][positionY + 1] = Tileset.PLAYER;
                 positionY += 1;
             }
         } else if (direction.equals("down")) {

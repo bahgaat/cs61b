@@ -1,6 +1,7 @@
 package byog.Core;
 
 import byog.Core.Position;
+import byog.SaveDemo.World;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
@@ -27,7 +28,7 @@ public class MyWorld implements Serializable {
     /* draw line, its position determines if it is vertical or horizontal, and its direction determines if the line
     is positive or negative. While drawing any line, we start counting from the present line. for eg, if i want to
     draw aline 1 step from where i am standing, I have to move 2 steps because the step that i stand on is counted. */
-    void drawLine(TETile[][] world, Position p, int size,
+    static void drawLine(TETile[][] world, Position p, int size,
                           TETile type, String position, String direction) {
         while (size > 0) {
             try {
@@ -50,7 +51,7 @@ public class MyWorld implements Serializable {
         }
     }
 
-    private void moveOneStep(TETile[][] world, Position p,
+    private static void moveOneStep(TETile[][] world, Position p,
                              TETile type, String position, String direction) {
         if (position.equals("vertical") && direction.equals("positive")) {
             p._y += 1;
@@ -65,7 +66,7 @@ public class MyWorld implements Serializable {
 
     /* draw letter L, Start drawing from the vertical line. The direction determines if it is a typical letter L
      or a negative L, which is similar to L but looks toward the left side. */
-    private void drawLStartFromVerticalLine(TETile[][] world, Position p, int sizeOfVerticalPartOfL,
+    private static void drawLStartFromVerticalLine(TETile[][] world, Position p, int sizeOfVerticalPartOfL,
                                             int sizeOfHorizontalPartOfL,  TETile type, String direction) {
         drawLine(world, p, sizeOfVerticalPartOfL, type, "vertical", "negative");
         drawLine(world, p, sizeOfHorizontalPartOfL, type, "horizontal", direction);
@@ -73,7 +74,7 @@ public class MyWorld implements Serializable {
 
     /* draw the opposite of L, Start drawing from the vertical line. The direction determines if is a positive
     opposite of L, which looks to the right or a Negative opposite, which looks to the left.. */
-    private void drawOppositeLStartFromVerticalLine(TETile[][] world, Position p, int sizeOfVerticalPartOfOppositeL,
+    private static void drawOppositeLStartFromVerticalLine(TETile[][] world, Position p, int sizeOfVerticalPartOfOppositeL,
                                                     int sizeOfHorizontalPartOfOppositeL, TETile type, String direction) {
         drawLine(world, p, sizeOfVerticalPartOfOppositeL, type, "vertical", "positive");
         drawLine(world, p, sizeOfHorizontalPartOfOppositeL, type, "horizontal", direction);
@@ -81,7 +82,7 @@ public class MyWorld implements Serializable {
 
     /* draw letter L, Start drawing from the horizontal line. The direction determines if it is a typical letter L
      or a negative L, which is similar to L but looks toward the left side. */
-    private void drawLStartFromHorizontalLine(TETile[][] world, Position p, int sizeOfHorizontalLine,
+    private static void drawLStartFromHorizontalLine(TETile[][] world, Position p, int sizeOfHorizontalLine,
                                               int sizeOfVerticalLine, TETile type, String direction) {
         String directionOfHorizontalLine;
         if (direction.equals("positive")) {
@@ -95,7 +96,7 @@ public class MyWorld implements Serializable {
 
     /* draw the opposite of L, Start drawing from the horizontal line. The direction determines if is a positive
     opposite of L, which looks to the right or a negative opposite, which looks to the left.. */
-    private void drawOppositeOfLStartFromHorizontalLine(TETile[][] world, Position p, int sizeOfHorizontalLine,
+    private static void drawOppositeOfLStartFromHorizontalLine(TETile[][] world, Position p, int sizeOfHorizontalLine,
                                                         int sizeOfVerticalLine, TETile type, String direction) {
         String directionOfHorizontalLine;
         if (direction.equals("positive")) {
@@ -108,7 +109,7 @@ public class MyWorld implements Serializable {
     }
 
     /* draw a shape which is similar to half square, which looks to the left side. Start drawing the shape from bottom.*/
-    private void drawLeftHalfSquare(TETile[][] world, Position p, int sizeOfBottomHorizontalLine,
+    private static void drawLeftHalfSquare(TETile[][] world, Position p, int sizeOfBottomHorizontalLine,
                                     int sizeOfVerticalLine, int sizeOfUpperHorizontalLine, TETile type) {
         drawLine(world, p, sizeOfBottomHorizontalLine, type, "horizontal", "positive");
         drawLine(world, p, sizeOfVerticalLine, type, "vertical", "positive");
@@ -116,7 +117,7 @@ public class MyWorld implements Serializable {
     }
 
     /* draw a shape which is similar to half square, which looks to the right. Start drawing the shape from bottom */
-    private void drawRightHalfSquare(TETile[][] world, Position p, int sizeOfBottomHorizontalLine,
+    private static void drawRightHalfSquare(TETile[][] world, Position p, int sizeOfBottomHorizontalLine,
                                      int sizeOfVerticalLine, int sizeOfUpperHorizontalLine, TETile type) {
         drawLine(world, p, sizeOfBottomHorizontalLine, type, "horizontal", "negative");
         drawLine(world, p, sizeOfVerticalLine, type, "vertical", "positive");
@@ -124,7 +125,7 @@ public class MyWorld implements Serializable {
     }
 
     /* draw a shape which is similar to half square, which looks down. Start drawing the shape from right. */
-    private void drawBottomHalfSquare(TETile[][] world, Position P, int sizeOfRightVerticalLine,
+    private static void drawBottomHalfSquare(TETile[][] world, Position P, int sizeOfRightVerticalLine,
                                       int sizeOfHorizontalLine, int sizeOfLeftVerticalLine, TETile type) {
         drawLine(world, P, sizeOfRightVerticalLine, type, "vertical", "positive");
         drawLine(world, P, sizeOfHorizontalLine, type, "horizontal", "negative");
@@ -132,7 +133,7 @@ public class MyWorld implements Serializable {
     }
 
     /* draw a shape which is similar to half square, which looks up. Start drawing the shape from right. */
-    private void drawUpperHalfSquare(TETile[][] world, Position p, int sizeOfRightVerticalLine,
+    private static void drawUpperHalfSquare(TETile[][] world, Position p, int sizeOfRightVerticalLine,
                                      int sizeOfHorizontalLine, int sizeOfLeftVerticalLine, TETile type) {
         drawLine(world, p, sizeOfRightVerticalLine, type, "vertical", "negative");
         drawLine(world, p, sizeOfHorizontalLine, type, "horizontal", "negative");
@@ -141,7 +142,7 @@ public class MyWorld implements Serializable {
 
     /* draw a rectangle, which looks down. its direction determines if the rectangle will be drawn
     toward right or left. the shape ends at the highest part of the last size */
-    private void drawBottomRectangle(TETile[][] world, Position p, int sizeOfVerticalLine,
+    private static void drawBottomRectangle(TETile[][] world, Position p, int sizeOfVerticalLine,
                                      int sizeOfHorizontalLine, TETile type, String direction) {
         String directionOfHorizontalLine;
         if (direction.equals("positive")) {
@@ -164,7 +165,7 @@ public class MyWorld implements Serializable {
 
     /* draw a rectangle, which looks up. its direction determines if the rectangle will be drawn
     toward right or left. The shape ends at the lowest part of the last size. */
-    private void drawUpperRectangle(TETile[][] world, Position P, int sizeOfVerticalLine,
+    private static void drawUpperRectangle(TETile[][] world, Position P, int sizeOfVerticalLine,
                                     int sizeOfHorizontalLine, TETile type, String direction) {
 
         String directionOfHorizontalLine;
@@ -188,11 +189,11 @@ public class MyWorld implements Serializable {
 
     /* draw first part of the world. its direction is toward left. I divide drawing the first part
     into   3 parts. Upper wall, Bottom wall, Hallway. */
-    private void drawFirstPartOfTheWorld(TETile[][] world, Position upperPosition,
+    private static void drawFirstPartOfTheWorld(TETile[][] world, Position upperPosition,
                                          Position bottomPosition,  Position hallwayPosition, int i, Random r) {
         int h = RandomUtils.uniform(r, 4, 6);
         for (int j = 0; j < h; j += 1) {
-            int randomNumber = r.nextInt(4);
+            int randomNumber = r.nextInt(3);
             drawUpperWallOfTheFirstPartOfTheWorld(world, upperPosition, j, i, randomNumber);
             drawBottomWallOfTheFirstPartOfTheWorld(world, bottomPosition, j, i, randomNumber);
             drawHallWayOfTheFirstPartOfTheWorld(world, hallwayPosition, j, i, randomNumber);
@@ -200,7 +201,7 @@ public class MyWorld implements Serializable {
     }
 
     /* draw upper wall of the first part of the world, which moves toward left. */
-    private void drawUpperWallOfTheFirstPartOfTheWorld(TETile[][] world, Position upperPosition,
+    private static void drawUpperWallOfTheFirstPartOfTheWorld(TETile[][] world, Position upperPosition,
                                                        int j, int i, int randomNumber) {
         if (j == 0 && randomNumber >= 2) {
             drawLine(world, upperPosition, i, Tileset.WALL, "horizontal", "negative");
@@ -214,9 +215,12 @@ public class MyWorld implements Serializable {
             drawBottomHalfSquare(world, upperPosition, i + j, i + j, i + j, Tileset.WALL);
             drawLine(world, upperPosition, i, Tileset.WALL, "horizontal", "positive");
             drawLine(world, upperPosition, i * 2, Tileset.WALL, "horizontal", "negative");
+            /*
         } else if (randomNumber == 2) {
             drawLine(world, upperPosition, i * 4, Tileset.WALL, "horizontal", "negative");
-        } else if (randomNumber == 3) {
+
+             */
+        } else if (randomNumber == 2) {
             drawOppositeLStartFromVerticalLine(world, upperPosition, i + j + 2, i, Tileset.WALL, "positive");
             drawBottomHalfSquare(world, upperPosition, i + j, i * 2, i + j, Tileset.WALL);
             drawOppositeOfLStartFromHorizontalLine(world, upperPosition, i - 2, i + j + 2, Tileset.WALL, "negative");
@@ -225,7 +229,7 @@ public class MyWorld implements Serializable {
     }
 
     /* draw bottom wall of the first part of the world, which moves toward left. */
-    private void drawBottomWallOfTheFirstPartOfTheWorld(TETile[][] world, Position bottomPosition,
+    private static void drawBottomWallOfTheFirstPartOfTheWorld(TETile[][] world, Position bottomPosition,
                                                         int j, int i, int randomNumber) {
         if (j == 0 && randomNumber >= 2) {
             drawLine(world, bottomPosition, i + 2, Tileset.WALL, "vertical", "negative");
@@ -239,18 +243,21 @@ public class MyWorld implements Serializable {
             drawUpperHalfSquare(world, bottomPosition, i + j, i + j + 3, i + j, Tileset.WALL);
             drawLine(world, bottomPosition, i, Tileset.WALL, "horizontal", "positive");
             drawLine(world, bottomPosition, i * 2 - 3, Tileset.WALL, "horizontal", "negative");
+            /*
         } else if (randomNumber == 2) {
             drawLStartFromVerticalLine(world, bottomPosition, i + j + 2, i + j + 2, Tileset.WALL, "positive");
             drawUpperHalfSquare(world, bottomPosition, i + j + 2, i + j + 2, i + j, Tileset.WALL);
             drawLStartFromHorizontalLine(world, bottomPosition, i, i + j + 4, Tileset.WALL, "positive");
             drawLine(world, bottomPosition, i * 3 + 1, Tileset.WALL, "horizontal", "negative");
-        } else if (randomNumber == 3) {
+
+             */
+        } else if (randomNumber == 2) {
             drawLine(world, bottomPosition, i * 2 - (i - 2) + i + 1, Tileset.WALL, "horizontal", "negative");
         }
     }
 
     /* draw hallway of the first part of the game, which moves toward left. */
-    private void drawHallWayOfTheFirstPartOfTheWorld(TETile[][] world, Position hallWayPosition,
+    private static void drawHallWayOfTheFirstPartOfTheWorld(TETile[][] world, Position hallWayPosition,
                                                      int j, int i, int randomNumber) {
         if (j == 0 && randomNumber >= 2) {
             drawBottomRectangle(world, hallWayPosition, i, i - 2, Tileset.FLOOR, "negative");
@@ -272,6 +279,7 @@ public class MyWorld implements Serializable {
             drawBottomRectangle(world, hallWayPosition, i + j - 1, i + j + 3 - 2, Tileset.FLOOR, "negative");
             drawLStartFromHorizontalLine(world, hallWayPosition, i + j + 3 - 2, 2, Tileset.FLOOR, "negative");
             drawLine(world, hallWayPosition, (i * 2) + j - 1, Tileset.FLOOR, "horizontal", "negative");
+            /*
         } else if (randomNumber == 2) {
             drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
             drawBottomRectangle(world, hallWayPosition, i + j + 4, i - 2, Tileset.FLOOR, "negative");
@@ -280,7 +288,9 @@ public class MyWorld implements Serializable {
             drawLStartFromHorizontalLine(world, hallWayPosition, (i + j + 1) + (i - 2), i + j + 4, Tileset.FLOOR,
                     "positive");
             drawLine(world, hallWayPosition, i * 3 + 2, Tileset.FLOOR, "horizontal", "negative");
-        } else if (randomNumber == 3) {
+
+             */
+        } else if (randomNumber == 2) {
             drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
             drawUpperRectangle(world, hallWayPosition, i + j + 3, i - (i - 2), Tileset.FLOOR, "negative");
             drawLine(world, hallWayPosition, i + j + 4, Tileset.FLOOR, "vertical", "positive");
@@ -301,9 +311,9 @@ public class MyWorld implements Serializable {
 
     /* draw second part of the world. its direction is toward up. I divide drawing the second part into 3 parts
    Upper wall, Bottom wall, and hallway. */
-    private void drawSecondPartOfTheWorld(TETile[][] world, Position upperPosition,
+    private static void drawSecondPartOfTheWorld(TETile[][] world, Position upperPosition,
                                           Position bottomPosition,  Position hallwayPosition, int i, Random r) {
-        int h = RandomUtils.uniform(r, 5, 7);
+        int h = RandomUtils.uniform(r, 4, 6);
         for (int j = 0; j < h; j += 1) {
             int randomNumber = r.nextInt(3);
             drawUpperWallOfTheSecondPartOfTheWorld(world, upperPosition, j, i, randomNumber);
@@ -313,7 +323,7 @@ public class MyWorld implements Serializable {
     }
 
     /* draw upper wall of the second part of the world. which moves toward up. */
-    private void drawUpperWallOfTheSecondPartOfTheWorld(TETile[][] world, Position upperPosition,
+    private static void drawUpperWallOfTheSecondPartOfTheWorld(TETile[][] world, Position upperPosition,
                                                         int j, int i, int randomNumber) {
         if (j == 0) {
             drawLine(world, upperPosition, 3, Tileset.WALL, "horizontal", "negative");
@@ -332,7 +342,7 @@ public class MyWorld implements Serializable {
     }
 
     /* draw bottom wall of the second part of the world. which moves toward up. */
-    private void drawBottomWallOfTheSecondPartOfTheWorld(TETile[][] world, Position bottomPosition,
+    private static void drawBottomWallOfTheSecondPartOfTheWorld(TETile[][] world, Position bottomPosition,
                                                          int j, int i, int randomNumber) {
         if (j == 0) {
             drawLStartFromVerticalLine(world, bottomPosition, i + 8 + 4 + 1 + 4, i * 16, Tileset.WALL, "positive");
@@ -350,7 +360,7 @@ public class MyWorld implements Serializable {
     }
 
     /* draw hallway of the second part of the world. which moves toward up. */
-    private void drawHallWayOfTheSecondPartOfTheWorld(TETile[][] world, Position hallWayPosition,
+    private static void drawHallWayOfTheSecondPartOfTheWorld(TETile[][] world, Position hallWayPosition,
                                                       int j, int i, int randomNumber) {
         if (j == 0) {
             drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
@@ -379,8 +389,97 @@ public class MyWorld implements Serializable {
         }
     }
 
+    private static void drawThirdPartOfTheWorld(TETile[][] world, Position upperPosition,
+                                                Position bottomPosition,  Position hallwayPosition, int i, Random r) {
+        int h = RandomUtils.uniform(r, 2, 3);
+        for (int j = 0; j < 4; j += 1) {
+            int randomNumber = r.nextInt(2);
+            drawUpperWallOfTheThirdPartOfTheWorld(world, upperPosition, j, i, randomNumber, r);
+            drawBottomWallOfTheThirdPartOfTheWorld(world, bottomPosition, j, i, randomNumber, r);
+            drawHallWayOfTheThirdPartOfTheWorld(world, hallwayPosition, j, i, randomNumber, r);
+
+
+        }
+    }
+
+    private static void drawUpperWallOfTheThirdPartOfTheWorld(TETile[][] world, Position upperPosition,
+                                                               int j, int i, int randomNumber, Random r) {
+        if (j == 0) {
+            drawOppositeLStartFromVerticalLine(world, upperPosition, 3, i * 2 + 4,
+                    Tileset.WALL, "negative");
+            while (upperPosition._y > 55) {
+                drawLine(world, upperPosition, i - 2, Tileset.WALL, "vertical", "negative");
+            }
+            drawLine(world, upperPosition, i, Tileset.WALL, "horizontal", "negative");
+        } else if (randomNumber == 0) {
+            i = 3;
+            j = 0;
+            drawLine(world, upperPosition, i * 4 + 2 , Tileset.WALL, "horizontal", "negative");
+            drawLStartFromVerticalLine(world, upperPosition, i * 2, i * 2, Tileset.WALL, "negative");
+        } else if (randomNumber == 1) {
+            drawLine(world, upperPosition, i * 2 + 2, Tileset.WALL, "horizontal", "negative");
+        }
+    }
+
+    private static void drawBottomWallOfTheThirdPartOfTheWorld(TETile[][] world, Position bottomPosition,
+                                                               int j, int i, int randomNumber, Random r) {
+        if (j == 0) {
+            drawLine(world, bottomPosition, i * 2, Tileset.WALL, "horizontal", "negative");
+            while (bottomPosition._y > 55) {
+                drawLine(world, bottomPosition, 2, Tileset.WALL, "vertical", "negative");
+            }
+            drawLStartFromVerticalLine(world, bottomPosition, i - 1, i + 2,
+                    Tileset.WALL, "negative");
+        } else if (randomNumber == 0) {
+            i = 3;
+            j = 0;
+            drawLStartFromVerticalLine(world, bottomPosition, i + j + 2, i + j + 2, Tileset.WALL, "positive");
+            drawUpperHalfSquare(world, bottomPosition, i + j + 2, i + j + 2, i + j, Tileset.WALL);
+            drawLStartFromHorizontalLine(world, bottomPosition, i, i + j + 4, Tileset.WALL, "positive");
+            drawLine(world, bottomPosition, i * 3 + 1, Tileset.WALL, "horizontal", "negative");
+            drawLStartFromVerticalLine(world, bottomPosition, i * 2, i * 2 + 2, Tileset.WALL, "negative");
+        } else if (randomNumber == 1) {
+            drawUpperHalfSquare(world, bottomPosition, i + 2, i + 2, i + 2, Tileset.WALL);
+            drawLine(world, bottomPosition, i + 1, Tileset.WALL, "horizontal", "negative");
+        }
+
+    }
+
+    private static void drawHallWayOfTheThirdPartOfTheWorld(TETile[][] world, Position hallWayPosition,
+                                                            int j, int i, int randomNumber, Random r) {
+        if (j == 0) {
+            drawOppositeLStartFromVerticalLine(world, hallWayPosition, 2, i * 2 + 2,
+                    Tileset.FLOOR, "negative");
+
+            while (hallWayPosition._y > 55) {
+                drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "negative");
+            }
+            drawLStartFromVerticalLine(world, hallWayPosition, i - 2 , i + 1,
+                    Tileset.FLOOR, "negative");
+        } else if (randomNumber == 0) {
+            i = 3;
+            j = 0;
+            drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
+            drawBottomRectangle(world, hallWayPosition, i + j + 4, i - 2, Tileset.FLOOR, "negative");
+            drawLStartFromVerticalLine(world, hallWayPosition, i + j + 4, i, Tileset.FLOOR, "positive");
+            drawBottomRectangle(world, hallWayPosition, i + j, i + j, Tileset.FLOOR, "positive");
+            drawLStartFromHorizontalLine(world, hallWayPosition, (i + j + 1) + (i - 2), i + j + 4, Tileset.FLOOR,
+                    "positive");
+            drawLine(world, hallWayPosition, i * 3 + 3, Tileset.FLOOR, "horizontal", "negative");
+            drawLStartFromVerticalLine(world, hallWayPosition, i * 2, i * 2 + 1, Tileset.FLOOR, "negative");
+        } else if (randomNumber == 1) {
+            drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
+            drawBottomRectangle(world, hallWayPosition, i + 2 , i + 2 - 2 , Tileset.FLOOR, "negative");
+            drawLine(world, hallWayPosition, i + 2, Tileset.FLOOR, "horizontal", "negative");
+        }
+
+    }
+
+
+
+
     /* draw the whole world, I divide the drawing into 2 parts.*/
-    TETile[][] drawWorld(long seed) {
+    static TETile[][]  drawWorld(long seed) {
         Random r = new Random(seed);
         int y = RandomUtils.uniform(r, 60, 65);
         int x = RandomUtils.uniform(r, 60, 70);
@@ -394,18 +493,16 @@ public class MyWorld implements Serializable {
         Position upperPosition = new Position(x, y, Tileset.WALL);
         Position bottomPosition = new Position(x, y, Tileset.WALL);
         hallWayPosition = new Position(x - 1, y - 1, Tileset.FLOOR);
-        int i = RandomUtils.uniform(r, 3, 5);
+        int i = RandomUtils.uniform(r, 3, 5  );
         drawFirstPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
+        int h = RandomUtils.uniform(r, 5, 7);
         drawSecondPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
-        drawLine(world, bottomPosition, 2, Tileset.WALL, "horizontal", "positive");
-        double o = StdDraw.mouseX();
-        double p = StdDraw.mouseY();
-        StdDraw.setPenColor(Color.white);
+        drawThirdPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
+        drawLine(world, bottomPosition, 2, Tileset.WALL, "vertical", "positive");
         return world;
     }
 
-     void displayUi(String s) {
-
+     static void drawFrame(String s) {
         StdDraw.setCanvasSize(40 * 16, 40 * 16);
         Font font = new Font("Monaco", Font.BOLD, 30);
         StdDraw.setFont(font);
@@ -414,153 +511,124 @@ public class MyWorld implements Serializable {
         StdDraw.enableDoubleBuffering();
         StdDraw.clear();
         StdDraw.clear(Color.black);
+        StdDraw.setFont(font);
+        StdDraw.setPenColor(Color.white);
+
         if (s.equals("Ui")) {
-            StdDraw.setFont(font);
-            StdDraw.setPenColor(Color.white);
             StdDraw.text(20, 20, "NewGame(N)");
             StdDraw.text(20, 18, "LoadGame(L)");
             StdDraw.text(20, 16, "Quit(Q)");
-            StdDraw.show();
-            StdDraw.pause(1500);
         } else {
-            StdDraw.setFont(font);
-            StdDraw.setPenColor(Color.white);
             StdDraw.text(20, 20, s);
-            StdDraw.show();
-            StdDraw.pause(1500);
         }
-
-
+        StdDraw.show();
+        StdDraw.pause(1500);
     }
 
 
-    private void readFromTheUserKeyboard() {
+    private static void readFromTheUserBeforeStartingTheGame() {
         if (StdDraw.hasNextKeyTyped()) {
-            char answer = StdDraw.nextKeyTyped();
-            if (answer == 'N') {
-                displayUi("Enter the seed");
+            Player player;
+            char keyTypedFromUser = StdDraw.nextKeyTyped();
+            if (keyTypedFromUser == 'N') {
+                drawFrame("Enter the seed");
                 String seed = "";
                 while (true) {
                     if (StdDraw.hasNextKeyTyped()) {
-                        char seed2 = StdDraw.nextKeyTyped();
-                        String convertCharToString = String.valueOf(seed2);
-                        if (seed2 == 'S') {
+                        char keyTypedFromTheUser = StdDraw.nextKeyTyped();
+                        String convertCharToString = String.valueOf(keyTypedFromTheUser);
+                        if (keyTypedFromTheUser == 'S') {
                             TERenderer ter = new TERenderer();
                             ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
                             long convertStringToLong = Long.parseLong(seed);
                             world = drawWorld(convertStringToLong);
-                            Player player1 = new Player();
-                            ter.renderFrame(world);
+                            player = new Player();
                             while (true) {
-                                if (StdDraw.hasNextKeyTyped()) {
-                                    char seed3 = StdDraw.nextKeyTyped();
-                                    if (seed3 == 'W') {
-                                        player1.moveOneStep("up");
-                                        ter.renderFrame(world);
-                                    } else if (seed3 == 'A') {
-                                        player1.moveOneStep("left");
-                                        ter.renderFrame(world);
-                                    } else if (seed3 == 'S') {
-                                        player1.moveOneStep("down");
-                                        ter.renderFrame(world);
-                                    } else if (seed3 == 'D') {
-                                        player1.moveOneStep("right");
-                                        ter.renderFrame(world);
-                                    } else if (seed3 == 'Q') {
-                                        saveGameWorld(world);
-                                        saveGamePlayer(player1);
-                                    }
-
-                                }
+                                ter.renderFrame(world);
+                                playGame(world, player, 'p');
                             }
                         } else {
                             seed += convertCharToString;
-                            displayUi(seed);
+                            drawFrame(seed);
                         }
                     }
-
                 }
-
-            } else if (answer == 'L') {
-                TERenderer ter = new TERenderer();
-                ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
-                world = loadGameFile(f);
-                ter.renderFrame(world);
-                Player player1 = loadGamePlayer(f);
-                while (true) {
-                    if (StdDraw.hasNextKeyTyped()) {
-                        char seed3 = StdDraw.nextKeyTyped();
-                        if (seed3 == 'W') {
-                            player1.moveOneStep("up");
-                        } else if (seed3 == 'A') {
-                            player1.moveOneStep("left");
-                        } else if (seed3 == 'S') {
-                            player1.moveOneStep("down");
-                        } else if (seed3 == 'D') {
-                            player1.moveOneStep("right");
-                        } else if (seed3 == 'Q') {
-                            saveGameWorld(world);
-                            saveGamePlayer(player1);
-                        }
+                } else if (keyTypedFromUser == 'L') {
+                    TERenderer ter = new TERenderer();
+                    ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
+                    world = loadWorld();
+                    player = loadPlayer();
+                    while (true) {
                         ter.renderFrame(world);
+                        playGame(world, player, 'p');
+
                     }
                 }
-
             }
         }
-    }
 
 
-
-
-    private void saveGameWorld(TETile[][] world)  {
-        try {
-            /*f = new File("world.txt");*/
-            FileOutputStream fos = new FileOutputStream("world.txt");
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(world);
-            oos.close();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    static void playGame(TETile[][] world, Player player, char keyTypedFromTheUser) {
+        if (keyTypedFromTheUser == 'p') {
+            if (StdDraw.hasNextKeyTyped()) {
+                keyTypedFromTheUser = StdDraw.nextKeyTyped();
+            }
         }
-
-    }
-
-    private void saveGamePlayer(Player player1) {
-        try {
-            FileOutputStream fns = new FileOutputStream("player1.txt");
-            ObjectOutputStream ons = new ObjectOutputStream(fns);
-            ons.writeObject(player1);
-            ons.close();
-            fns.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (keyTypedFromTheUser == 'W' || keyTypedFromTheUser == 'w') {
+            player.moveOneStep("up");
+        } else if (keyTypedFromTheUser == 'A' || keyTypedFromTheUser == 'a') {
+            player.moveOneStep("left");
+        } else if (keyTypedFromTheUser== 'S' || keyTypedFromTheUser == 's') {
+            player.moveOneStep("down");
+        } else if (keyTypedFromTheUser == 'D' || keyTypedFromTheUser == 'd') {
+            player.moveOneStep("right");
+        } else if (keyTypedFromTheUser == 'Q' || keyTypedFromTheUser == 'q') {
+            saveGame(world, player);
         }
     }
 
-    private TETile[][] loadGameFile(File f)  {
+
+    static void saveGame(TETile[][] world, Player player)  {
         try {
-            FileInputStream fis = new FileInputStream("world.txt");
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            TETile[][] world2 = (TETile[][]) ois.readObject();
-            ois.close();
-            fis.close();
-            return world2;
+            FileOutputStream fosWorld = new FileOutputStream("world.txt");
+            ObjectOutputStream oosWorld = new ObjectOutputStream(fosWorld);
+            oosWorld.writeObject(world);
+            fosWorld.close();
+            oosWorld.close();
+            FileOutputStream fosPlayer = new FileOutputStream("player1.txt");
+            ObjectOutputStream oosPlayer = new ObjectOutputStream(fosPlayer);
+            oosPlayer.writeObject(player);
+            fosWorld.close();
+            oosWorld.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    static TETile[][] loadWorld()  {
+        try {
+            FileInputStream fisWorld = new FileInputStream("world.txt");
+            ObjectInputStream oisWorld = new ObjectInputStream(fisWorld);
+            TETile[][] world = (TETile[][]) oisWorld.readObject();
+            oisWorld.close();
+            fisWorld.close();
+            return world;
         } catch (Exception e) {
             e.printStackTrace();
-            return new TETile[2][3];
+            return new TETile[0][0];
         }
     }
 
-    private Player loadGamePlayer(File f) {
+    static Player loadPlayer() {
         try {
-            FileInputStream frs = new FileInputStream("player1.txt");
-            ObjectInputStream ors = new ObjectInputStream(frs);
-            Player player2 = (Player) ors.readObject();
-            ors.close();
-            frs.close();
-            return player2;
+            FileInputStream fisPlayer = new FileInputStream("player1.txt");
+            ObjectInputStream oisPlayer = new ObjectInputStream(fisPlayer);
+            Player player = (Player) oisPlayer.readObject();
+            oisPlayer.close();
+            fisPlayer.close();
+            return player;
         } catch (Exception e) {
             e.printStackTrace();
             return new Player();
@@ -569,10 +637,10 @@ public class MyWorld implements Serializable {
 
 
 
-    void startGame() {
+    static void startGame() {
         try {
-            displayUi("Ui");
-            readFromTheUserKeyboard();
+            drawFrame("Ui");
+            readFromTheUserBeforeStartingTheGame();
         } catch (Exception e) {
             e.printStackTrace();
         }
