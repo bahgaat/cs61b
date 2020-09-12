@@ -407,12 +407,14 @@ public class MyWorld implements Serializable {
         if (j == 0) {
             drawOppositeLStartFromVerticalLine(world, upperPosition, 3, i * 2 + 4,
                     Tileset.WALL, "negative");
-            while (upperPosition._y > 55) {
-                drawLine(world, upperPosition, i - 2, Tileset.WALL, "vertical", "negative");
-            }
+             while (upperPosition._y > 50) {
+                 drawLine(world, upperPosition,  2, Tileset.WALL, "vertical", "negative");
+             }
+
+
             drawLine(world, upperPosition, i, Tileset.WALL, "horizontal", "negative");
         } else if (randomNumber == 0) {
-            i = 3;
+
             j = 0;
             drawLine(world, upperPosition, i * 4 + 2 , Tileset.WALL, "horizontal", "negative");
             drawLStartFromVerticalLine(world, upperPosition, i * 2, i * 2, Tileset.WALL, "negative");
@@ -425,13 +427,17 @@ public class MyWorld implements Serializable {
                                                                int j, int i, int randomNumber, Random r) {
         if (j == 0) {
             drawLine(world, bottomPosition, i * 2, Tileset.WALL, "horizontal", "negative");
-            while (bottomPosition._y > 55) {
-                drawLine(world, bottomPosition, 2, Tileset.WALL, "vertical", "negative");
+
+            while (bottomPosition._y > 48) {
+                drawLine(world, bottomPosition,  2, Tileset.WALL, "vertical", "negative");
             }
+            /*
             drawLStartFromVerticalLine(world, bottomPosition, i - 1, i + 2,
                     Tileset.WALL, "negative");
+             */
+            drawLine(world, bottomPosition, i + 2, Tileset.WALL, "horizontal", "negative");
         } else if (randomNumber == 0) {
-            i = 3;
+
             j = 0;
             drawLStartFromVerticalLine(world, bottomPosition, i + j + 2, i + j + 2, Tileset.WALL, "positive");
             drawUpperHalfSquare(world, bottomPosition, i + j + 2, i + j + 2, i + j, Tileset.WALL);
@@ -451,13 +457,16 @@ public class MyWorld implements Serializable {
             drawOppositeLStartFromVerticalLine(world, hallWayPosition, 2, i * 2 + 2,
                     Tileset.FLOOR, "negative");
 
-            while (hallWayPosition._y > 55) {
-                drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "negative");
+            while (hallWayPosition._y > 49) {
+                drawLine(world, hallWayPosition,  2, Tileset.FLOOR, "vertical", "negative");
             }
+            /*
             drawLStartFromVerticalLine(world, hallWayPosition, i - 2 , i + 1,
                     Tileset.FLOOR, "negative");
+             */
+            drawLine(world, hallWayPosition, i + 1, Tileset.FLOOR, "horizontal", "negative");
         } else if (randomNumber == 0) {
-            i = 3;
+
             j = 0;
             drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
             drawBottomRectangle(world, hallWayPosition, i + j + 4, i - 2, Tileset.FLOOR, "negative");
