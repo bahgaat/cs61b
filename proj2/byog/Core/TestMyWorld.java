@@ -3,16 +3,16 @@ package byog.Core;
 import byog.Core.Game;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
+import byog.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdDraw;
 
-public class TestMyWorld {
+import java.awt.*;
+import java.io.Serializable;
+
+public class TestMyWorld implements Serializable {
 
     public static void main(String[] args) {
-        TERenderer ter = new TERenderer();
-        MyWorld mygame = new MyWorld();
-        ter.initialize(mygame.WIDTH, mygame.HEIGHT);
         Game game = new Game();
-        TETile[][] worldState = game.playWithInputString( "n89s");
-        ter.renderFrame(worldState);
-
+        game.playWithKeyboard();
     }
 }

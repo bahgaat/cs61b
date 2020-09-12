@@ -11,7 +11,7 @@ class Player implements Serializable {
 
 
     public Player() {
-        Position position = new Position(MyWorld.hallWayPosition._x, MyWorld.hallWayPosition._y , Tileset.PLAYER);
+        Position position = new Position(MyWorld.hallWayPosition._x + 1, MyWorld.hallWayPosition._y , Tileset.PLAYER);
         positionX = position._x;
         positionY = position._y;
         MyWorld.world[positionX][positionY] = Tileset.PLAYER;

@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 import static byog.Core.MyWorld.*;
 
+
 public class Game implements Serializable {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
@@ -20,9 +21,8 @@ public class Game implements Serializable {
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard()  {
-        MyWorld world = new MyWorld();
-        world.startGame();
 
+        MyWorld.startGame();
     }
     
 
@@ -39,14 +39,39 @@ public class Game implements Serializable {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] playWithInputString(String input) {
-        long answer = 0;
+        long seed = 0;
         int stringLength = input.length();
-        MyWorld mygame = new MyWorld();
+        Player player;
+
+        int i = 1;
         String[] arrayOfInputs = input.split("");
-        for (int i = 1; i < stringLength - 1; i += 1) {
-            answer = answer * 10 + Integer.parseInt(arrayOfInputs[i]);
+        int lengthOfArray = arrayOfInputs.length;
+
+        if (arrayOfInputs[0].equals("L")) {
+            MyWorld.world = loadWorld();
+            player = loadPlayer();
+        } else {
+            boolean x = true;
+            while (x) {
+                if (arrayOfInputs[i].equals("s") || arrayOfInputs[i].equals("S")) {
+                    x = false;
+                } else {
+                    seed = seed * 10 + Long.parseLong(arrayOfInputs[i]);
+                }
+                i += 1;
+            }
+            MyWorld.world = MyWorld.drawWorld(seed);
+            player = new Player();
         }
-        return mygame.drawWorld(answer);
+
+        /* the error here is that the world is null. */
+        while (lengthOfArray > i) {
+            char convertStringToChar = arrayOfInputs[i].charAt(0);
+            MyWorld.playGame(MyWorld.world, player, convertStringToChar);
+            i += 1;
+        }
+        return MyWorld.world;
     }
+
 
 }
