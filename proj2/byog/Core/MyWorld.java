@@ -391,7 +391,7 @@ public class MyWorld implements Serializable {
 
     private static void drawThirdPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
                                                 Position hallwayPosition, int i, Random r) {
-        int h = RandomUtils.uniform(r, 2, 3);
+        int h = RandomUtils.uniform(r, 3, 5);
         for (int j = 0; j < 3; j += 1) {
             int randomNumber = r.nextInt(2);
             drawUpperWallOfTheThirdPartOfTheWorld(world, upperPosition, j, i, randomNumber, r);
@@ -407,7 +407,7 @@ public class MyWorld implements Serializable {
         if (j == 0) {
             drawOppositeLStartFromVerticalLine(world, upperPosition, 3, i * 2 + 4,
                     Tileset.WALL, "negative");
-             while (upperPosition._y > 50) {
+             while (upperPosition._y > 55) {
                  drawLine(world, upperPosition,  2, Tileset.WALL, "vertical", "negative");
              }
 
@@ -428,7 +428,7 @@ public class MyWorld implements Serializable {
         if (j == 0) {
             drawLine(world, bottomPosition, i * 2, Tileset.WALL, "horizontal", "negative");
 
-            while (bottomPosition._y > 48) {
+            while (bottomPosition._y > 53) {
                 drawLine(world, bottomPosition,  2, Tileset.WALL, "vertical", "negative");
             }
             /*
@@ -457,7 +457,7 @@ public class MyWorld implements Serializable {
             drawOppositeLStartFromVerticalLine(world, hallWayPosition, 2, i * 2 + 2,
                     Tileset.FLOOR, "negative");
 
-            while (hallWayPosition._y > 49) {
+            while (hallWayPosition._y > 54) {
                 drawLine(world, hallWayPosition,  2, Tileset.FLOOR, "vertical", "negative");
             }
             /*
@@ -491,7 +491,7 @@ public class MyWorld implements Serializable {
     static TETile[][]  drawWorld(long seed) {
         Random r = new Random(seed);
         int y = RandomUtils.uniform(r, 60, 65);
-        int x = RandomUtils.uniform(r, 50, 60);
+        int x = RandomUtils.uniform(r, 55, 65);
 
         for (int p = 0; p < WIDTH; p += 1) {
             for (int g = 0; g < HEIGHT; g += 1) {
