@@ -327,7 +327,7 @@ public class MyWorld implements Serializable {
                                                         int j, int i, int randomNumber) {
         if (j == 0) {
             drawLine(world, upperPosition, 3, Tileset.WALL, "horizontal", "negative");
-            drawLStartFromVerticalLine(world, upperPosition, i + 8 + 8 + 1 + 4, i * 16 + 2, Tileset.WALL, "positive");
+            drawLStartFromVerticalLine(world, upperPosition, i + 8 + 8 + 1 + 4, i * 15 + 2, Tileset.WALL, "positive");
             drawLStartFromHorizontalLine(world, upperPosition, 3, i + 2, Tileset.WALL, "negative");
         } else if (randomNumber == 0) {
             drawLeftHalfSquare(world, upperPosition, i, i, i, Tileset.WALL);
@@ -345,7 +345,7 @@ public class MyWorld implements Serializable {
     private static void drawBottomWallOfTheSecondPartOfTheWorld(TETile[][] world, Position bottomPosition,
                                                          int j, int i, int randomNumber) {
         if (j == 0) {
-            drawLStartFromVerticalLine(world, bottomPosition, i + 8 + 4 + 1 + 4, i * 16, Tileset.WALL, "positive");
+            drawLStartFromVerticalLine(world, bottomPosition, i + 8 + 4 + 1 + 4, i * 15, Tileset.WALL, "positive");
             drawLine(world, bottomPosition, i, Tileset.WALL, "vertical", "positive");
         } else if (randomNumber == 0) {
             drawRightHalfSquare(world, bottomPosition, i, i, i, Tileset.WALL);
@@ -364,7 +364,7 @@ public class MyWorld implements Serializable {
                                                       int j, int i, int randomNumber) {
         if (j == 0) {
             drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
-            drawLStartFromVerticalLine(world, hallWayPosition, i + 8 + 8 + 1 + 2, i * 16 + 1, Tileset.FLOOR,
+            drawLStartFromVerticalLine(world, hallWayPosition, i + 8 + 8 + 1 + 2, i * 15 + 1, Tileset.FLOOR,
                     "positive");
             drawLStartFromHorizontalLine(world, hallWayPosition, 2, i + 1, Tileset.FLOOR, "negative");
         } else if (randomNumber == 0) {
@@ -417,7 +417,7 @@ public class MyWorld implements Serializable {
 
             j = 0;
             drawLine(world, upperPosition, i * 4 + 2 , Tileset.WALL, "horizontal", "negative");
-            drawLStartFromVerticalLine(world, upperPosition, i * 2, i * 2, Tileset.WALL, "negative");
+            drawLStartFromVerticalLine(world, upperPosition, i * 2, i * 2 - 1, Tileset.WALL, "negative");
         } else if (randomNumber == 1 || randomNumber == 2) {
             drawLine(world, upperPosition, i * 2 + 2, Tileset.WALL, "horizontal", "negative");
         }
@@ -443,7 +443,7 @@ public class MyWorld implements Serializable {
             drawUpperHalfSquare(world, bottomPosition, i + j + 2, i + j + 2, i + j, Tileset.WALL);
             drawLStartFromHorizontalLine(world, bottomPosition, i, i + j + 4, Tileset.WALL, "positive");
             drawLine(world, bottomPosition, i * 3 + 1, Tileset.WALL, "horizontal", "negative");
-            drawLStartFromVerticalLine(world, bottomPosition, i * 2, i * 2 + 2, Tileset.WALL, "negative");
+            drawLStartFromVerticalLine(world, bottomPosition, i * 2, i * 2 + 1, Tileset.WALL, "negative");
         } else if (randomNumber == 1 || randomNumber == 2) {
             drawUpperHalfSquare(world, bottomPosition, i + 2, i + 2, i + 2, Tileset.WALL);
             drawLine(world, bottomPosition, i + 1, Tileset.WALL, "horizontal", "negative");
@@ -475,7 +475,7 @@ public class MyWorld implements Serializable {
             drawLStartFromHorizontalLine(world, hallWayPosition, (i + j + 1) + (i - 2), i + j + 4, Tileset.FLOOR,
                     "positive");
             drawLine(world, hallWayPosition, i * 3 + 3, Tileset.FLOOR, "horizontal", "negative");
-            drawLStartFromVerticalLine(world, hallWayPosition, i * 2, i * 2 + 1, Tileset.FLOOR, "negative");
+            drawLStartFromVerticalLine(world, hallWayPosition, i * 2, i * 2 , Tileset.FLOOR, "negative");
         } else if (randomNumber == 1 || randomNumber == 2)  {
             drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
             drawBottomRectangle(world, hallWayPosition, i + 2 , i + 2 - 2 , Tileset.FLOOR, "negative");
@@ -491,7 +491,7 @@ public class MyWorld implements Serializable {
     static TETile[][]  drawWorld(long seed) {
         Random r = new Random(seed);
         int y = RandomUtils.uniform(r, 60, 65);
-        int x = RandomUtils.uniform(r, 55, 65);
+        int x = RandomUtils.uniform(r, 60, 70);
 
         for (int p = 0; p < WIDTH; p += 1) {
             for (int g = 0; g < HEIGHT; g += 1) {
