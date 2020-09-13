@@ -313,7 +313,7 @@ public class MyWorld implements Serializable {
    Upper wall, Bottom wall, and hallway. */
     private static void drawSecondPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
                                                  Position hallwayPosition, int i, Random r) {
-        int h = RandomUtils.uniform(r, 4, 6);
+        int h = RandomUtils.uniform(r, 5, 7);
         for (int j = 0; j < h; j += 1) {
             int randomNumber = r.nextInt(3);
             drawUpperWallOfTheSecondPartOfTheWorld(world, upperPosition, j, i, randomNumber);
