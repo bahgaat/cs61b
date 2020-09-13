@@ -31,11 +31,9 @@ public class MyWorld implements Serializable {
     static void drawLine(TETile[][] world, Position p, int size,
                           TETile type, String position, String direction) {
         while (size > 0) {
-            try {
-                world[p._x][p._y] = type;
-            } catch (Exception e) {
-                break;
-            }
+
+            world[p._x][p._y] = type;
+
 
             if (position.equals("vertical") && direction.equals("positive") && size > 1) {
                 p._y += 1;
