@@ -407,7 +407,7 @@ public class MyWorld implements Serializable {
         if (j == 0) {
             drawOppositeLStartFromVerticalLine(world, upperPosition, 3, i * 2 + 4,
                     Tileset.WALL, "negative");
-             while (upperPosition._y > 50) {
+             while (upperPosition._y > 60) {
                  drawLine(world, upperPosition,  2, Tileset.WALL, "vertical", "negative");
              }
 
@@ -428,7 +428,7 @@ public class MyWorld implements Serializable {
         if (j == 0) {
             drawLine(world, bottomPosition, i * 2, Tileset.WALL, "horizontal", "negative");
 
-            while (bottomPosition._y > 48) {
+            while (bottomPosition._y > 58) {
                 drawLine(world, bottomPosition,  2, Tileset.WALL, "vertical", "negative");
             }
             /*
@@ -457,7 +457,7 @@ public class MyWorld implements Serializable {
             drawOppositeLStartFromVerticalLine(world, hallWayPosition, 2, i * 2 + 2,
                     Tileset.FLOOR, "negative");
 
-            while (hallWayPosition._y > 49) {
+            while (hallWayPosition._y > 59) {
                 drawLine(world, hallWayPosition,  2, Tileset.FLOOR, "vertical", "negative");
             }
             /*
@@ -491,7 +491,7 @@ public class MyWorld implements Serializable {
     static TETile[][]  drawWorld(long seed) {
         Random r = new Random(seed);
         int y = RandomUtils.uniform(r, 60, 65);
-        int x = RandomUtils.uniform(r, 60, 70);
+        int x = RandomUtils.uniform(r, 40, 50);
 
         for (int p = 0; p < WIDTH; p += 1) {
             for (int g = 0; g < HEIGHT; g += 1) {
