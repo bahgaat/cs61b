@@ -2,13 +2,9 @@ package byog.Core;
 
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
-import byog.TileEngine.Tileset;
-import edu.princeton.cs.introcs.StdDraw;
 
-import java.awt.*;
 import java.io.Serializable;
-
-import static byog.Core.MyWorld.*;
+import java.util.ArrayList;
 
 
 public class Game implements Serializable {
@@ -16,6 +12,10 @@ public class Game implements Serializable {
     /* Feel free to change the width and height. */
     public static final int WIDTH = 100;
     public static final int HEIGHT = 100;
+    static int lengthOfArray;
+    static String[] arrayOfInputs;
+    static int y;
+
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
@@ -36,42 +36,45 @@ public class Game implements Serializable {
      * should save, and thus if we then called playWithInputString with the string "l", we'd expect
      * to get the exact same world back again, since this corresponds to loading the saved game.
      * @param input the input string to feed to your program
-     * @return the 2D TETile[][] representing the state of the world
+     * @return
      */
-    public TETile[][] playWithInputString(String input) {
+
+    public static void playWithInputString(String input) {
         long seed = 0;
         int stringLength = input.length();
-        Player player;
-
-        int i = 1;
-        String[] arrayOfInputs = input.split("");
-        int lengthOfArray = arrayOfInputs.length;
-
-        if (arrayOfInputs[0].equals("L")) {
-            MyWorld.world = loadWorld();
-            player = loadPlayer();
+        y = 1;
+        arrayOfInputs = input.split("");
+        lengthOfArray = arrayOfInputs.length;
+        if (arrayOfInputs[0].equals("L") || arrayOfInputs[0].equals("l")) {
+            MyWorld.readFromTheUserBeforeStartingTheGame(true);
         } else {
             boolean x = true;
             while (x) {
-                if (arrayOfInputs[i].equals("s") || arrayOfInputs[i].equals("S")) {
+                if (arrayOfInputs[y].equals("s") || arrayOfInputs[y].equals("S")) {
                     x = false;
                 } else {
-                    seed = seed * 10 + Long.parseLong(arrayOfInputs[i]);
+                    seed = seed * 10 + Long.parseLong(arrayOfInputs[y]);
                 }
-                i += 1;
+                y += 1;
             }
-            MyWorld.world = MyWorld.drawWorld(seed);
-            player = new Player();
-        }
+            MyWorld.helpWithInputString(seed, true);
 
-        /* the error here is that the world is null. */
-        while (lengthOfArray > i) {
-            char convertStringToChar = arrayOfInputs[i].charAt(0);
-            MyWorld.playGame(MyWorld.world, player, convertStringToChar);
-            i += 1;
         }
-        return MyWorld.world;
     }
+
+
+
+   public static void helper2(ArrayList<EvilPlayer> arrayOfEvilPlayers, MainPlayer player,
+                                    Point point, int i, TETile[][] world) {
+       if (lengthOfArray > y) {
+           char convertStringToChar = arrayOfInputs[y].charAt(0);
+           MyWorld.playGame(world, player, point, arrayOfEvilPlayers, convertStringToChar, i);
+           y += 1;
+       } else {
+           MyWorld.gameOver = true;
+       }
+   }
+
 
 
 }

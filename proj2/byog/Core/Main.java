@@ -16,8 +16,8 @@ public class Main implements Serializable {
             System.exit(0);
         } else if (args.length == 1) {
             Game game = new Game();
-            TETile[][] world = game.playWithInputString(args[0]);
-            System.out.println(TETile.toString(world));
+            game.playWithInputString(args[0]);
+            System.out.println(TETile.toString(MyWorld.world));
         } else {
             Game game = new Game();
             game.playWithKeyboard();

@@ -22,32 +22,32 @@ import java.util.*;
 public class MyWorld implements Serializable {
     static final int WIDTH = 100;
     static final int HEIGHT = 100;
-    static TETile[][] world = new TETile[WIDTH][HEIGHT];
-    static Position hallWayPosition;
+    public static TETile[][] world = new TETile[WIDTH][HEIGHT];
     static boolean gameOver = false;
     static Queue<Map> queueEvil = new LinkedList<Map>();
     static ArrayList<Position> arrayOfPoints = new ArrayList<Position>();
-    static int round = 1;
+    public static int round = 1;
+    static Position hallWayPosition;
     static Position doorPosition;
 
 
     static void startGame() {
         try {
             drawFrame("Ui");
-            readFromTheUserBeforeStartingTheGame();
+            readFromTheUserBeforeStartingTheGame(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void readFromTheUserBeforeStartingTheGame() {
-        if (StdDraw.hasNextKeyTyped()) {
-            MainPlayer player;
-            Point point;
-            EvilPlayer evilPlayer;
-            char keyTypedFromUser = StdDraw.nextKeyTyped();
-            ArrayList<EvilPlayer> arrayOfEvilPlayers = new ArrayList<EvilPlayer>();
-            int i = 0;
+    public static void readFromTheUserBeforeStartingTheGame(boolean inputOrNo) {
+        char keyTypedFromUser;
+        if (inputOrNo == true || StdDraw.hasNextKeyTyped()) {
+            if (inputOrNo == true) {
+                keyTypedFromUser = 'L';
+            } else {
+                keyTypedFromUser = StdDraw.nextKeyTyped();
+            }
             if (keyTypedFromUser == 'N') {
                 drawFrame("Enter the seed");
                 String seed = "";
@@ -59,30 +59,29 @@ public class MyWorld implements Serializable {
                             TERenderer ter = new TERenderer();
                             ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
                             long convertSeedFromStringToLong = Long.parseLong(seed);
-                            world = drawWorld(convertSeedFromStringToLong);
-                            player = new MainPlayer();
-                            point = new Point();
-                            point.addPoint(0);
-                            evilPlayer = new EvilPlayer();
-                            arrayOfEvilPlayers.add(evilPlayer);
-                            interactivityInTheGame(arrayOfEvilPlayers, player, point, i, ter, world);
+                            helpWithInputString(convertSeedFromStringToLong, false);
                         } else {
                             seed += convertCharToString;
                             drawFrame(seed);
                         }
                     }
                 }
-            } else if (keyTypedFromUser == 'L') {
-                TERenderer ter = new TERenderer();
-                ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
+            } else if (keyTypedFromUser == 'L' || keyTypedFromUser == 'l') {
+                int i = 0;
+                TERenderer ter = null;
+                if (inputOrNo == false) {
+                    ter = new TERenderer();
+                    ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
+                }
                 String[] arrayOfTheSavedFiles;
                 arrayOfTheSavedFiles = new String[] {"world.txt", "mainPlayer.txt", "point.txt", "arrayOfEvilPlayers.txt",
                         "hallWayPosition.txt", "gameOver.txt", "queueEvil.txt", "arrayOfPoints.txt", "round.txt",
                         "doorPosition.txt"};
                 Object[] arrayOfObjects = loadGame(arrayOfTheSavedFiles);
                 world = (TETile[][]) arrayOfObjects[0];
-                player = (MainPlayer) arrayOfObjects[1];
-                point = (Point) arrayOfObjects[2];
+                MainPlayer player = (MainPlayer) arrayOfObjects[1];
+                Point point = (Point) arrayOfObjects[2];
+                ArrayList<EvilPlayer> arrayOfEvilPlayers = new ArrayList<EvilPlayer>();
                 arrayOfEvilPlayers = (ArrayList<EvilPlayer>) arrayOfObjects[3];
                 hallWayPosition = (Position) arrayOfObjects[4];
                 gameOver = (boolean) arrayOfObjects[5];
@@ -90,37 +89,50 @@ public class MyWorld implements Serializable {
                 arrayOfPoints = (ArrayList<Position>) arrayOfObjects[7];
                 round = (int) arrayOfObjects[8];
                 doorPosition = (Position) arrayOfObjects[9];
-                interactivityInTheGame(arrayOfEvilPlayers, player, point, i, ter, world);
+                interactivityInTheGame(arrayOfEvilPlayers, player, point, i, ter, world, inputOrNo);
             }
         }
     }
 
-    static void  helpWithInputString() {
-        TERenderer ter = new TERenderer();
-        ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
-        long convertSeedFromStringToLong = Long.parseLong(seed);
-        world = drawWorld(convertSeedFromStringToLong);
-        player = new MainPlayer();
-        point = new Point();
+    static void  helpWithInputString(long seed, boolean inputOrNo) {
+        int i = 0;
+        TERenderer ter = null;
+        if (inputOrNo == false) {
+            ter = new TERenderer();
+            ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
+        }
+        world = drawWorld(seed);
+        MainPlayer player = new MainPlayer();
+        Point point = new Point();
         point.addPoint(0);
-        evilPlayer = new EvilPlayer();
+        EvilPlayer evilPlayer = new EvilPlayer();
+        ArrayList<EvilPlayer> arrayOfEvilPlayers = new ArrayList<EvilPlayer>();
         arrayOfEvilPlayers.add(evilPlayer);
+        interactivityInTheGame(arrayOfEvilPlayers, player, point, i, ter, world, inputOrNo);
     }
 
     static void interactivityInTheGame(ArrayList<EvilPlayer> arrayOfEvilPlayers, MainPlayer player,
-                                       Point point, int i, TERenderer ter, TETile[][] world) {
+                                       Point point, int i, TERenderer ter, TETile[][] world, boolean inputOrNo) {
 
         while (!gameOver) {
-            ter.renderFrame(world);
-            playGame(world, player, point, arrayOfEvilPlayers, 'p', i);
+            if (inputOrNo == true) {
+                Game.helper2(arrayOfEvilPlayers, player, point, i, world);
+            } else {
+                ter.renderFrame(world);
+                playGame(world, player, point, arrayOfEvilPlayers, 'p', i);
+            }
             i += 1;
             if (player.winTheRound()) {
                 round += 1;
                 player.startNewRound();
                 int x = 0;
                 while (round  > x) {
-                    point.addPoint(x);
-                    x += 1;
+                    try {
+                        point.addPoint(x);
+                        x += 1;
+                    } catch (Exception e) {
+                        drawFrame("Congratulations, You have won the game");
+                    }
                 }
                 if (round == 4) {
                     EvilPlayer evilPlayer = new EvilPlayer();
@@ -137,7 +149,10 @@ public class MyWorld implements Serializable {
                 }
             }
         }
-        drawFrame("gameOver, you reached round" + round);
+        if (inputOrNo == false) {
+            drawFrame("gameOver, you reached round" + round);
+        }
+
     }
 
 
