@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-public class EvilPlayer extends Player {
+class EvilPlayer extends Player {
     int distanceMoved;
     int totalDistance;
     String attackDirection;
@@ -16,7 +16,7 @@ public class EvilPlayer extends Player {
     int speed;
 
 
-    public EvilPlayer() {
+    EvilPlayer() {
         Position position = null;
         Map map = MyWorld.queueEvil.poll();
         if (map.containsKey("horizontal")) {
@@ -35,25 +35,32 @@ public class EvilPlayer extends Player {
         MyWorld.world[positionX][positionY] = Tileset.MOUNTAIN;
     }
 
-    @Override
-    void attack() {
+
+    /* attack the mainPlayer depending on the attackDirection. */
+    void move() {
         String positiveDirection = "";
         String negativeDirection = "";
+        TETile directionPositive = null;
+        TETile directionNegative = null;
         if (attackDirection.equals("horizontal")) {
             positiveDirection = "right";
             negativeDirection = "left";
+            directionPositive = MyWorld.world[positionX + 1][positionY];
+            directionNegative = MyWorld.world[positionX - 1][positionY];
         } else if (attackDirection.equals("vertical")) {
             positiveDirection = "up";
             negativeDirection = "down";
+            directionPositive = MyWorld.world[positionX][positionY + 1];
+            directionNegative = MyWorld.world[positionX][positionY - 1];
         }
 
-        if (MyWorld.world[positionX + 1][positionY].description().equals("player")) {
+        if (directionPositive.description().equals("player")) {
             moveOneStep(positiveDirection, Tileset.MOUNTAIN);
             MyWorld.gameOver = true;
-        } else if (MyWorld.world[positionX - 1][positionY].description().equals("player")) {
+        } else if (directionNegative.description().equals("player")) {
             moveOneStep(negativeDirection, Tileset.MOUNTAIN);
             MyWorld.gameOver = true;
-        } else if (MyWorld.world[positionX + 1][positionY].description().equals("floor") && distanceMoved == totalDistance) {
+        } else if (directionPositive.description().equals("floor") && distanceMoved == totalDistance) {
             if (!movedTowardPositiveDirection) {
                 distanceMoved = 0;
             }

@@ -8,21 +8,18 @@ import java.util.ArrayList;
 
 
 public class Game implements Serializable {
-    TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 100;
     public static final int HEIGHT = 100;
-    static int lengthOfArray;
-    static String[] arrayOfInputs;
-    static int y;
+
 
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard()  {
-
-        MyWorld.startGame();
+        InputDevice input = new KeyBoardInput();
+        MyWorld.startGame(input, "");
     }
     
 
@@ -39,42 +36,9 @@ public class Game implements Serializable {
      * @return
      */
 
-    public static void playWithInputString(String input) {
-        long seed = 0;
-        int stringLength = input.length();
-        y = 1;
-        arrayOfInputs = input.split("");
-        lengthOfArray = arrayOfInputs.length;
-        if (arrayOfInputs[0].equals("L") || arrayOfInputs[0].equals("l")) {
-            MyWorld.readFromTheUserBeforeStartingTheGame(true);
-        } else {
-            boolean x = true;
-            while (x) {
-                if (arrayOfInputs[y].equals("s") || arrayOfInputs[y].equals("S")) {
-                    x = false;
-                } else {
-                    seed = seed * 10 + Long.parseLong(arrayOfInputs[y]);
-                }
-                y += 1;
-            }
-            MyWorld.helpWithInputString(seed, true);
-
-        }
+    public static void playWithInputString(String inputSeed) {
+        InputDevice input = new InputString(inputSeed);
+        MyWorld.startGame(input, inputSeed);
     }
-
-
-
-   public static void helper2(ArrayList<EvilPlayer> arrayOfEvilPlayers, MainPlayer player,
-                                    Point point, int i, TETile[][] world) {
-       if (lengthOfArray > y) {
-           char convertStringToChar = arrayOfInputs[y].charAt(0);
-           MyWorld.playGame(world, player, point, arrayOfEvilPlayers, convertStringToChar, i);
-           y += 1;
-       } else {
-           MyWorld.gameOver = true;
-       }
-   }
-
-
 
 }

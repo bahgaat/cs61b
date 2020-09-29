@@ -1,12 +1,9 @@
 package byog.Core;
 
-import byog.SaveDemo.World;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
-import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.introcs.StdDraw;
-
 import java.awt.*;
 import java.io.*;
 import java.util.Random;
@@ -29,78 +26,66 @@ public class MyWorld implements Serializable {
     public static int round = 1;
     static Position hallWayPosition;
     static Position doorPosition;
+    static int i = 0;
 
-
-    static void startGame() {
+    /* draw the Ui and read input from the user. */
+    static void startGame(InputDevice input, String seed) {
         try {
             drawFrame("Ui");
-            readFromTheUserBeforeStartingTheGame(false);
+            readFromTheUserBeforeStartingTheGame(input, seed);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void readFromTheUserBeforeStartingTheGame(boolean inputOrNo) {
-        char keyTypedFromUser;
-        if (inputOrNo == true || StdDraw.hasNextKeyTyped()) {
-            if (inputOrNo == true) {
-                keyTypedFromUser = 'L';
-            } else {
-                keyTypedFromUser = StdDraw.nextKeyTyped();
-            }
-            if (keyTypedFromUser == 'N') {
-                drawFrame("Enter the seed");
-                String seed = "";
+
+    /* read input from the user, and make decision based on his input. If he typed 'N', get seed from him and draw the world
+    with its  components and then play the game. if he typed 'L', load all the saved objects and play the game. */
+    static void readFromTheUserBeforeStartingTheGame(InputDevice input, String seed) {
+        if (input.hasNextChar()) {
+            if (input.nextChar() == 'N') {
                 while (true) {
-                    if (StdDraw.hasNextKeyTyped()) {
-                        char keyTypedFromTheUser = StdDraw.nextKeyTyped();
+                    if (input.hasNextChar()) {
+                        char keyTypedFromTheUser = input.nextChar();
                         String convertCharToString = String.valueOf(keyTypedFromTheUser);
                         if (keyTypedFromTheUser == 'S') {
-                            TERenderer ter = new TERenderer();
-                            ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
-                            long convertSeedFromStringToLong = Long.parseLong(seed);
-                            helpWithInputString(convertSeedFromStringToLong, false);
+                            input.generateTheWorld();
                         } else {
-                            seed += convertCharToString;
-                            drawFrame(seed);
+                            input.collectTheSeed(convertCharToString);
                         }
                     }
                 }
-            } else if (keyTypedFromUser == 'L' || keyTypedFromUser == 'l') {
-                int i = 0;
-                TERenderer ter = null;
-                if (inputOrNo == false) {
-                    ter = new TERenderer();
-                    ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
-                }
-                String[] arrayOfTheSavedFiles;
-                arrayOfTheSavedFiles = new String[] {"world.txt", "mainPlayer.txt", "point.txt", "arrayOfEvilPlayers.txt",
-                        "hallWayPosition.txt", "gameOver.txt", "queueEvil.txt", "arrayOfPoints.txt", "round.txt",
-                        "doorPosition.txt"};
-                Object[] arrayOfObjects = loadGame(arrayOfTheSavedFiles);
-                world = (TETile[][]) arrayOfObjects[0];
-                MainPlayer player = (MainPlayer) arrayOfObjects[1];
-                Point point = (Point) arrayOfObjects[2];
-                ArrayList<EvilPlayer> arrayOfEvilPlayers = new ArrayList<EvilPlayer>();
-                arrayOfEvilPlayers = (ArrayList<EvilPlayer>) arrayOfObjects[3];
-                hallWayPosition = (Position) arrayOfObjects[4];
-                gameOver = (boolean) arrayOfObjects[5];
-                queueEvil = (Queue<Map>) arrayOfObjects[6];
-                arrayOfPoints = (ArrayList<Position>) arrayOfObjects[7];
-                round = (int) arrayOfObjects[8];
-                doorPosition = (Position) arrayOfObjects[9];
-                interactivityInTheGame(arrayOfEvilPlayers, player, point, i, ter, world, inputOrNo);
+            } else if (input.nextChar() == 'L') {
+                input.generateTheWorldAfterLoading();
             }
         }
     }
 
-    static void  helpWithInputString(long seed, boolean inputOrNo) {
-        int i = 0;
-        TERenderer ter = null;
-        if (inputOrNo == false) {
-            ter = new TERenderer();
-            ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
-        }
+    static void loadAllObjectsOfTheGame(InputDevice input) {
+        String[] arrayOfTheSavedFiles;
+        arrayOfTheSavedFiles = new String[]{"world.txt", "mainPlayer.txt", "point.txt", "arrayOfEvilPlayers.txt",
+                "hallWayPosition.txt", "gameOver.txt", "queueEvil.txt", "arrayOfPoints.txt", "round.txt",
+                "doorPosition.txt"};
+        Object[] arrayOfObjects = loadGame(arrayOfTheSavedFiles);
+        world = (TETile[][]) arrayOfObjects[0];
+        MainPlayer player = (MainPlayer) arrayOfObjects[1];
+        Point point = (Point) arrayOfObjects[2];
+        ArrayList<EvilPlayer> arrayOfEvilPlayers = new ArrayList<EvilPlayer>();
+        arrayOfEvilPlayers = (ArrayList<EvilPlayer>) arrayOfObjects[3];
+        hallWayPosition = (Position) arrayOfObjects[4];
+        gameOver = (boolean) arrayOfObjects[5];
+        queueEvil = (Queue<Map>) arrayOfObjects[6];
+        arrayOfPoints = (ArrayList<Position>) arrayOfObjects[7];
+        round = (int) arrayOfObjects[8];
+        doorPosition = (Position) arrayOfObjects[9];
+        playGame(world, player, point, arrayOfEvilPlayers, input);
+    }
+
+
+
+
+    /* draw the world and add all the components. which are mainPlayer, evilPlayer, and points. */
+    static void drawAndAddAllTheComponentsOfTheWorld(long seed, InputDevice input) {
         world = drawWorld(seed);
         MainPlayer player = new MainPlayer();
         Point point = new Point();
@@ -108,92 +93,103 @@ public class MyWorld implements Serializable {
         EvilPlayer evilPlayer = new EvilPlayer();
         ArrayList<EvilPlayer> arrayOfEvilPlayers = new ArrayList<EvilPlayer>();
         arrayOfEvilPlayers.add(evilPlayer);
-        interactivityInTheGame(arrayOfEvilPlayers, player, point, i, ter, world, inputOrNo);
-    }
-
-    static void interactivityInTheGame(ArrayList<EvilPlayer> arrayOfEvilPlayers, MainPlayer player,
-                                       Point point, int i, TERenderer ter, TETile[][] world, boolean inputOrNo) {
-
-        while (!gameOver) {
-            if (inputOrNo == true) {
-                Game.helper2(arrayOfEvilPlayers, player, point, i, world);
-            } else {
-                ter.renderFrame(world);
-                playGame(world, player, point, arrayOfEvilPlayers, 'p', i);
-            }
-            i += 1;
-            if (player.winTheRound()) {
-                round += 1;
-                player.startNewRound();
-                int x = 0;
-                while (round  > x) {
-                    try {
-                        point.addPoint(x);
-                        x += 1;
-                    } catch (Exception e) {
-                        drawFrame("Congratulations, You have won the game");
-                    }
-                }
-                if (round == 4) {
-                    EvilPlayer evilPlayer = new EvilPlayer();
-                    arrayOfEvilPlayers.add(evilPlayer);
-                }
-                player.points = 0;
-                for (int y = 0; y < arrayOfEvilPlayers.size(); y += 1) {
-                    EvilPlayer evilPlayer1 = arrayOfEvilPlayers.get(y);
-                    if (evilPlayer1.speed < 2) {
-                        evilPlayer1.speed = 2;
-                    } else  {
-                        evilPlayer1.speed -= 1;
-                    }
-                }
-            }
-        }
-        if (inputOrNo == false) {
-            drawFrame("gameOver, you reached round" + round);
-        }
-
+        playGame(world, player, point, arrayOfEvilPlayers, input);
     }
 
 
+    private static void startNewRound(MainPlayer player, Point point) {
+        player.setPlayerToStartPosition();
+        MyWorld.world[MyWorld.doorPosition._x][MyWorld.doorPosition._y] = Tileset.LOCKED_DOOR;
+        MyWorld.round += 1;
+        int x = 0;
+        while (MyWorld.round  > x) {
+            try {
+                point.addPoint(x);
+                x += 1;
+            } catch (Exception e) {
+               drawFrame("Congratulations, You have won the game");
+            }
+        }
+    }
+
+    private static void updateEvilPlayerSpeed(ArrayList<EvilPlayer> arrayOfEvilPlayers) {
+        for (int y = 0; y < arrayOfEvilPlayers.size(); y += 1) {
+            EvilPlayer evilPlayer = arrayOfEvilPlayers.get(y);
+            evilPlayer.updateSpeed();
+        }
+    }
+
+
+    /* play the game. This including moving the mainPlayer toward his direction, and moving evilPlayer (his speed
+    depends on the round. The higher the round, the faster the evilPlayer. */
     static void playGame(TETile[][] world, MainPlayer player, Point point, ArrayList<EvilPlayer> arrayOfEvilPlayers,
-                                 char keyTypedFromTheUser, int i) {
-        if (keyTypedFromTheUser == 'p') {
-            if (StdDraw.hasNextKeyTyped()) {
-                keyTypedFromTheUser = StdDraw.nextKeyTyped();
+                                 InputDevice input) {
+        while (!gameOver) {
+            input.renderTheWorld(world);
+            boolean playerMoved = false;
+            char nextChar = 0;
+            if (input.hasNextChar()) {
+                nextChar = input.nextChar();
+                playerMoved = true;
+            }
+
+            if (nextChar == 'W') {
+                player.checkIfItIsPossibleToMoveToTheNewPositionAndMoveIfItIsOk("up", Tileset.PLAYER, "floor");
+            } else if (nextChar == 'A') {
+                player.checkIfItIsPossibleToMoveToTheNewPositionAndMoveIfItIsOk("left", Tileset.PLAYER, "floor");
+            } else if (nextChar == 'S') {
+                player.checkIfItIsPossibleToMoveToTheNewPositionAndMoveIfItIsOk("down", Tileset.PLAYER, "floor");
+            } else if (nextChar == 'D') {
+                player.checkIfItIsPossibleToMoveToTheNewPositionAndMoveIfItIsOk("right", Tileset.PLAYER, "floor");
+            } else if (nextChar== 'Q') {
+                putAllTheObjectsInAMapAndThenSaveTheGame(player, point, arrayOfEvilPlayers);
+            }
+
+            if (playerMoved) {
+                player.attack();
+                if (player.winTheRound()) {
+                    startNewRound(player, point);
+                    updateEvilPlayerSpeed(arrayOfEvilPlayers);
+                }
+            }
+
+
+            for (int j = 0; j < arrayOfEvilPlayers.size(); j += 1) {
+                EvilPlayer evilPlayer = arrayOfEvilPlayers.get(j);
+                if (i % evilPlayer.speed == 0) {
+                    evilPlayer.attack();
+                }
+            }
+
+            i += 1;
+
+            if (round == 6) {
+                EvilPlayer evilPlayer = new EvilPlayer();
+                arrayOfEvilPlayers.add(evilPlayer);
             }
         }
-        if (keyTypedFromTheUser == 'W' || keyTypedFromTheUser == 'w') {
-            player.moveOneStep("up", Tileset.PLAYER);
-        } else if (keyTypedFromTheUser == 'A' || keyTypedFromTheUser == 'a') {
-            player.moveOneStep("left", Tileset.PLAYER);
-        } else if (keyTypedFromTheUser== 'S' || keyTypedFromTheUser == 's') {
-            player.moveOneStep("down", Tileset.PLAYER);
-        } else if (keyTypedFromTheUser == 'D' || keyTypedFromTheUser == 'd') {
-            player.moveOneStep("right", Tileset.PLAYER);
-        } else if (keyTypedFromTheUser == 'Q' || keyTypedFromTheUser == 'q') {
-            Map<Object, String> mapOfTheWorld = new HashMap<Object, String>();
-            mapOfTheWorld.put(world, "world.txt");
-            mapOfTheWorld.put(player, "mainPlayer.txt");
-            mapOfTheWorld.put(point, "point.txt");
-            mapOfTheWorld.put(arrayOfEvilPlayers, "arrayOfEvilPlayers.txt");
-            mapOfTheWorld.put(hallWayPosition, "hallWayPosition.txt");
-            mapOfTheWorld.put(gameOver, "gameOver.txt");
-            mapOfTheWorld.put(queueEvil, "queueEvil.txt");
-            mapOfTheWorld.put(arrayOfPoints, "arrayOfPoints.txt");
-            mapOfTheWorld.put(round, "round.txt");
-            mapOfTheWorld.put(doorPosition, "doorPosition.txt");
-            saveGame(mapOfTheWorld);
-        }
-        for (int j = 0; j < arrayOfEvilPlayers.size(); j += 1) {
-            EvilPlayer evilPlayer = arrayOfEvilPlayers.get(j);
-            if (i % evilPlayer.speed == 0) {
-                evilPlayer.attack();
-            }
-        }
+        drawFrame("gameOver, you reached round" + round);
     }
 
-    public static void drawFrame(String s) {
+    static void putAllTheObjectsInAMapAndThenSaveTheGame(MainPlayer player, Point point,
+                                                         ArrayList<EvilPlayer> arrayOfEvilPlayers) {
+        Map<Object, String> mapOfTheWorld = new HashMap<Object, String>();
+        mapOfTheWorld.put(world, "world.txt");
+        mapOfTheWorld.put(player, "mainPlayer.txt");
+        mapOfTheWorld.put(point, "point.txt");
+        mapOfTheWorld.put(arrayOfEvilPlayers, "arrayOfEvilPlayers.txt");
+        mapOfTheWorld.put(hallWayPosition, "hallWayPosition.txt");
+        mapOfTheWorld.put(gameOver, "gameOver.txt");
+        mapOfTheWorld.put(queueEvil, "queueEvil.txt");
+        mapOfTheWorld.put(arrayOfPoints, "arrayOfPoints.txt");
+        mapOfTheWorld.put(round, "round.txt");
+        mapOfTheWorld.put(doorPosition, "doorPosition.txt");
+        saveGame(mapOfTheWorld);
+
+    }
+
+
+    static void drawFrame(String s) {
         StdDraw.setCanvasSize(40 * 16, 40 * 16);
         Font font = new Font("Monaco", Font.BOLD, 30);
         StdDraw.setFont(font);
@@ -205,19 +201,21 @@ public class MyWorld implements Serializable {
         StdDraw.setFont(font);
         StdDraw.setPenColor(Color.white);
 
+        // draw the actual Ui
         if (s.equals("Ui")) {
             StdDraw.text(20, 20, "NewGame(N)");
             StdDraw.text(20, 18, "LoadGame(L)");
             StdDraw.text(20, 16, "Quit(Q)");
         } else {
+            // draw the text
             StdDraw.text(20, 20, s);
         }
         StdDraw.show();
         StdDraw.pause(1500);
     }
 
-
-    static void saveGame(Map<Object, String> mapOfTheWorld) {
+    /* save the needed objects of the game in a map. */
+    private static void saveGame(Map<Object, String> mapOfTheWorld) {
         try {
             for (Map.Entry<Object, String> entry : mapOfTheWorld.entrySet()) {
                 FileOutputStream fosEntry = new FileOutputStream(entry.getValue());
@@ -231,7 +229,8 @@ public class MyWorld implements Serializable {
         }
     }
 
-    static Object[] loadGame(String[] arrayOfTheSavedFiles)  {
+    /* load all the saved objects of the game. */
+    private static Object[] loadGame(String[] arrayOfTheSavedFiles)  {
         Object[] arrayOfObjects = new Object[10];
         try {
             for(int i = 0; i < arrayOfTheSavedFiles.length; i += 1) {
@@ -249,10 +248,10 @@ public class MyWorld implements Serializable {
 
 
     /* draw the whole world, I divide the drawing into 2 parts.*/
-    static TETile[][]  drawWorld(long seed) {
+    private static TETile[][]  drawWorld(long seed) {
         Random r = new Random(seed);
-        int y = RandomUtils.uniform(r, 60, 65);
-        int x = RandomUtils.uniform(r, 55, 65);
+        int y = RandomUtils.uniform(r, 63, 69);
+        int x = RandomUtils.uniform(r, 80, 85);
 
         for (int p = 0; p < WIDTH; p += 1) {
             for (int g = 0; g < HEIGHT; g += 1) {
@@ -263,7 +262,7 @@ public class MyWorld implements Serializable {
         Position upperPosition = new Position(x, y, Tileset.WALL);
         Position bottomPosition = new Position(x, y, Tileset.WALL);
         hallWayPosition = new Position(x - 1, y - 1, Tileset.FLOOR);
-        int i = RandomUtils.uniform(r, 3, 5  );
+        int i = RandomUtils.uniform(r, 3, 4  );
         drawFirstPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
         drawSecondPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
         drawLine(world, bottomPosition, 2, Tileset.WALL, "horizontal", "positive");
@@ -271,10 +270,11 @@ public class MyWorld implements Serializable {
     }
 
     /* draw first part of the world. its direction is toward left. I divide drawing the first part
-    into   3 parts. Upper wall, Bottom wall, Hallway. */
+    into  3 parts. Upper wall, Bottom wall, Hallway. and I add evil player which moves horizontally in the
+    game. */
     private static void drawFirstPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
                                                 Position hallwayPosition, int i, Random r) {
-        int h = RandomUtils.uniform(r, 4, 6);
+        int h = RandomUtils.uniform(r, 8, 9);
         for (int j = 0; j < h; j += 1) {
             int randomNumber = r.nextInt(4);
             drawUpperWallOfTheFirstPartOfTheWorld(world, upperPosition, j, i, randomNumber);
@@ -339,7 +339,9 @@ public class MyWorld implements Serializable {
     }
 
 
-    /* draw hallway of the first part of the game, which moves toward left. */
+    /* draw hallway of the first part of the game, which moves toward left. and add random room position in arraylist
+    which will be replaced later as a points (flowers). the number of points depending on the round. The higher the round,
+    the more the points. */
     private static void drawHallWayOfTheFirstPartOfTheWorld(TETile[][] world, Position hallWayPosition,
                                                      int j, int i, int randomNumber) {
         if (j == 0 && randomNumber >= 2) {
@@ -405,7 +407,7 @@ public class MyWorld implements Serializable {
    Upper wall, Bottom wall, and hallway. */
     private static void drawSecondPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
                                                  Position hallwayPosition, int i, Random r) {
-        int h = RandomUtils.uniform(r, 5, 7);
+        int h = RandomUtils.uniform(r, 6, 8);
         for (int j = 0; j < h; j += 1) {
             int randomNumber = r.nextInt(3);
             drawUpperWallOfTheSecondPartOfTheWorld(world, upperPosition, j, i, randomNumber);
@@ -419,7 +421,7 @@ public class MyWorld implements Serializable {
                                                         int j, int i, int randomNumber) {
         if (j == 0) {
             drawLine(world, upperPosition, 3, Tileset.WALL, "horizontal", "negative");
-            drawLStartFromVerticalLine(world, upperPosition, i + 8 + 8 + 1 + 4, i * 15 + 2, Tileset.WALL, "positive");
+            drawLStartFromVerticalLine(world, upperPosition, i + 8 + 8 + 1 + 4, i * 27 + 2, Tileset.WALL, "positive");
             drawLStartFromHorizontalLine(world, upperPosition, 3, i + 2, Tileset.WALL, "negative");
         } else if (randomNumber == 0) {
             drawLeftHalfSquare(world, upperPosition, i, i, i, Tileset.WALL);
@@ -437,7 +439,7 @@ public class MyWorld implements Serializable {
     private static void drawBottomWallOfTheSecondPartOfTheWorld(TETile[][] world, Position bottomPosition,
                                                          int j, int i, int randomNumber) {
         if (j == 0) {
-            drawLStartFromVerticalLine(world, bottomPosition, i + 8 + 4 + 1 + 4, i * 15, Tileset.WALL, "positive");
+            drawLStartFromVerticalLine(world, bottomPosition, i + 8 + 4 + 1 + 4, i * 27, Tileset.WALL, "positive");
             drawLine(world, bottomPosition, i - 2, Tileset.WALL, "vertical", "positive");
             drawLine(world, bottomPosition, 2, Tileset.LOCKED_DOOR, "vertical", "positive");
             doorPosition = new Position(bottomPosition._x, bottomPosition._y - 1, bottomPosition._type);
@@ -454,12 +456,14 @@ public class MyWorld implements Serializable {
         }
     }
 
-    /* draw hallway of the second part of the world. which moves toward up. */
+    /* draw hallway of the second part of the world. which moves toward up. and add random room positions in arraylist
+    which will be replaced later as points (flowers). the number of points depending on the round. The higher the round,
+    the more the points. Also, add position which will be replaced by evil player in round 4. */
     private static void drawHallWayOfTheSecondPartOfTheWorld(TETile[][] world, Position hallWayPosition,
                                                       int j, int i, int randomNumber) {
         if (j == 0) {
             drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
-            drawLStartFromVerticalLine(world, hallWayPosition, i + 8 + 8 + 1 + 2, i * 15 + 1, Tileset.FLOOR,
+            drawLStartFromVerticalLine(world, hallWayPosition, i + 8 + 8 + 1 + 2, i * 27 + 1, Tileset.FLOOR,
                     "positive");
             Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.FLOWER);
             arrayOfPoints.add(pointPosition);
@@ -625,7 +629,12 @@ public class MyWorld implements Serializable {
     static void drawLine(TETile[][] world, Position p, int size,
                          TETile type, String position, String direction) {
         while (size > 0) {
-            world[p._x][p._y] = type;
+            try {
+                world[p._x][p._y] = type;
+            } catch (Exception e) {
+                continue;
+            }
+
             if (position.equals("vertical") && direction.equals("positive") && size > 1) {
                 p._y += 1;
             } else if (position.equals("vertical") && direction.equals("negative") && size > 1) {

@@ -2,37 +2,42 @@ package byog.Core;
 
 import byog.TileEngine.Tileset;
 
-import java.io.Serializable;
 
+class MainPlayer extends Player{
+    private int points;
+    private boolean winTheRound;
 
-public class MainPlayer extends Player {
-
-    public MainPlayer() {
+   MainPlayer() {
         Position position = new Position(MyWorld.hallWayPosition._x, MyWorld.hallWayPosition._y - 1, Tileset.PLAYER);
         positionX = position._x;
         positionY = position._y;
-        typeToAttack = "flower";
         MyWorld.world[positionX][positionY] = Tileset.PLAYER;
     }
 
     @Override
     void attack(){
-        points += 1;
+        if (itIsPossibleToMoveToTheNewPosition(newDirection, "flower")) {
+            checkIfItIsPossibleToMoveToTheNewPositionAndMoveIfItIsOk(newDirection, Tileset.PLAYER, "flower");
+            points += 1;
+        }
     }
 
-    protected void startNewRound() {
+    boolean winTheRound() {
+        return itIsPossibleToMoveToTheNewPosition(newDirection, "locked door") && MyWorld.round == points;
+    }
+
+    /* start new round by putting the mainPlayer to the startingPosition. */
+    void setPlayerToStartPosition() {
+        MyWorld.world[positionX][positionY] = Tileset.FLOOR;
         Position position = new Position(MyWorld.hallWayPosition._x, MyWorld.hallWayPosition._y - 1, Tileset.PLAYER);
         positionX = position._x;
         positionY = position._y;
+        points = 0;
         MyWorld.world[positionX][positionY] = Tileset.PLAYER;
-        MyWorld.world[MyWorld.doorPosition._x][MyWorld.doorPosition._y] = Tileset.LOCKED_DOOR;
+
     }
 
 
-
-    boolean winTheRound() {
-        return points == MyWorld.round && MyWorld.world[MyWorld.doorPosition._x][MyWorld.doorPosition._y] == Tileset.PLAYER;
-    }
 
 
 
