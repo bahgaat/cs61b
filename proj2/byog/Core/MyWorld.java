@@ -26,7 +26,13 @@ public class MyWorld implements Serializable {
     public static int round = 1;
     static Position hallWayPosition;
     static Position doorPosition;
+    static Position upperPosition;
+    static Position bottomPosition;
+    static Position playerPosition;
     static int i = 0;
+    static int addToX = 0;
+    static int addToY = 0;
+
 
     /* draw the Ui and read input from the user. */
     static void startGame(InputDevice input, String seed) {
@@ -39,48 +45,29 @@ public class MyWorld implements Serializable {
     }
 
 
+
     /* read input from the user, and make decision based on his input. If he typed 'N', get seed from him and draw the world
     with its  components and then play the game. if he typed 'L', load all the saved objects and play the game. */
     static void readFromTheUserBeforeStartingTheGame(InputDevice input, String seed) {
         if (input.hasNextChar()) {
-            if (input.nextChar() == 'N') {
+            char nextInputChar = input.nextChar();
+            if (nextInputChar == 'N') {
                 while (true) {
                     if (input.hasNextChar()) {
-                        char keyTypedFromTheUser = input.nextChar();
-                        String convertCharToString = String.valueOf(keyTypedFromTheUser);
-                        if (keyTypedFromTheUser == 'S') {
+                        nextInputChar = input.nextChar();
+                        String convertCharToString = String.valueOf(nextInputChar);
+                        if (nextInputChar == 'S') {
                             input.generateTheWorld();
                         } else {
                             input.collectTheSeed(convertCharToString);
                         }
                     }
                 }
-            } else if (input.nextChar() == 'L') {
+            } else if (nextInputChar == 'L') {
                 input.generateTheWorldAfterLoading();
             }
         }
     }
-
-    static void loadAllObjectsOfTheGame(InputDevice input) {
-        String[] arrayOfTheSavedFiles;
-        arrayOfTheSavedFiles = new String[]{"world.txt", "mainPlayer.txt", "point.txt", "arrayOfEvilPlayers.txt",
-                "hallWayPosition.txt", "gameOver.txt", "queueEvil.txt", "arrayOfPoints.txt", "round.txt",
-                "doorPosition.txt"};
-        Object[] arrayOfObjects = loadGame(arrayOfTheSavedFiles);
-        world = (TETile[][]) arrayOfObjects[0];
-        MainPlayer player = (MainPlayer) arrayOfObjects[1];
-        Point point = (Point) arrayOfObjects[2];
-        ArrayList<EvilPlayer> arrayOfEvilPlayers = new ArrayList<EvilPlayer>();
-        arrayOfEvilPlayers = (ArrayList<EvilPlayer>) arrayOfObjects[3];
-        hallWayPosition = (Position) arrayOfObjects[4];
-        gameOver = (boolean) arrayOfObjects[5];
-        queueEvil = (Queue<Map>) arrayOfObjects[6];
-        arrayOfPoints = (ArrayList<Position>) arrayOfObjects[7];
-        round = (int) arrayOfObjects[8];
-        doorPosition = (Position) arrayOfObjects[9];
-        playGame(world, player, point, arrayOfEvilPlayers, input);
-    }
-
 
 
 
@@ -97,29 +84,6 @@ public class MyWorld implements Serializable {
     }
 
 
-    private static void startNewRound(MainPlayer player, Point point) {
-        player.setPlayerToStartPosition();
-        MyWorld.world[MyWorld.doorPosition._x][MyWorld.doorPosition._y] = Tileset.LOCKED_DOOR;
-        MyWorld.round += 1;
-        int x = 0;
-        while (MyWorld.round  > x) {
-            try {
-                point.addPoint(x);
-                x += 1;
-            } catch (Exception e) {
-               drawFrame("Congratulations, You have won the game");
-            }
-        }
-    }
-
-    private static void updateEvilPlayerSpeed(ArrayList<EvilPlayer> arrayOfEvilPlayers) {
-        for (int y = 0; y < arrayOfEvilPlayers.size(); y += 1) {
-            EvilPlayer evilPlayer = arrayOfEvilPlayers.get(y);
-            evilPlayer.updateSpeed();
-        }
-    }
-
-
     /* play the game. This including moving the mainPlayer toward his direction, and moving evilPlayer (his speed
     depends on the round. The higher the round, the faster the evilPlayer. */
     static void playGame(TETile[][] world, MainPlayer player, Point point, ArrayList<EvilPlayer> arrayOfEvilPlayers,
@@ -128,6 +92,7 @@ public class MyWorld implements Serializable {
             input.renderTheWorld(world);
             boolean playerMoved = false;
             char nextChar = 0;
+
             if (input.hasNextChar()) {
                 nextChar = input.nextChar();
                 playerMoved = true;
@@ -142,7 +107,7 @@ public class MyWorld implements Serializable {
             } else if (nextChar == 'D') {
                 player.checkIfItIsPossibleToMoveToTheNewPositionAndMoveIfItIsOk("right", Tileset.PLAYER, "floor");
             } else if (nextChar== 'Q') {
-                putAllTheObjectsInAMapAndThenSaveTheGame(player, point, arrayOfEvilPlayers);
+                putAllTheObjectsInAMap(player, point, arrayOfEvilPlayers);
             }
 
             if (playerMoved) {
@@ -171,7 +136,29 @@ public class MyWorld implements Serializable {
         drawFrame("gameOver, you reached round" + round);
     }
 
-    static void putAllTheObjectsInAMapAndThenSaveTheGame(MainPlayer player, Point point,
+    private static void startNewRound(MainPlayer player, Point point) {
+        player.setPlayerToStartPosition();
+        MyWorld.world[MyWorld.doorPosition._x][MyWorld.doorPosition._y] = Tileset.LOCKED_DOOR;
+        MyWorld.round += 1;
+        int x = 0;
+        while (MyWorld.round  > x) {
+            try {
+                point.addPoint(x);
+                x += 1;
+            } catch (Exception e) {
+                drawFrame("Congratulations, You have won the game");
+            }
+        }
+    }
+
+    private static void updateEvilPlayerSpeed(ArrayList<EvilPlayer> arrayOfEvilPlayers) {
+        for (int y = 0; y < arrayOfEvilPlayers.size(); y += 1) {
+            EvilPlayer evilPlayer = arrayOfEvilPlayers.get(y);
+            evilPlayer.updateSpeed();
+        }
+    }
+
+    static void putAllTheObjectsInAMap(MainPlayer player, Point point,
                                                          ArrayList<EvilPlayer> arrayOfEvilPlayers) {
         Map<Object, String> mapOfTheWorld = new HashMap<Object, String>();
         mapOfTheWorld.put(world, "world.txt");
@@ -188,6 +175,59 @@ public class MyWorld implements Serializable {
 
     }
 
+
+    /* save the needed objects of the game in a map. */
+    private static void saveGame(Map<Object, String> mapOfTheWorld) {
+        try {
+            for (Map.Entry<Object, String> entry : mapOfTheWorld.entrySet()) {
+                FileOutputStream fosEntry = new FileOutputStream(entry.getValue());
+                ObjectOutputStream oosEntry = new ObjectOutputStream(fosEntry);
+                oosEntry.writeObject(entry.getKey());
+                fosEntry.close();
+                oosEntry.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void loadAllObjectsOfTheGame(InputDevice input) {
+        String[] arrayOfTheSavedFiles;
+        arrayOfTheSavedFiles = new String[]{"world.txt", "mainPlayer.txt", "point.txt", "arrayOfEvilPlayers.txt",
+                "hallWayPosition.txt", "gameOver.txt", "queueEvil.txt", "arrayOfPoints.txt", "round.txt",
+                "doorPosition.txt"};
+        Object[] arrayOfObjects = loadGame(arrayOfTheSavedFiles);
+        world = (TETile[][]) arrayOfObjects[0];
+        MainPlayer player = (MainPlayer) arrayOfObjects[1];
+        Point point = (Point) arrayOfObjects[2];
+        ArrayList<EvilPlayer> arrayOfEvilPlayers = new ArrayList<EvilPlayer>();
+        arrayOfEvilPlayers = (ArrayList<EvilPlayer>) arrayOfObjects[3];
+        hallWayPosition = (Position) arrayOfObjects[4];
+        gameOver = (boolean) arrayOfObjects[5];
+        queueEvil = (Queue<Map>) arrayOfObjects[6];
+        arrayOfPoints = (ArrayList<Position>) arrayOfObjects[7];
+        round = (int) arrayOfObjects[8];
+        doorPosition = (Position) arrayOfObjects[9];
+        playGame(world, player, point, arrayOfEvilPlayers, input);
+    }
+
+
+    /* load all the saved objects of the game. */
+    private static Object[] loadGame(String[] arrayOfTheSavedFiles)  {
+        Object[] arrayOfObjects = new Object[10];
+        try {
+            for(int i = 0; i < arrayOfTheSavedFiles.length; i += 1) {
+                FileInputStream fisItem = new FileInputStream(arrayOfTheSavedFiles[i]);
+                ObjectInputStream oisItem = new ObjectInputStream(fisItem);
+                Object item = (Object) oisItem.readObject();
+                arrayOfObjects[i] = item;
+            }
+            return arrayOfObjects;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return arrayOfObjects;
+        }
+    }
 
     static void drawFrame(String s) {
         StdDraw.setCanvasSize(40 * 16, 40 * 16);
@@ -214,43 +254,11 @@ public class MyWorld implements Serializable {
         StdDraw.pause(1500);
     }
 
-    /* save the needed objects of the game in a map. */
-    private static void saveGame(Map<Object, String> mapOfTheWorld) {
-        try {
-            for (Map.Entry<Object, String> entry : mapOfTheWorld.entrySet()) {
-                FileOutputStream fosEntry = new FileOutputStream(entry.getValue());
-                ObjectOutputStream oosEntry = new ObjectOutputStream(fosEntry);
-                oosEntry.writeObject(entry.getKey());
-                fosEntry.close();
-                oosEntry.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /* load all the saved objects of the game. */
-    private static Object[] loadGame(String[] arrayOfTheSavedFiles)  {
-        Object[] arrayOfObjects = new Object[10];
-        try {
-            for(int i = 0; i < arrayOfTheSavedFiles.length; i += 1) {
-                FileInputStream fisItem = new FileInputStream(arrayOfTheSavedFiles[i]);
-                ObjectInputStream oisItem = new ObjectInputStream(fisItem);
-                Object item = (Object) oisItem.readObject();
-                arrayOfObjects[i] = item;
-            }
-            return arrayOfObjects;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return arrayOfObjects;
-        }
-    }
-
 
     /* draw the whole world, I divide the drawing into 2 parts.*/
     private static TETile[][]  drawWorld(long seed) {
         Random r = new Random(seed);
-        int y = RandomUtils.uniform(r, 63, 69);
+        int y = RandomUtils.uniform(r, 60, 64);
         int x = RandomUtils.uniform(r, 80, 85);
 
         for (int p = 0; p < WIDTH; p += 1) {
@@ -259,13 +267,32 @@ public class MyWorld implements Serializable {
             }
         }
 
-        Position upperPosition = new Position(x, y, Tileset.WALL);
-        Position bottomPosition = new Position(x, y, Tileset.WALL);
+        upperPosition = new Position(x, y, Tileset.WALL);
+        bottomPosition = new Position(x, y, Tileset.WALL);
         hallWayPosition = new Position(x - 1, y - 1, Tileset.FLOOR);
-        int i = RandomUtils.uniform(r, 3, 4  );
+        int i = RandomUtils.uniform(r, 3, 4 );
+
         drawFirstPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
-        drawSecondPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
-        drawLine(world, bottomPosition, 2, Tileset.WALL, "horizontal", "positive");
+
+        int total = 25 * i + 2;
+        if (upperPosition._x + total < 98) {
+            drawSecondPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
+            drawLine(world, bottomPosition, 2, Tileset.WALL, "horizontal", "positive");
+            playerPosition = new Position(MyWorld.hallWayPosition._x , MyWorld.hallWayPosition._y - 1, Tileset.PLAYER);
+
+        } else {
+
+            drawOppositeOfLStartFromHorizontalLine(world, upperPosition, 5, i * 4,
+                    Tileset.WALL, "positive");
+            drawOppositeOfLStartFromHorizontalLine(world, bottomPosition, 3, i * 4 - 2,
+                    Tileset.WALL, "positive");
+            drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, 4, i * 4 - 1,
+                    Tileset.FLOOR, "positive");
+            drawLine(world, upperPosition, 2, Tileset.WALL, "horizontal", "positive");
+            playerPosition = new Position(MyWorld.hallWayPosition._x, MyWorld.hallWayPosition._y + 1, Tileset.PLAYER);
+        }
+
+
         return world;
     }
 
@@ -274,7 +301,7 @@ public class MyWorld implements Serializable {
     game. */
     private static void drawFirstPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
                                                 Position hallwayPosition, int i, Random r) {
-        int h = RandomUtils.uniform(r, 8, 9);
+        int h = RandomUtils.uniform(r, 8, 10);
         for (int j = 0; j < h; j += 1) {
             int randomNumber = r.nextInt(4);
             drawUpperWallOfTheFirstPartOfTheWorld(world, upperPosition, j, i, randomNumber);
@@ -339,69 +366,99 @@ public class MyWorld implements Serializable {
     }
 
 
-    /* draw hallway of the first part of the game, which moves toward left. and add random room position in arraylist
-    which will be replaced later as a points (flowers). the number of points depending on the round. The higher the round,
-    the more the points. */
+    /* draw hallway of the first part of the game, which moves toward left. and add positions to arrayOfPoints
+    which will be replaced later as a points (flowers). */
     private static void drawHallWayOfTheFirstPartOfTheWorld(TETile[][] world, Position hallWayPosition,
                                                      int j, int i, int randomNumber) {
         if (j == 0 && randomNumber >= 2) {
-            drawBottomRectangle(world, hallWayPosition, i, i - 2, Tileset.FLOOR, "negative");
-            Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.FLOWER);
-            arrayOfPoints.add(pointPosition);
-            drawLStartFromVerticalLine(world, hallWayPosition, i, i + 1, Tileset.FLOOR, "negative");
-        } else if (j == 0 && randomNumber < 2) {
-            Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.FLOWER);
-            arrayOfPoints.add(pointPosition);
-            drawBottomRectangle(world, hallWayPosition, (i * 2) - 2, i - 2, Tileset.FLOOR, "negative");
-            drawLine(world, hallWayPosition, i + 2, Tileset.FLOOR, "horizontal", "negative");
+            drawHallWayOfTheFirstPartOfTheWorldWhenJEqual0AndRandomNumberEqual2(world, hallWayPosition, j, i);
+        }  else if (j == 0 && randomNumber < 2) {
+             drawHallWayOfTheFirstPartOfTheWorldWhenJEqual0AndRandomNumberLessThan2(world, hallWayPosition, j, i);
         } else if (randomNumber == 0) {
-            drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
-            drawUpperRectangle(world, hallWayPosition, i + j, (i + j) - 2, Tileset.FLOOR, "negative");
-            drawBottomRectangle(world, hallWayPosition, i + j, i + j - 2, Tileset.FLOOR, "positive");
-            Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.FLOWER);
-            arrayOfPoints.add(pointPosition);
-            drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, i + j - 2, i + j, Tileset.FLOOR, "positive");
-            drawLine(world, hallWayPosition, i + j + 1, Tileset.FLOOR, "horizontal", "negative");
+            drawHallWayOfTheFirstPartOfTheWorldWhenRandomNumberEqual0(world, hallWayPosition, j, i);
         } else if (randomNumber == 1) {
-            drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
-            drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "positive");
-            drawUpperRectangle(world, hallWayPosition, i + j - 1, i + j - 2, Tileset.FLOOR, "negative");
-            drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, i + j - 2, 3, Tileset.FLOOR, "negative");
-            drawBottomRectangle(world, hallWayPosition, i + j - 1, i + j + 3 - 2, Tileset.FLOOR, "negative");
-            Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.FLOWER);
-            arrayOfPoints.add(pointPosition);
-            drawLStartFromHorizontalLine(world, hallWayPosition, i + j + 3 - 2, 2, Tileset.FLOOR, "negative");
-            drawLine(world, hallWayPosition, (i * 2) + j - 1, Tileset.FLOOR, "horizontal", "negative");
-        } else if (randomNumber == 3) {
-            drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
-            drawUpperRectangle(world, hallWayPosition, i + j + 3, i - (i - 2), Tileset.FLOOR, "negative");
-            drawLine(world, hallWayPosition, i + j + 4, Tileset.FLOOR, "vertical", "positive");
-            drawUpperRectangle(world, hallWayPosition, i + j - 2, i * 2 - 1 - (i - 2), Tileset.FLOOR, "positive");
-            Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.FLOWER);
-            arrayOfPoints.add(pointPosition);
-            if (i > 3) {
-                drawLine(world, hallWayPosition, i * 2 - (i - 2), Tileset.FLOOR, "horizontal", "negative");
-                drawUpperRectangle(world, hallWayPosition, i + j - 2, i - 2 - 1, Tileset.FLOOR, "negative");
-                drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, i - 2, i + j + 4, Tileset.FLOOR,
-                        "negative");
-                drawLine(world, hallWayPosition, i * 2 + 1, Tileset.FLOOR, "horizontal", "negative");
-            } else {
-                drawLine(world, hallWayPosition, i + 1, Tileset.FLOOR, "horizontal", "negative");
-                drawLine(world, hallWayPosition, i + j + 4, Tileset.FLOOR, "vertical", "negative");
-                drawLine(world, hallWayPosition, i * 2 + 1, Tileset.FLOOR, "horizontal", "negative");
-            }
+            drawHallWayOfTheFirstPartOfTheWorldWhenRandomNumberEqual1(world, hallWayPosition, j, i);
         } else if (randomNumber == 2) {
-            drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
-            drawBottomRectangle(world, hallWayPosition, i + j + 4, i - 2, Tileset.FLOOR, "negative");
-            drawLStartFromVerticalLine(world, hallWayPosition, i + j + 4, i, Tileset.FLOOR, "positive");
-            drawBottomRectangle(world, hallWayPosition, i + j, i + j, Tileset.FLOOR, "positive");
-            Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.FLOWER);
-            arrayOfPoints.add(pointPosition);
-            drawLStartFromHorizontalLine(world, hallWayPosition, (i + j + 1) + (i - 2), i + j + 4, Tileset.FLOOR,
-                    "positive");
-            drawLine(world, hallWayPosition, i * 3 + 2, Tileset.FLOOR, "horizontal", "negative");
+            drawHallWayOfTheFirstPartOfTheWorldWhenRandomNumberEqual2(world, hallWayPosition, j, i);
+        } else if (randomNumber == 3) {
+            drawHallWayOfTheFirstPartOfTheWorldWhenRandomNumberEqual3(world, hallWayPosition, j, i);
         }
     }
+
+    private static void drawHallWayOfTheFirstPartOfTheWorldWhenJEqual0AndRandomNumberEqual2
+            (TETile[][] world, Position hallWayPosition, int j, int i) {
+
+        drawBottomRectangle(world, hallWayPosition, i, i - 2, Tileset.FLOOR, "negative");
+        addPointsPositionToArrayOfPoints();
+        drawLStartFromVerticalLine(world, hallWayPosition, i, i + 1, Tileset.FLOOR, "negative");
+    }
+
+    private static void drawHallWayOfTheFirstPartOfTheWorldWhenJEqual0AndRandomNumberLessThan2
+            (TETile[][] world, Position hallWayPosition, int j, int i) {
+
+        Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.FLOWER);
+        addPointsPositionToArrayOfPoints();
+        drawLine(world, hallWayPosition, i + 2, Tileset.FLOOR, "horizontal", "negative");
+    }
+
+    private static void drawHallWayOfTheFirstPartOfTheWorldWhenRandomNumberEqual0
+            (TETile[][] world, Position hallWayPosition, int j, int i) {
+
+        drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
+        drawUpperRectangle(world, hallWayPosition, i + j, (i + j) - 2, Tileset.FLOOR, "negative");
+        drawBottomRectangle(world, hallWayPosition, i + j, i + j - 2, Tileset.FLOOR, "positive");
+        addPointsPositionToArrayOfPoints();
+        drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, i + j - 2, i + j, Tileset.FLOOR, "positive");
+        drawLine(world, hallWayPosition, i + j + 1, Tileset.FLOOR, "horizontal", "negative");
+    }
+
+    private static void drawHallWayOfTheFirstPartOfTheWorldWhenRandomNumberEqual1
+            (TETile[][] world, Position hallWayPosition, int j, int i) {
+
+        drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
+        drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "positive");
+        drawUpperRectangle(world, hallWayPosition, i + j - 1, i + j - 2, Tileset.FLOOR, "negative");
+        drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, i + j - 2, 3, Tileset.FLOOR, "negative");
+        drawBottomRectangle(world, hallWayPosition, i + j - 1, i + j + 3 - 2, Tileset.FLOOR, "negative");
+        addPointsPositionToArrayOfPoints();
+        drawLStartFromHorizontalLine(world, hallWayPosition, i + j + 3 - 2, 2, Tileset.FLOOR, "negative");
+        drawLine(world, hallWayPosition, (i * 2) + j - 1, Tileset.FLOOR, "horizontal", "negative");
+    }
+
+    private static void drawHallWayOfTheFirstPartOfTheWorldWhenRandomNumberEqual2
+            (TETile[][] world, Position hallWayPosition, int j, int i) {
+
+        drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
+        drawBottomRectangle(world, hallWayPosition, i + j + 4, i - 2, Tileset.FLOOR, "negative");
+        drawLStartFromVerticalLine(world, hallWayPosition, i + j + 4, i, Tileset.FLOOR, "positive");
+        drawBottomRectangle(world, hallWayPosition, i + j, i + j, Tileset.FLOOR, "positive");
+        addPointsPositionToArrayOfPoints();
+        drawLStartFromHorizontalLine(world, hallWayPosition, (i + j + 1) + (i - 2), i + j + 4, Tileset.FLOOR,
+                "positive");
+        drawLine(world, hallWayPosition, i * 3 + 2, Tileset.FLOOR, "horizontal", "negative");
+    }
+
+    private static void drawHallWayOfTheFirstPartOfTheWorldWhenRandomNumberEqual3
+            (TETile[][] world, Position hallWayPosition, int j, int i) {
+
+        drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
+        drawUpperRectangle(world, hallWayPosition, i + j + 3, i - (i - 2), Tileset.FLOOR, "negative");
+        drawLine(world, hallWayPosition, i + j + 4, Tileset.FLOOR, "vertical", "positive");
+        drawUpperRectangle(world, hallWayPosition, i + j - 2, i * 2 - 1 - (i - 2), Tileset.FLOOR, "positive");
+        addPointsPositionToArrayOfPoints();
+        if (i > 3) {
+            drawLine(world, hallWayPosition, i * 2 - (i - 2), Tileset.FLOOR, "horizontal", "negative");
+            drawUpperRectangle(world, hallWayPosition, i + j - 2, i - 2 - 1, Tileset.FLOOR, "negative");
+            drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, i - 2, i + j + 4, Tileset.FLOOR,
+                    "negative");
+            drawLine(world, hallWayPosition, i * 2 + 1, Tileset.FLOOR, "horizontal", "negative");
+        } else {
+            drawLine(world, hallWayPosition, i + 1, Tileset.FLOOR, "horizontal", "negative");
+            drawLine(world, hallWayPosition, i + j + 4, Tileset.FLOOR, "vertical", "negative");
+            drawLine(world, hallWayPosition, i * 2 + 1, Tileset.FLOOR, "horizontal", "negative");
+        }
+    }
+
 
     /* draw second part of the world. its direction is toward up. I divide drawing the second part into 3 parts
    Upper wall, Bottom wall, and hallway. */
@@ -421,7 +478,7 @@ public class MyWorld implements Serializable {
                                                         int j, int i, int randomNumber) {
         if (j == 0) {
             drawLine(world, upperPosition, 3, Tileset.WALL, "horizontal", "negative");
-            drawLStartFromVerticalLine(world, upperPosition, i + 8 + 8 + 1 + 4, i * 27 + 2, Tileset.WALL, "positive");
+            drawLStartFromVerticalLine(world, upperPosition, i + 8 + 8 + 1 + 4, i * 25 + 2, Tileset.WALL, "positive");
             drawLStartFromHorizontalLine(world, upperPosition, 3, i + 2, Tileset.WALL, "negative");
         } else if (randomNumber == 0) {
             drawLeftHalfSquare(world, upperPosition, i, i, i, Tileset.WALL);
@@ -439,7 +496,7 @@ public class MyWorld implements Serializable {
     private static void drawBottomWallOfTheSecondPartOfTheWorld(TETile[][] world, Position bottomPosition,
                                                          int j, int i, int randomNumber) {
         if (j == 0) {
-            drawLStartFromVerticalLine(world, bottomPosition, i + 8 + 4 + 1 + 4, i * 27, Tileset.WALL, "positive");
+            drawLStartFromVerticalLine(world, bottomPosition, i + 8 + 4 + 1 + 4, i * 25, Tileset.WALL, "positive");
             drawLine(world, bottomPosition, i - 2, Tileset.WALL, "vertical", "positive");
             drawLine(world, bottomPosition, 2, Tileset.LOCKED_DOOR, "vertical", "positive");
             doorPosition = new Position(bottomPosition._x, bottomPosition._y - 1, bottomPosition._type);
@@ -462,42 +519,67 @@ public class MyWorld implements Serializable {
     private static void drawHallWayOfTheSecondPartOfTheWorld(TETile[][] world, Position hallWayPosition,
                                                       int j, int i, int randomNumber) {
         if (j == 0) {
-            drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
-            drawLStartFromVerticalLine(world, hallWayPosition, i + 8 + 8 + 1 + 2, i * 27 + 1, Tileset.FLOOR,
-                    "positive");
-            Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.FLOWER);
-            arrayOfPoints.add(pointPosition);
-            drawLStartFromHorizontalLine(world, hallWayPosition, 2, i + 1, Tileset.FLOOR, "negative");
-            Position evilPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.MOUNTAIN);
-            Map<String, Position> map6 = new HashMap<String, Position>();
-            map6.put("vertical", evilPosition);
-            queueEvil.add(map6);
+            drawHallWayOfTheSecondPartOfTheWorldWhenJEqual0(world, hallWayPosition,
+                    j, i, randomNumber);
         } else if (randomNumber == 0) {
-            drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "positive");
-            drawUpperRectangle(world, hallWayPosition, i - 2, i, Tileset.FLOOR, "negative");
-            drawLine(world, hallWayPosition, i, Tileset.FLOOR, "horizontal", "positive");
-            drawUpperRectangle(world, hallWayPosition, i - 2, i, Tileset.FLOOR, "positive");
-            Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.FLOWER);
-            arrayOfPoints.add(pointPosition);
-            drawLStartFromHorizontalLine(world, hallWayPosition, i, i - 1, Tileset.FLOOR, "positive");
-            drawLine(world, hallWayPosition, i, Tileset.FLOOR, "vertical", "positive");
+            drawHallWayOfTheSecondPartOfTheWorldWhenRandomNumberEqual0(world, hallWayPosition,
+                    j, i, randomNumber);
         } else if (randomNumber == 1) {
-            drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "positive");
-            drawLine(world, hallWayPosition, 3, Tileset.FLOOR, "horizontal", "positive");
-            drawUpperRectangle(world, hallWayPosition, i, i, Tileset.FLOOR, "positive");
-            Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.FLOWER);
-            arrayOfPoints.add(pointPosition);
-            drawLine(world, hallWayPosition, i + 2, Tileset.FLOOR, "horizontal", "negative");
-            drawLine(world, hallWayPosition, i * 2 + 1, Tileset.FLOOR, "vertical", "positive");
+            drawHallWayOfTheSecondPartOfTheWorldWhenRandomNumberEqual1(world, hallWayPosition,
+                    j, i, randomNumber);
         } else if (randomNumber == 2) {
-            drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "positive");
-            drawLine(world, hallWayPosition, 3, Tileset.FLOOR, "horizontal", "negative");
-            drawUpperRectangle(world, hallWayPosition, i * 2 - 2, i, Tileset.FLOOR, "negative");
-            Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.FLOWER);
-            arrayOfPoints.add(pointPosition);
-            drawLine(world, hallWayPosition, i + 2, Tileset.FLOOR, "horizontal", "positive");
-            drawLine(world, hallWayPosition, i * 2 + 1, Tileset.FLOOR, "vertical", "positive");
+            drawHallWayOfTheSecondPartOfTheWorldWhenRandomNumberEqual2(world, hallWayPosition,
+                    j, i, randomNumber);
         }
+    }
+
+    private static void drawHallWayOfTheSecondPartOfTheWorldWhenJEqual0(TETile[][] world, Position hallWayPosition,
+                                         int j, int i, int randomNumber) {
+        drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
+        drawLStartFromVerticalLine(world, hallWayPosition, i + 8 + 8 + 1 + 2, i * 25 + 1, Tileset.FLOOR,
+                "positive");
+        addPointsPositionToArrayOfPoints();
+        drawLStartFromHorizontalLine(world, hallWayPosition, 2, i + 1, Tileset.FLOOR, "negative");
+        Position evilPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.MOUNTAIN);
+        Map<String, Position> map6 = new HashMap<String, Position>();
+        map6.put("vertical", evilPosition);
+        queueEvil.add(map6);
+    }
+
+    private static void drawHallWayOfTheSecondPartOfTheWorldWhenRandomNumberEqual0(TETile[][] world, Position hallWayPosition,
+                                                                        int j, int i, int randomNumber) {
+        drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "positive");
+        drawUpperRectangle(world, hallWayPosition, i - 2, i, Tileset.FLOOR, "negative");
+        drawLine(world, hallWayPosition, i, Tileset.FLOOR, "horizontal", "positive");
+        drawUpperRectangle(world, hallWayPosition, i - 2, i, Tileset.FLOOR, "positive");
+        addPointsPositionToArrayOfPoints();
+        drawLStartFromHorizontalLine(world, hallWayPosition, i, i - 1, Tileset.FLOOR, "positive");
+        drawLine(world, hallWayPosition, i, Tileset.FLOOR, "vertical", "positive");
+    }
+
+    private static void drawHallWayOfTheSecondPartOfTheWorldWhenRandomNumberEqual1(TETile[][] world, Position hallWayPosition,
+                                                                                   int j, int i, int randomNumber) {
+        drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "positive");
+        drawLine(world, hallWayPosition, 3, Tileset.FLOOR, "horizontal", "positive");
+        drawUpperRectangle(world, hallWayPosition, i, i, Tileset.FLOOR, "positive");
+        addPointsPositionToArrayOfPoints();
+        drawLine(world, hallWayPosition, i + 2, Tileset.FLOOR, "horizontal", "negative");
+        drawLine(world, hallWayPosition, i * 2 + 1, Tileset.FLOOR, "vertical", "positive");
+    }
+
+    private static void drawHallWayOfTheSecondPartOfTheWorldWhenRandomNumberEqual2(TETile[][] world, Position hallWayPosition,
+                                                                                   int j, int i, int randomNumber) {
+        drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "positive");
+        drawLine(world, hallWayPosition, 3, Tileset.FLOOR, "horizontal", "negative");
+        drawUpperRectangle(world, hallWayPosition, i * 2 - 2, i, Tileset.FLOOR, "negative");
+        addPointsPositionToArrayOfPoints();
+        drawLine(world, hallWayPosition, i + 2, Tileset.FLOOR, "horizontal", "positive");
+        drawLine(world, hallWayPosition, i * 2 + 1, Tileset.FLOOR, "vertical", "positive");
+    }
+
+    private static void addPointsPositionToArrayOfPoints() {
+        Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.FLOWER);
+        arrayOfPoints.add(pointPosition);
     }
 
 
@@ -626,14 +708,16 @@ public class MyWorld implements Serializable {
     /* draw line, its position determines if it is vertical or horizontal, and its direction determines if the line
     is positive or negative. While drawing any line, we start counting from the present line. for eg, if i want to
     draw aline 1 step from where i am standing, I have to move 2 steps because the step that i stand on is counted. */
-    static void drawLine(TETile[][] world, Position p, int size,
+    private static void drawLine(TETile[][] world, Position p, int size,
                          TETile type, String position, String direction) {
         while (size > 0) {
-            try {
-                world[p._x][p._y] = type;
-            } catch (Exception e) {
-                continue;
-            }
+
+
+
+            world[p._x][p._y] = type;
+
+
+
 
             if (position.equals("vertical") && direction.equals("positive") && size > 1) {
                 p._y += 1;
@@ -647,6 +731,13 @@ public class MyWorld implements Serializable {
             p._type = type;
             size -= 1;
         }
+    }
+
+    private static void complete() {
+
+
+
+
     }
 
 }
