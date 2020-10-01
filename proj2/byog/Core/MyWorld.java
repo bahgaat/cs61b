@@ -271,22 +271,6 @@ public class MyWorld implements Serializable {
         hallWayPosition = new Position(x - 1, y - 1, Tileset.FLOOR);
         int i = RandomUtils.uniform(r, 3, 4 );
         drawFirstPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
-        int total = 27 * i + 2;
-
-        if (upperPosition._x + total < 95 && f == true) {
-            drawSecondPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
-            drawLine(world, bottomPosition, 2, Tileset.WALL, "horizontal", "positive");
-            playerPosition = new Position(MyWorld.hallWayPosition._x , MyWorld.hallWayPosition._y - 1, Tileset.PLAYER);
-        } else if (f == true) {
-            drawOppositeOfLStartFromHorizontalLine(world, upperPosition, 5, i * 4,
-                    Tileset.WALL, "positive");
-            drawOppositeOfLStartFromHorizontalLine(world, bottomPosition, 3, i * 4 - 2,
-                    Tileset.WALL, "positive");
-            drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, 4, i * 4 - 1,
-                    Tileset.FLOOR, "positive");
-            drawLine(world, upperPosition, 2, Tileset.WALL, "horizontal", "positive");
-            playerPosition = new Position(MyWorld.hallWayPosition._x , MyWorld.hallWayPosition._y + 1, Tileset.PLAYER);
-        }
         return world;
     }
 
@@ -295,14 +279,22 @@ public class MyWorld implements Serializable {
     game. */
     private static void drawFirstPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
                                                 Position hallwayPosition, int i, Random r) {
+
+        /*
         int h = RandomUtils.uniform(r, 7, 9);
-        for (int j = 0; j < h; j += 1) {
+
+        for (int j = 0; j < h; j += 1)
+
+         */
+        int j = 0;
+        while (f != false) {
             int randomNumber = r.nextInt(4);
             drawUpperWallOfTheFirstPartOfTheWorld(world, upperPosition, j, i, randomNumber, r);
             if (f != false) {
                 drawBottomWallOfTheFirstPartOfTheWorld(world, bottomPosition, j, i, randomNumber, r);
                 drawHallWayOfTheFirstPartOfTheWorld(world, hallwayPosition, j, i, randomNumber, r);
             }
+            j += 1;
 
         }
         Position evilPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.MOUNTAIN);
@@ -314,13 +306,12 @@ public class MyWorld implements Serializable {
     /* draw upper wall of the first part of the world, which moves toward left. */
     private static void drawUpperWallOfTheFirstPartOfTheWorld(TETile[][] world, Position upperPosition,
                                                        int j, int i, int randomNumber, Random r) {
-        if (upperPosition._x < 5) {
+        if (upperPosition._x < i * 5) {
             f = false;
             drawSecondPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
             drawLine(world, bottomPosition, 2, Tileset.WALL, "horizontal", "positive");
-            playerPosition = new Position(MyWorld.hallWayPosition._x , MyWorld.hallWayPosition._y - 1, Tileset.PLAYER);
-        }
-        if (j == 0 && randomNumber >= 2) {
+            playerPosition = new Position(MyWorld.hallWayPosition._x, MyWorld.hallWayPosition._y - 1, Tileset.PLAYER);
+        } else if (j == 0 && randomNumber >= 2) {
             drawLine(world, upperPosition, i, Tileset.WALL, "horizontal", "negative");
             drawLStartFromVerticalLine(world, upperPosition, i, i, Tileset.WALL, "negative");
         } else if (j == 0 && randomNumber < 2) {
@@ -482,7 +473,16 @@ public class MyWorld implements Serializable {
                                                         int j, int i, int randomNumber) {
         if (j == 0) {
             drawLine(world, upperPosition, 3, Tileset.WALL, "horizontal", "negative");
+            /*
             drawLStartFromVerticalLine(world, upperPosition, i + 8 + 8 + 1 + 4, i * 27 + 2, Tileset.WALL, "positive");
+
+             */
+            while (upperPosition._y > 28) {
+                drawLine(world, upperPosition, 2, Tileset.WALL, "vertical", "negative");
+            }
+            while (upperPosition._x < 89) {
+                drawLine(world, upperPosition, 2, Tileset.WALL, "horizontal", "positive");
+            }
             drawLStartFromHorizontalLine(world, upperPosition, 3, i + 2, Tileset.WALL, "negative");
         } else if (randomNumber == 0) {
             drawLeftHalfSquare(world, upperPosition, i, i, i, Tileset.WALL);
@@ -500,7 +500,16 @@ public class MyWorld implements Serializable {
     private static void drawBottomWallOfTheSecondPartOfTheWorld(TETile[][] world, Position bottomPosition,
                                                          int j, int i, int randomNumber) {
         if (j == 0) {
+            /*
             drawLStartFromVerticalLine(world, bottomPosition, i + 8 + 4 + 1 + 4, i * 27, Tileset.WALL, "positive");
+
+             */
+            while (bottomPosition._y > 30) {
+                drawLine(world, bottomPosition, 2, Tileset.WALL, "vertical", "negative");
+            }
+            while (bottomPosition._x < 89) {
+                drawLine(world, bottomPosition, 2, Tileset.WALL, "horizontal", "positive");
+            }
             drawLine(world, bottomPosition, i - 2, Tileset.WALL, "vertical", "positive");
             drawLine(world, bottomPosition, 2, Tileset.LOCKED_DOOR, "vertical", "positive");
             doorPosition = new Position(bottomPosition._x, bottomPosition._y - 1, bottomPosition._type);
@@ -540,8 +549,17 @@ public class MyWorld implements Serializable {
     private static void drawHallWayOfTheSecondPartOfTheWorldWhenJEqual0(TETile[][] world, Position hallWayPosition,
                                          int j, int i, int randomNumber) {
         drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
+        /*
         drawLStartFromVerticalLine(world, hallWayPosition, i + 8 + 8 + 1 + 2, i * 27 + 1, Tileset.FLOOR,
                 "positive");
+
+         */
+        while (hallWayPosition._y > 29) {
+            drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "negative");
+        }
+        while (hallWayPosition._x < 89) {
+            drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "positive");
+        }
         addPointsPositionToArrayOfPoints();
         drawLStartFromHorizontalLine(world, hallWayPosition, 2, i + 1, Tileset.FLOOR, "negative");
         Position evilPosition = new Position(hallWayPosition._x, hallWayPosition._y, Tileset.MOUNTAIN);
