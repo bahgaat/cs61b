@@ -31,6 +31,9 @@ public class MyWorld implements Serializable {
     static Position playerPosition;
     static int i = 0;
     static boolean f = true;
+    static boolean t = true;
+    static int startPositionX;
+    static int startPositionY;
 
 
     /* draw the Ui and read input from the user. */
@@ -280,12 +283,6 @@ public class MyWorld implements Serializable {
     private static void drawFirstPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
                                                 Position hallwayPosition, int i, Random r) {
 
-        /*
-        int h = RandomUtils.uniform(r, 7, 9);
-
-        for (int j = 0; j < h; j += 1)
-
-         */
         int j = 0;
         while (f != false) {
             int randomNumber = r.nextInt(4);
@@ -309,8 +306,11 @@ public class MyWorld implements Serializable {
         if (upperPosition._x < i * 5) {
             f = false;
             drawSecondPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
+            /*
             drawLine(world, bottomPosition, 2, Tileset.WALL, "horizontal", "positive");
             playerPosition = new Position(MyWorld.hallWayPosition._x, MyWorld.hallWayPosition._y - 1, Tileset.PLAYER);
+
+             */
         } else if (j == 0 && randomNumber >= 2) {
             drawLine(world, upperPosition, i, Tileset.WALL, "horizontal", "negative");
             drawLStartFromVerticalLine(world, upperPosition, i, i, Tileset.WALL, "negative");
@@ -459,18 +459,29 @@ public class MyWorld implements Serializable {
    Upper wall, Bottom wall, and hallway. */
     private static void drawSecondPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
                                                  Position hallwayPosition, int i, Random r) {
-        int h = RandomUtils.uniform(r, 6, 8);
-        for (int j = 0; j < h; j += 1) {
+        /*
+        int h = RandomUtils.uniform(r, 8, 10);
+        for (int j = 0; j < h; j += 1)
+         {
+         */
+        int j = 0;
+        i = RandomUtils.uniform(r, 3, 5 );
+        while (t == true) {
             int randomNumber = r.nextInt(3);
             drawUpperWallOfTheSecondPartOfTheWorld(world, upperPosition, j, i, randomNumber);
-            drawBottomWallOfTheSecondPartOfTheWorld(world, bottomPosition, j, i, randomNumber);
-            drawHallWayOfTheSecondPartOfTheWorld(world, hallwayPosition, j, i, randomNumber);
+            if (t == true) {
+                drawBottomWallOfTheSecondPartOfTheWorld(world, bottomPosition, j, i, randomNumber);
+                drawHallWayOfTheSecondPartOfTheWorld(world, hallwayPosition, j, i, randomNumber);
+            }
+            j += 1;
         }
     }
 
     /* draw upper wall of the second part of the world. which moves toward up. */
     private static void drawUpperWallOfTheSecondPartOfTheWorld(TETile[][] world, Position upperPosition,
                                                         int j, int i, int randomNumber) {
+        int total = i * 2 + 3;
+
         if (j == 0) {
             drawLine(world, upperPosition, 3, Tileset.WALL, "horizontal", "negative");
             /*
@@ -484,6 +495,10 @@ public class MyWorld implements Serializable {
                 drawLine(world, upperPosition, 2, Tileset.WALL, "horizontal", "positive");
             }
             drawLStartFromHorizontalLine(world, upperPosition, 3, i + 2, Tileset.WALL, "negative");
+        }else if (78 < upperPosition._y + total) {
+            t = false;
+            drawLine(world, bottomPosition, 2, Tileset.WALL, "horizontal", "positive");
+            playerPosition = new Position(MyWorld.hallWayPosition._x, MyWorld.hallWayPosition._y - 1, Tileset.PLAYER);
         } else if (randomNumber == 0) {
             drawLeftHalfSquare(world, upperPosition, i, i, i, Tileset.WALL);
             drawLine(world, upperPosition, i, Tileset.WALL, "vertical", "positive");
