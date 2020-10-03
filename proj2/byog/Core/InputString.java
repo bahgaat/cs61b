@@ -9,12 +9,14 @@ public class InputString implements InputDevice{
     private String seed = "";
     private int startSlicingIndex = 0;
     private int endSlicingIndex = 1;
+    private int lengthOfInput= _input.length();
 
     public InputString(String input) {
         _input = input;
     }
 
-    public void startGame( String seed) {
+    @Override
+    public void startGame(String seed) {
         try {
             MyWorld.readFromTheUserBeforeStartingTheGame(this, seed);
         } catch (Exception e) {
@@ -23,22 +25,13 @@ public class InputString implements InputDevice{
     }
 
     @Override
+    /* return true if the input has more characters to iterate through. */
     public boolean hasNextChar() {
-        /*
-        int lengthOfInput = _input.length();
-        if (lengthOfInput >= endSlicingIndex) {
-            return true;
-        } else {
-            MyWorld.gameOver = true;
-            return false;
-        }
-
-         */
-        int lengthOfInput = _input.length();
         return lengthOfInput >= endSlicingIndex;
     }
 
     @Override
+    /* return the next character in the String input. */
     public char nextChar() {
         String nextChar = _input.substring(startSlicingIndex, endSlicingIndex);
         startSlicingIndex = endSlicingIndex;
@@ -48,11 +41,13 @@ public class InputString implements InputDevice{
     }
 
     @Override
+    /* collect the seed (the numbers) from the whole input. */
     public void collectTheSeed(String input) {
         seed += input;
     }
 
     @Override
+    /* generate the world an add all components in it. */
     public void generateTheWorld() {
         long convertSeedFromStringToLong = Long.parseLong(seed);
         MyWorld.drawAndAddAllTheComponentsOfTheWorld(convertSeedFromStringToLong, this);
@@ -60,12 +55,13 @@ public class InputString implements InputDevice{
 
     @Override
     public void generateTheWorldAfterLoading() {
-        MyWorld.loadAllObjectsOfTheGame(this);
+        MyWorld.loadGame(this);
     }
 
     @Override
+    /* return true if all the characters of the input has been iterated on. this means
+    show the world. */
     public boolean theGameEnded() {
-        int lengthOfInput = _input.length();
         return lengthOfInput < endSlicingIndex;
     }
 

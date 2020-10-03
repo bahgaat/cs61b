@@ -11,24 +11,30 @@ abstract class Player implements Serializable {
     protected String typeToAttack;
     protected String newDirection;
 
-    /* move the player (if satisfied all the conditions) to the newPosition depending on the direction. */
+    /* move the player to the newPosition depending on the newDirection. */
     void move(TETile typeOfAttacker, String typeToCheck) {
+        int oldPositionX = positionX;
+        int oldPositionY = positionY;
+        int newPositionX = positionX;
+        int newPositionY = positionY;
+
         if (newDirection.equals("up")) {
-            helperMove(this, typeOfAttacker, positionX, positionY, positionX, positionY + 1);
             positionY += 1;
+            newPositionY = positionY;
         } else if (newDirection.equals("down")) {
-            helperMove(this, typeOfAttacker, positionX, positionY, positionX, positionY - 1);
             positionY -= 1;
+            newPositionY = positionY;
         } else if (newDirection.equals("right")) {
-            helperMove(this, typeOfAttacker, positionX, positionY, positionX + 1, positionY);
             positionX += 1;
+            newPositionX = positionX;
         } else if (newDirection.equals("left")) {
-            helperMove(this, typeOfAttacker, positionX, positionY, positionX - 1, positionY);
             positionX -= 1;
+            newPositionX = positionX;
         }
+        helperMove(this, typeOfAttacker, oldPositionX, oldPositionY, newPositionX, newPositionY);
     }
 
-    /* move to the new position. */
+    /* A helper method for the basic move method. it moves the player to the new position. */
     private void helperMove(Player player, TETile typeOfAttacker, int oldPositionX, int oldPositionY, int newPositionX, int newPositionY) {
         MyWorld.world[newPositionX][newPositionY] = typeOfAttacker;
         MyWorld.world[oldPositionX][oldPositionY] = Tileset.FLOOR;

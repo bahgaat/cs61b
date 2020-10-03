@@ -20,23 +20,21 @@ import java.util.*;
 public class MyWorld implements Serializable {
     static final int WIDTH = 100;
     static final int HEIGHT = 100;
-    public static TETile[][] world = new TETile[WIDTH][HEIGHT];
+    static TETile[][] world = new TETile[WIDTH][HEIGHT];
     static boolean gameOver = false;
     static Queue<Map> queueEvil = new LinkedList<Map>();
     static ArrayList<Position> arrayOfPoints = new ArrayList<Position>();
-    public static int round = 1;
-    static Position hallWayPosition;
-    static Position doorPosition;
-    static Position upperPosition;
-    static Position bottomPosition;
     static Position playerPosition;
-    static int i = 0;
-    static boolean itIsOkToMoveHorizontally = true;
-    static boolean itIsOkToMoveVertically = true;
+    private static int i = 0;
+    private static boolean itIsOkToMoveHorizontally = true;
+    private static boolean itIsOkToMoveVertically = true;
+    private static Position doorPosition;
+    private static int round = 1;
 
 
-    /* read input from the user, and make decision based on his input. If he typed 'N', get seed from him and draw the world
-    with its  components and then play the game. if he typed 'L', load all the saved objects and play the game. */
+
+    /* read input , and make decision based on the input. If the input is 'N', get seed from the input and draw the world
+    with its  components and then play the game. if the input is 'L', load all the saved objects and play the game. */
     static void readFromTheUserBeforeStartingTheGame(InputDevice input, String seed) {
         if (input.hasNextChar()) {
             char nextInputChar = input.nextChar();
@@ -62,7 +60,7 @@ public class MyWorld implements Serializable {
 
 
 
-    /* draw the world and add all the components. which are mainPlayer, evilPlayer, and points. */
+    /* draw the world and add all the components. which are mainPlayer, evilPlayer, and one point. */
     static void drawAndAddAllTheComponentsOfTheWorld(long seed, InputDevice input) {
         world = drawWorld(seed);
         MainPlayer player = new MainPlayer();
@@ -75,9 +73,9 @@ public class MyWorld implements Serializable {
     }
 
 
-    /* play the game. This including moving the mainPlayer toward his direction, and moving evilPlayer (his speed
+    /* play the game. This including moving the mainPlayer toward his direction, and moving evilPlayer ,his speed
     depends on the round. The higher the round, the faster the evilPlayer. */
-    static void playGame(TETile[][] world, MainPlayer player, Point point, ArrayList<EvilPlayer> arrayOfEvilPlayers,
+    private static void playGame(TETile[][] world, MainPlayer player, Point point, ArrayList<EvilPlayer> arrayOfEvilPlayers,
                                  InputDevice input) {
         while (!input.theGameEnded()) {
             input.renderTheWorld(world);
@@ -93,7 +91,7 @@ public class MyWorld implements Serializable {
                 } else if (nextChar == 'D') {
                     newDirection = "right";
                 } else if (nextChar== 'Q') {
-                    putAllTheObjectsInAMap(player, point, arrayOfEvilPlayers);
+                    saveGame(player, point, arrayOfEvilPlayers);
                 }
 
                 if (player.itIsPossibleToMoveToTheNewPosition(newDirection, "floor")) {
@@ -104,8 +102,6 @@ public class MyWorld implements Serializable {
                     startNewRound(player, point);
                     updateEvilPlayerSpeed(arrayOfEvilPlayers);
                 }
-
-
             }
 
 
@@ -130,13 +126,14 @@ public class MyWorld implements Serializable {
 
     }
 
+    /* start newRound in the game, and this happens when the MainPlayer win the round. The new round
+    will be harder. For example, the evilPlayer will be faster and the points (flowers) will be more. */
     private static void startNewRound(MainPlayer player, Point point) {
-
         player.setPlayerToStartPosition();
-        MyWorld.world[MyWorld.doorPosition._x][MyWorld.doorPosition._y] = Tileset.LOCKED_DOOR;
-        MyWorld.round += 1;
+        world[doorPosition._x][doorPosition._y] = Tileset.LOCKED_DOOR;
+        round += 1;
         int x = 0;
-        while (MyWorld.round  > x) {
+        while (round  > x) {
             try {
                 point.addPoint(x);
                 x += 1;
@@ -146,6 +143,8 @@ public class MyWorld implements Serializable {
         }
     }
 
+    /* update evilPlayer speed to be faster, and this happens when the round increases.
+    Important note. The bigger the speed is, the less faster the evilPlayer is. */
     private static void updateEvilPlayerSpeed(ArrayList<EvilPlayer> arrayOfEvilPlayers) {
         for (int y = 0; y < arrayOfEvilPlayers.size(); y += 1) {
             EvilPlayer evilPlayer = arrayOfEvilPlayers.get(y);
@@ -153,26 +152,11 @@ public class MyWorld implements Serializable {
         }
     }
 
-    static void putAllTheObjectsInAMap(MainPlayer player, Point point,
-                                                         ArrayList<EvilPlayer> arrayOfEvilPlayers) {
-        Map<Object, String> mapOfTheWorld = new HashMap<Object, String>();
-        mapOfTheWorld.put(world, "world.txt");
-        mapOfTheWorld.put(player, "mainPlayer.txt");
-        mapOfTheWorld.put(point, "point.txt");
-        mapOfTheWorld.put(arrayOfEvilPlayers, "arrayOfEvilPlayers.txt");
-        mapOfTheWorld.put(hallWayPosition, "hallWayPosition.txt");
-        mapOfTheWorld.put(gameOver, "gameOver.txt");
-        mapOfTheWorld.put(queueEvil, "queueEvil.txt");
-        mapOfTheWorld.put(arrayOfPoints, "arrayOfPoints.txt");
-        mapOfTheWorld.put(round, "round.txt");
-        mapOfTheWorld.put(doorPosition, "doorPosition.txt");
-        saveGame(mapOfTheWorld);
-
-    }
-
-
     /* save the needed objects of the game in a map. */
-    private static void saveGame(Map<Object, String> mapOfTheWorld) {
+    private static void saveGame(MainPlayer player, Point point,
+                                 ArrayList<EvilPlayer> arrayOfEvilPlayers) {
+
+        Map<Object, String> mapOfTheWorld = putAllTheObjectsInAMap(player, point, arrayOfEvilPlayers);
         try {
             for (Map.Entry<Object, String> entry : mapOfTheWorld.entrySet()) {
                 FileOutputStream fosEntry = new FileOutputStream(entry.getValue());
@@ -186,30 +170,47 @@ public class MyWorld implements Serializable {
         }
     }
 
-    static void loadAllObjectsOfTheGame(InputDevice input) {
+    /* helper method for saveGame method. put All The Objects In A Map and then return the map. */
+    private static Map<Object, String> putAllTheObjectsInAMap(MainPlayer player, Point point,
+                                                              ArrayList<EvilPlayer> arrayOfEvilPlayers) {
+        Map<Object, String> mapOfTheWorld = new HashMap<Object, String>();
+        mapOfTheWorld.put(world, "world.txt");
+        mapOfTheWorld.put(player, "mainPlayer.txt");
+        mapOfTheWorld.put(point, "point.txt");
+        mapOfTheWorld.put(arrayOfEvilPlayers, "arrayOfEvilPlayers.txt");
+        mapOfTheWorld.put(gameOver, "gameOver.txt");
+        mapOfTheWorld.put(queueEvil, "queueEvil.txt");
+        mapOfTheWorld.put(arrayOfPoints, "arrayOfPoints.txt");
+        mapOfTheWorld.put(round, "round.txt");
+        mapOfTheWorld.put(doorPosition, "doorPosition.txt");
+        return mapOfTheWorld;
+
+    }
+
+    /* load all the objects of the game and then play the game as usual. */
+    static void loadGame(InputDevice input) {
         String[] arrayOfTheSavedFiles;
         arrayOfTheSavedFiles = new String[]{"world.txt", "mainPlayer.txt", "point.txt", "arrayOfEvilPlayers.txt",
                 "hallWayPosition.txt", "gameOver.txt", "queueEvil.txt", "arrayOfPoints.txt", "round.txt",
                 "doorPosition.txt"};
-        Object[] arrayOfObjects = loadGame(arrayOfTheSavedFiles);
+        Object[] arrayOfObjects = loadObjectsOfTheGameInAnArray(arrayOfTheSavedFiles);
         world = (TETile[][]) arrayOfObjects[0];
         MainPlayer player = (MainPlayer) arrayOfObjects[1];
         Point point = (Point) arrayOfObjects[2];
         ArrayList<EvilPlayer> arrayOfEvilPlayers = new ArrayList<EvilPlayer>();
         arrayOfEvilPlayers = (ArrayList<EvilPlayer>) arrayOfObjects[3];
-        hallWayPosition = (Position) arrayOfObjects[4];
-        gameOver = (boolean) arrayOfObjects[5];
-        queueEvil = (Queue<Map>) arrayOfObjects[6];
-        arrayOfPoints = (ArrayList<Position>) arrayOfObjects[7];
-        round = (int) arrayOfObjects[8];
-        doorPosition = (Position) arrayOfObjects[9];
+        gameOver = (boolean) arrayOfObjects[4];
+        queueEvil = (Queue<Map>) arrayOfObjects[5];
+        arrayOfPoints = (ArrayList<Position>) arrayOfObjects[6];
+        round = (int) arrayOfObjects[7];
+        doorPosition = (Position) arrayOfObjects[8];
         playGame(world, player, point, arrayOfEvilPlayers, input);
     }
 
 
-    /* load all the saved objects of the game. */
-    private static Object[] loadGame(String[] arrayOfTheSavedFiles)  {
-        Object[] arrayOfObjects = new Object[10];
+    /* An helper method for loadGame method. it loads all the saved objects of the game in an array and then return the array. */
+    private static Object[] loadObjectsOfTheGameInAnArray(String[] arrayOfTheSavedFiles)  {
+        Object[] arrayOfObjects = new Object[9];
         try {
             for(int i = 0; i < arrayOfTheSavedFiles.length; i += 1) {
                 FileInputStream fisItem = new FileInputStream(arrayOfTheSavedFiles[i]);
@@ -224,6 +225,7 @@ public class MyWorld implements Serializable {
         }
     }
 
+    /* draw to the user either the basic Ui if the argument passed to drawFrame was "Ui" or the argument String. */
     static void drawFrame(String s) {
         StdDraw.setCanvasSize(40 * 16, 40 * 16);
         Font font = new Font("Monaco", Font.BOLD, 30);
@@ -249,6 +251,9 @@ public class MyWorld implements Serializable {
         StdDraw.pause(1500);
     }
 
+    public static int getRound() {
+        return round;
+    }
 
     /* draw the whole world, I divide the drawing into 2 parts.*/
     private static TETile[][]  drawWorld(long seed) {
@@ -262,9 +267,9 @@ public class MyWorld implements Serializable {
             }
         }
 
-        upperPosition = new Position(x, y);
-        bottomPosition = new Position(x, y);
-        hallWayPosition = new Position(x - 1, y - 1);
+        Position upperPosition = new Position(x, y);
+        Position bottomPosition = new Position(x, y);
+        Position hallWayPosition = new Position(x - 1, y - 1);
         int i = RandomUtils.uniform(r, 3, 7);
         drawFirstPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
         return world;
@@ -275,7 +280,7 @@ public class MyWorld implements Serializable {
     into  3 parts. Upper wall, Bottom wall, Hallway. and I add evil player which moves horizontally in the
     game. */
     private static void drawFirstPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
-                                                Position hallwayPosition, int i, Random r) {
+                                                Position hallWayPosition, int i, Random r) {
 
         int j = 0;
         while (itIsOkToMoveHorizontally) {
@@ -283,11 +288,11 @@ public class MyWorld implements Serializable {
             drawUpperWallOfTheFirstPartOfTheWorld(world, upperPosition, j, i, randomNumber, r);
             if (itIsOkToMoveHorizontally) {
                 drawBottomWallOfTheFirstPartOfTheWorld(world, bottomPosition, j, i, randomNumber, r);
-                drawHallWayOfTheFirstPartOfTheWorld(world, hallwayPosition, j, i, randomNumber, r);
+                drawHallWayOfTheFirstPartOfTheWorld(world, hallWayPosition, j, i, randomNumber, r);
             }
             j += 1;
         }
-        addEvilPlayerToTheQueueEvil("horizontal");
+        addEvilPlayerToTheQueueEvil("horizontal", hallWayPosition);
         drawSecondPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
 
     }
@@ -372,7 +377,7 @@ public class MyWorld implements Serializable {
             (TETile[][] world, Position hallWayPosition, int j, int i) {
 
         drawBottomRectangle(world, hallWayPosition, i, i - 2, Tileset.FLOOR, "negative");
-        addPointsPositionToArrayOfPoints();
+        addPointsPositionToArrayOfPoints(hallWayPosition);
         drawLStartFromVerticalLine(world, hallWayPosition, i, i + 1, Tileset.FLOOR, "negative");
     }
 
@@ -380,7 +385,7 @@ public class MyWorld implements Serializable {
             (TETile[][] world, Position hallWayPosition, int j, int i) {
         drawBottomRectangle(world, hallWayPosition, (i * 2) - 2, i - 2, Tileset.FLOOR, "negative");
         Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y);
-        addPointsPositionToArrayOfPoints();
+        addPointsPositionToArrayOfPoints(hallWayPosition);
         drawLine(world, hallWayPosition, i + 2, Tileset.FLOOR, "horizontal", "negative");
     }
 
@@ -390,7 +395,7 @@ public class MyWorld implements Serializable {
         drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "negative");
         drawUpperRectangle(world, hallWayPosition, i + j, (i + j) - 2, Tileset.FLOOR, "negative");
         drawBottomRectangle(world, hallWayPosition, i + j, i + j - 2, Tileset.FLOOR, "positive");
-        addPointsPositionToArrayOfPoints();
+        addPointsPositionToArrayOfPoints(hallWayPosition);
         drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, i + j - 2, i + j, Tileset.FLOOR, "positive");
         drawLine(world, hallWayPosition, i + j + 1, Tileset.FLOOR, "horizontal", "negative");
     }
@@ -403,7 +408,7 @@ public class MyWorld implements Serializable {
         drawUpperRectangle(world, hallWayPosition, i + j - 1, i + j - 2, Tileset.FLOOR, "negative");
         drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, i + j - 2, 3, Tileset.FLOOR, "negative");
         drawBottomRectangle(world, hallWayPosition, i + j - 1, i + j + 3 - 2, Tileset.FLOOR, "negative");
-        addPointsPositionToArrayOfPoints();
+        addPointsPositionToArrayOfPoints(hallWayPosition);
         drawLStartFromHorizontalLine(world, hallWayPosition, i + j + 3 - 2, 2, Tileset.FLOOR, "negative");
         drawLine(world, hallWayPosition, (i * 2) + j - 1, Tileset.FLOOR, "horizontal", "negative");
     }
@@ -415,7 +420,7 @@ public class MyWorld implements Serializable {
         drawBottomRectangle(world, hallWayPosition, i + j + 4, i - 2, Tileset.FLOOR, "negative");
         drawLStartFromVerticalLine(world, hallWayPosition, i + j + 4, i, Tileset.FLOOR, "positive");
         drawBottomRectangle(world, hallWayPosition, i + j, i + j, Tileset.FLOOR, "positive");
-        addPointsPositionToArrayOfPoints();
+        addPointsPositionToArrayOfPoints(hallWayPosition);
         drawLStartFromHorizontalLine(world, hallWayPosition, (i + j + 1) + (i - 2), i + j + 4, Tileset.FLOOR,
                 "positive");
         drawLine(world, hallWayPosition, i * 3 + 2, Tileset.FLOOR, "horizontal", "negative");
@@ -428,7 +433,7 @@ public class MyWorld implements Serializable {
         drawUpperRectangle(world, hallWayPosition, i + j + 3, i - (i - 2), Tileset.FLOOR, "negative");
         drawLine(world, hallWayPosition, i + j + 4, Tileset.FLOOR, "vertical", "positive");
         drawUpperRectangle(world, hallWayPosition, i + j - 2, i * 2 - 1 - (i - 2), Tileset.FLOOR, "positive");
-        addPointsPositionToArrayOfPoints();
+        addPointsPositionToArrayOfPoints(hallWayPosition);
         if (i > 3) {
             drawLine(world, hallWayPosition, i * 2 - (i - 2), Tileset.FLOOR, "horizontal", "negative");
             drawUpperRectangle(world, hallWayPosition, i + j - 2, i - 2 - 1, Tileset.FLOOR, "negative");
@@ -444,10 +449,10 @@ public class MyWorld implements Serializable {
 
 
     /* draw second part of the world. it takes L shape and then moves vertically
-    until it cant move more and then the drawing is ended. I divide drawing the second part into 3 parts
+    until it can't move more and then the drawing is ended. I divide drawing the second part into 3 parts
     Upper wall, Bottom wall, and hallway. */
     private static void drawSecondPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
-                                                 Position hallwayPosition, int i, Random r) {
+                                                 Position hallWayPosition, int i, Random r) {
 
         int j = 0;
         i = RandomUtils.uniform(r, 3, 5 );
@@ -456,12 +461,12 @@ public class MyWorld implements Serializable {
             drawUpperWallOfTheSecondPartOfTheWorld(world, upperPosition, j, i, randomNumber);
             if (itIsOkToMoveVertically) {
                 drawBottomWallOfTheSecondPartOfTheWorld(world, bottomPosition, j, i, randomNumber);
-                drawHallWayOfTheSecondPartOfTheWorld(world, hallwayPosition, j, i, randomNumber);
+                drawHallWayOfTheSecondPartOfTheWorld(world, hallWayPosition, j, i, randomNumber);
             }
             j += 1;
         }
         drawLine(world, bottomPosition, 2, Tileset.WALL, "horizontal", "positive");
-        playerPosition = new Position(MyWorld.hallWayPosition._x, MyWorld.hallWayPosition._y - 1);
+        playerPosition = new Position(hallWayPosition._x, hallWayPosition._y - 1);
     }
 
     /* draw upper wall of the second part of the world. which moves toward up. */
@@ -520,8 +525,7 @@ public class MyWorld implements Serializable {
     }
 
     /* draw hallway of the second part of the world. which moves toward up. and add random room positions in arraylist
-    which will be replaced later as points (flowers). the number of points depending on the round. The higher the round,
-    the more the points. Also, add position which will be replaced by evil player in round 4. */
+    which will be replaced later as points (flowers). */
     private static void drawHallWayOfTheSecondPartOfTheWorld(TETile[][] world, Position hallWayPosition,
                                                       int j, int i, int randomNumber) {
         if (j == 0) {
@@ -548,9 +552,9 @@ public class MyWorld implements Serializable {
         while (hallWayPosition._x < 89) {
             drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "horizontal", "positive");
         }
-        addPointsPositionToArrayOfPoints();
+        addPointsPositionToArrayOfPoints(hallWayPosition);
         drawLStartFromHorizontalLine(world, hallWayPosition, 2, i + 1, Tileset.FLOOR, "negative");
-        addEvilPlayerToTheQueueEvil("vertical");
+        addEvilPlayerToTheQueueEvil("vertical", hallWayPosition);
     }
 
     private static void drawHallWayOfTheSecondPartOfTheWorldWhenRandomNumberEqual0(TETile[][] world, Position hallWayPosition,
@@ -559,7 +563,7 @@ public class MyWorld implements Serializable {
         drawUpperRectangle(world, hallWayPosition, i - 2, i, Tileset.FLOOR, "negative");
         drawLine(world, hallWayPosition, i, Tileset.FLOOR, "horizontal", "positive");
         drawUpperRectangle(world, hallWayPosition, i - 2, i, Tileset.FLOOR, "positive");
-        addPointsPositionToArrayOfPoints();
+        addPointsPositionToArrayOfPoints(hallWayPosition);
         drawLStartFromHorizontalLine(world, hallWayPosition, i, i - 1, Tileset.FLOOR, "positive");
         drawLine(world, hallWayPosition, i, Tileset.FLOOR, "vertical", "positive");
     }
@@ -569,7 +573,7 @@ public class MyWorld implements Serializable {
         drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "positive");
         drawLine(world, hallWayPosition, 3, Tileset.FLOOR, "horizontal", "positive");
         drawUpperRectangle(world, hallWayPosition, i, i, Tileset.FLOOR, "positive");
-        addPointsPositionToArrayOfPoints();
+        addPointsPositionToArrayOfPoints(hallWayPosition);
         drawLine(world, hallWayPosition, i + 2, Tileset.FLOOR, "horizontal", "negative");
         drawLine(world, hallWayPosition, i * 2 + 1, Tileset.FLOOR, "vertical", "positive");
     }
@@ -579,17 +583,17 @@ public class MyWorld implements Serializable {
         drawLine(world, hallWayPosition, 2, Tileset.FLOOR, "vertical", "positive");
         drawLine(world, hallWayPosition, 3, Tileset.FLOOR, "horizontal", "negative");
         drawUpperRectangle(world, hallWayPosition, i * 2 - 2, i, Tileset.FLOOR, "negative");
-        addPointsPositionToArrayOfPoints();
+        addPointsPositionToArrayOfPoints(hallWayPosition);
         drawLine(world, hallWayPosition, i + 2, Tileset.FLOOR, "horizontal", "positive");
         drawLine(world, hallWayPosition, i * 2 + 1, Tileset.FLOOR, "vertical", "positive");
     }
 
-    private static void addPointsPositionToArrayOfPoints() {
+    private static void addPointsPositionToArrayOfPoints(Position hallWayPosition) {
         Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y);
         arrayOfPoints.add(pointPosition);
     }
 
-    private static void addEvilPlayerToTheQueueEvil(String position) {
+    private static void addEvilPlayerToTheQueueEvil(String position, Position hallWayPosition) {
         Position evilPosition = new Position(hallWayPosition._x, hallWayPosition._y);
         Map<String, Position> map = new HashMap<String, Position>();
         map.put(position, evilPosition);

@@ -10,6 +10,7 @@ public class KeyBoardInput implements InputDevice{
     private String seed = "";
     private TERenderer ter = new TERenderer();
 
+    @Override
     /* draw the Ui and read input from the user. */
     public void startGame(String seed) {
         try {
@@ -21,6 +22,7 @@ public class KeyBoardInput implements InputDevice{
     }
 
     @Override
+    /* return thr character the user typed. */
     public char nextChar() {
         char keyTypedFromTheUser = StdDraw.nextKeyTyped();
         if (keyTypedFromTheUser == 'N') {
@@ -30,16 +32,14 @@ public class KeyBoardInput implements InputDevice{
     }
 
     @Override
+    /* return true if the user has typed a character, else false. */
     public boolean hasNextChar() {
-        if (StdDraw.hasNextKeyTyped()) {
-            return true;
-        } else {
-            return false;
-        }
+        return StdDraw.hasNextKeyTyped();
     }
 
 
     @Override
+    /* collect the seed form the user. */
     public void collectTheSeed(String input){
         seed += input;
         MyWorld.drawFrame(seed);
@@ -55,22 +55,26 @@ public class KeyBoardInput implements InputDevice{
     @Override
     public void generateTheWorldAfterLoading() {
         ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
-        MyWorld.loadAllObjectsOfTheGame(this);
+        MyWorld.loadGame(this);
     }
 
     @Override
+    /* return true if the gameOver is true, this means that the evilPlayer attacked the MainPlayer and killed him
+    else false. */
     public boolean theGameEnded() {
         return MyWorld.gameOver;
     }
 
     @Override
+    /* render the world means show the world. */
     public void renderTheWorld(TETile[][] world) {
         ter.renderFrame(world);
     }
 
     @Override
+    /* show to the user that the game is over and which round he has reached. */
     public void endTheGame() {
-        MyWorld.drawFrame("gameOver, you reached round" + MyWorld.round);
+        MyWorld.drawFrame("gameOver, you reached round" + MyWorld.getRound());
     }
 
 

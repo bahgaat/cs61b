@@ -13,7 +13,9 @@ class EvilPlayer extends Player {
     private String attackDirection;
     private int speed;
 
-
+    /* the queueEvil contains two maps one in each index. The map has its key a string(horizontal or vertical) and its values
+    a Position (the starter position of the evilPlayer). The evilPlayer moves either horizontally or vertically depending
+    on the key. */
     EvilPlayer() {
         Position position = null;
         Map map = MyWorld.queueEvil.poll();
@@ -68,7 +70,7 @@ class EvilPlayer extends Player {
         if (attackedPlayer(positiveDirection, negativeDirection)) {
             MyWorld.gameOver = true;
         } else {
-            moveRandomly(positiveDirection, negativeDirection);
+            moveUntilReachesTheWall(positiveDirection, negativeDirection);
         }
     }
 
@@ -85,10 +87,10 @@ class EvilPlayer extends Player {
         return attackedPlayer;
     }
 
-    /* move randomly either horizontally or vertically depending on the attackedDirection,
+    /* move either horizontally or vertically depending on the attackedDirection,
     move totalDistance toward positive direction, and when reaches the totalDistance (When facing wall) move
     to the negative direction and so on. */
-    private void moveRandomly(String positiveDirection, String negativeDirection) {
+    private void moveUntilReachesTheWall(String positiveDirection, String negativeDirection) {
         if (distanceMovedTowardPositiveDirection != totalDistance &&
                 itIsPossibleToMoveToTheNewPosition(positiveDirection, "floor")) {
 

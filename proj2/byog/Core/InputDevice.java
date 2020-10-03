@@ -2,7 +2,6 @@ package byog.Core;
 
 import byog.TileEngine.TETile;
 
-import java.util.ArrayList;
 
 public interface InputDevice {
 
