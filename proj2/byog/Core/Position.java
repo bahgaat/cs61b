@@ -15,12 +15,10 @@ import static com.sun.java.accessibility.util.AWTEventMonitor.addMouseMotionList
 public class Position implements Serializable {
     int _x;
     int _y;
-    TETile _type;
 
-    public Position(int x, int y, TETile type) {
+    public Position(int x, int y) {
         _x = x;
         _y = y;
-        _type = type;
     }
 
 }

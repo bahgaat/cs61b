@@ -8,7 +8,7 @@ class MainPlayer extends Player{
     private boolean winTheRound;
 
    MainPlayer() {
-        Position position = new Position(MyWorld.hallWayPosition._x, MyWorld.hallWayPosition._y - 1, Tileset.PLAYER);
+        Position position = MyWorld.playerPosition;
         positionX = position._x;
         positionY = position._y;
         MyWorld.world[positionX][positionY] = Tileset.PLAYER;
@@ -17,19 +17,19 @@ class MainPlayer extends Player{
     @Override
     void attack(){
         if (itIsPossibleToMoveToTheNewPosition(newDirection, "flower")) {
-            checkIfItIsPossibleToMoveToTheNewPositionAndMoveIfItIsOk(newDirection, Tileset.PLAYER, "flower");
+            move(Tileset.PLAYER, "flower");
             points += 1;
         }
     }
 
     boolean winTheRound() {
-        return itIsPossibleToMoveToTheNewPosition(newDirection, "locked door") && MyWorld.round == points;
+        return itIsPossibleToMoveToTheNewPosition(newDirection, "locked door")  && MyWorld.round == points;
     }
 
     /* start new round by putting the mainPlayer to the startingPosition. */
     void setPlayerToStartPosition() {
         MyWorld.world[positionX][positionY] = Tileset.FLOOR;
-        Position position = new Position(MyWorld.hallWayPosition._x, MyWorld.hallWayPosition._y - 1, Tileset.PLAYER);
+        Position position = new Position(MyWorld.hallWayPosition._x, MyWorld.hallWayPosition._y - 1);
         positionX = position._x;
         positionY = position._y;
         points = 0;

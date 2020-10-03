@@ -10,6 +10,16 @@ public class KeyBoardInput implements InputDevice{
     private String seed = "";
     private TERenderer ter = new TERenderer();
 
+    /* draw the Ui and read input from the user. */
+    public void startGame(String seed) {
+        try {
+            MyWorld.drawFrame("Ui");
+            MyWorld.readFromTheUserBeforeStartingTheGame(this, seed);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public char nextChar() {
         char keyTypedFromTheUser = StdDraw.nextKeyTyped();
@@ -49,8 +59,18 @@ public class KeyBoardInput implements InputDevice{
     }
 
     @Override
+    public boolean theGameEnded() {
+        return MyWorld.gameOver;
+    }
+
+    @Override
     public void renderTheWorld(TETile[][] world) {
         ter.renderFrame(world);
+    }
+
+    @Override
+    public void endTheGame() {
+        MyWorld.drawFrame("gameOver, you reached round" + MyWorld.round);
     }
 
 

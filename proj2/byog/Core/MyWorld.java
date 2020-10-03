@@ -81,37 +81,47 @@ public class MyWorld implements Serializable {
                                  InputDevice input) {
         while (!input.theGameEnded()) {
             input.renderTheWorld(world);
+            String newDirection = null;
             if (input.hasNextChar()) {
                 char nextChar = input.nextChar();
                 if (nextChar == 'W') {
-                    player.checkIfItIsPossibleToMoveToTheNewPositionAndMoveIfItIsOk("up", Tileset.PLAYER, "floor");
+                    newDirection = "up";
                 } else if (nextChar == 'A') {
-                    player.checkIfItIsPossibleToMoveToTheNewPositionAndMoveIfItIsOk("left", Tileset.PLAYER, "floor");
+                    newDirection = "left";
                 } else if (nextChar == 'S') {
-                    player.checkIfItIsPossibleToMoveToTheNewPositionAndMoveIfItIsOk("down", Tileset.PLAYER, "floor");
+                    newDirection = "down";
                 } else if (nextChar == 'D') {
-                    player.checkIfItIsPossibleToMoveToTheNewPositionAndMoveIfItIsOk("right", Tileset.PLAYER, "floor");
+                    newDirection = "right";
                 } else if (nextChar== 'Q') {
                     putAllTheObjectsInAMap(player, point, arrayOfEvilPlayers);
                 }
-                player.attack();
-                if (player.winTheRound()) {
+
+                if (player.itIsPossibleToMoveToTheNewPosition(newDirection, "floor")) {
+                    player.move(Tileset.PLAYER, "floor");
+                    player.attack();
+                } else if (player.winTheRound()) {
+                    player.move(Tileset.PLAYER, "locked door");
                     startNewRound(player, point);
                     updateEvilPlayerSpeed(arrayOfEvilPlayers);
                 }
+
+
             }
 
 
+            /* evilPlayer attacks every now and then and this depends on the round and the speed. The higher the round
+            and the less the number speed is,the more powerful and faster the evilPlayer is. the more he attacks. */
             for (int j = 0; j < arrayOfEvilPlayers.size(); j += 1) {
                 EvilPlayer evilPlayer = arrayOfEvilPlayers.get(j);
-                if (i % evilPlayer.speed == 0) {
+                if (i % evilPlayer.getSpeed() == 0) {
                     evilPlayer.attack();
                 }
             }
-
             i += 1;
 
-            if (round == 6) {
+            /* if round == 5 the game has to be much harder and this happens by adding another evilPlayer that attacks
+            vertically. */
+            if (round == 5) {
                 EvilPlayer evilPlayer = new EvilPlayer();
                 arrayOfEvilPlayers.add(evilPlayer);
             }
@@ -121,6 +131,7 @@ public class MyWorld implements Serializable {
     }
 
     private static void startNewRound(MainPlayer player, Point point) {
+
         player.setPlayerToStartPosition();
         MyWorld.world[MyWorld.doorPosition._x][MyWorld.doorPosition._y] = Tileset.LOCKED_DOOR;
         MyWorld.round += 1;

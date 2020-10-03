@@ -1,19 +1,17 @@
 package byog.Core;
 
-import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
-import java.io.Serializable;
-import java.util.LinkedList;
+
 import java.util.Map;
-import java.util.Queue;
+
 
 class EvilPlayer extends Player {
-    int distanceMoved;
-    int totalDistance;
-    String attackDirection;
-    Boolean movedTowardPositiveDirection = false;
-    int speed;
+    private int distanceMovedTowardPositiveDirection;
+    private int distanceMovedTowardNegativeDirection;
+    private int totalDistance;
+    private String attackDirection;
+    private int speed;
 
 
     EvilPlayer() {
@@ -26,57 +24,102 @@ class EvilPlayer extends Player {
         } else if (map.containsKey("vertical")) {
             position = (Position) map.get("vertical");
             attackDirection = "vertical";
-            speed = 10;
+            speed = 8;
         }
         positionX = position._x;
         positionY = position._y;
-        typeToAttack = "player";
-        distanceMoved = 0;
+        distanceMovedTowardPositiveDirection = 0;
+        distanceMovedTowardNegativeDirection = 0;
+        totalDistance = calculateTotalDistance();
         MyWorld.world[positionX][positionY] = Tileset.MOUNTAIN;
     }
 
+    /* calculate totalDistance that the evilPlayer has to take to move to the opposite direction. */
+    private int calculateTotalDistance() {
+        int addToX = 0;
+        int addToY = 0;
 
-    /* attack the mainPlayer depending on the attackDirection. */
-    void move() {
+        /* I start the totalDistance equal -1 because i don't want to calculate the current position. */
+        int totalDistance = - 1;
+        while (MyWorld.world[positionX + addToX][positionY + addToY].description().equals("floor")) {
+            if (attackDirection.equals("horizontal")) {
+                addToX += 1;
+            } else if (attackDirection.equals("vertical")) {
+                addToY += 1;
+            }
+            totalDistance += 1;
+        }
+        return totalDistance;
+    }
+
+     @Override
+    /* attack the mainPlayer depending on the attackDirection, Or move randomly . */
+    void attack() {
         String positiveDirection = "";
         String negativeDirection = "";
-        TETile directionPositive = null;
-        TETile directionNegative = null;
         if (attackDirection.equals("horizontal")) {
             positiveDirection = "right";
             negativeDirection = "left";
-            directionPositive = MyWorld.world[positionX + 1][positionY];
-            directionNegative = MyWorld.world[positionX - 1][positionY];
         } else if (attackDirection.equals("vertical")) {
             positiveDirection = "up";
             negativeDirection = "down";
-            directionPositive = MyWorld.world[positionX][positionY + 1];
-            directionNegative = MyWorld.world[positionX][positionY - 1];
         }
 
-        if (directionPositive.description().equals("player")) {
-            moveOneStep(positiveDirection, Tileset.MOUNTAIN);
+        if (attackedPlayer(positiveDirection, negativeDirection)) {
             MyWorld.gameOver = true;
-        } else if (directionNegative.description().equals("player")) {
-            moveOneStep(negativeDirection, Tileset.MOUNTAIN);
-            MyWorld.gameOver = true;
-        } else if (directionPositive.description().equals("floor") && distanceMoved == totalDistance) {
-            if (!movedTowardPositiveDirection) {
-                distanceMoved = 0;
-            }
-            distanceMoved += 1;
-            totalDistance = distanceMoved;
-            movedTowardPositiveDirection = true;
-            moveOneStep(positiveDirection, Tileset.MOUNTAIN);
-        } else if (movedTowardPositiveDirection) {
-            distanceMoved = 0;
-            movedTowardPositiveDirection = false;
-            moveOneStep(negativeDirection, Tileset.MOUNTAIN);
-            distanceMoved += 1;
         } else {
-            moveOneStep(negativeDirection, Tileset.MOUNTAIN);
-            distanceMoved += 1;
+            moveRandomly(positiveDirection, negativeDirection);
         }
+    }
+
+
+    private boolean attackedPlayer(String positiveDirection, String negativeDirection) {
+        boolean attackedPlayer = false;
+        if (itIsPossibleToMoveToTheNewPosition(positiveDirection, "player")) {
+            move(Tileset.MOUNTAIN, "player");
+            attackedPlayer = true;
+        } else if (itIsPossibleToMoveToTheNewPosition(negativeDirection, "player")) {
+            move(Tileset.MOUNTAIN, "player");
+            attackedPlayer = true;
+        }
+        return attackedPlayer;
+    }
+
+    /* move randomly either horizontally or vertically depending on the attackedDirection,
+    move totalDistance toward positive direction, and when reaches the totalDistance (When facing wall) move
+    to the negative direction and so on. */
+    private void moveRandomly(String positiveDirection, String negativeDirection) {
+        if (distanceMovedTowardPositiveDirection != totalDistance &&
+                itIsPossibleToMoveToTheNewPosition(positiveDirection, "floor")) {
+
+                move(Tileset.MOUNTAIN, "floor");
+                distanceMovedTowardPositiveDirection += 1;
+
+        } else if (distanceMovedTowardNegativeDirection != totalDistance &&
+                itIsPossibleToMoveToTheNewPosition(negativeDirection, "floor")) {
+
+                move(Tileset.MOUNTAIN, "floor");
+                distanceMovedTowardNegativeDirection += 1;
+
+        } else {
+            distanceMovedTowardPositiveDirection = 0;
+            distanceMovedTowardNegativeDirection = 0;
+
+        }
+
+    }
+
+    /* update the speed. the less the number the speed is. The faster the evilPlayer is.*/
+    void updateSpeed() {
+        if (speed < 2) {
+            speed = 2;
+        } else {
+            speed -= 1;
+        }
+    }
+
+    public int getSpeed() {
+        return speed;
     }
 }
 

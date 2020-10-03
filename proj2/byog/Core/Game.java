@@ -19,7 +19,7 @@ public class Game implements Serializable {
      */
     public void playWithKeyboard()  {
         InputDevice input = new KeyBoardInput();
-        MyWorld.startGame(input, "");
+        input.startGame("");
     }
     
 
@@ -38,7 +38,7 @@ public class Game implements Serializable {
 
     public static void playWithInputString(String inputSeed) {
         InputDevice input = new InputString(inputSeed);
-        MyWorld.startGame(input, inputSeed);
+        input.startGame(inputSeed);
     }
 
 }

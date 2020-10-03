@@ -14,14 +14,33 @@ public class InputString implements InputDevice{
         _input = input;
     }
 
+    public void startGame( String seed) {
+        try {
+            MyWorld.readFromTheUserBeforeStartingTheGame(this, seed);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public boolean hasNextChar() {
-        return true;
+        /*
+        int lengthOfInput = _input.length();
+        if (lengthOfInput >= endSlicingIndex) {
+            return true;
+        } else {
+            MyWorld.gameOver = true;
+            return false;
+        }
+
+         */
+        int lengthOfInput = _input.length();
+        return lengthOfInput >= endSlicingIndex;
     }
 
     @Override
     public char nextChar() {
-        String nextChar = seed.substring(startSlicingIndex, endSlicingIndex);
+        String nextChar = _input.substring(startSlicingIndex, endSlicingIndex);
         startSlicingIndex = endSlicingIndex;
         endSlicingIndex += 1;
         char convertStringIntoChar = nextChar.charAt(0);
@@ -45,8 +64,10 @@ public class InputString implements InputDevice{
     }
 
     @Override
-    public void renderTheWorld(TETile[][] world) {
-
+    public boolean theGameEnded() {
+        int lengthOfInput = _input.length();
+        return lengthOfInput < endSlicingIndex;
     }
+
 
 }
