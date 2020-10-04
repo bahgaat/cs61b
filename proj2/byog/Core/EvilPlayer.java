@@ -6,7 +6,7 @@ import byog.TileEngine.Tileset;
 import java.util.Map;
 
 
-class EvilPlayer extends Player {
+class EvilBasePlayer extends BasePlayer {
     private int distanceMovedTowardPositiveDirection;
     private int distanceMovedTowardNegativeDirection;
     private int totalDistance;
@@ -16,7 +16,7 @@ class EvilPlayer extends Player {
     /* the queueEvil contains two maps one in each index. The map has its key a string(horizontal or vertical) and its values
     a Position (the starter position of the evilPlayer). The evilPlayer moves either horizontally or vertically depending
     on the key. */
-    EvilPlayer() {
+    EvilBasePlayer() {
         Position position = null;
         Map map = MyWorld.queueEvil.poll();
         if (map.containsKey("horizontal")) {
@@ -76,12 +76,13 @@ class EvilPlayer extends Player {
 
 
     private boolean attackedPlayer(String positiveDirection, String negativeDirection) {
+        // TODO refactor
         boolean attackedPlayer = false;
         if (itIsPossibleToMoveToTheNewPosition(positiveDirection, "player")) {
-            move(Tileset.MOUNTAIN, "player");
+            move(Tileset.MOUNTAIN);
             attackedPlayer = true;
         } else if (itIsPossibleToMoveToTheNewPosition(negativeDirection, "player")) {
-            move(Tileset.MOUNTAIN, "player");
+            move(Tileset.MOUNTAIN);
             attackedPlayer = true;
         }
         return attackedPlayer;
@@ -94,12 +95,12 @@ class EvilPlayer extends Player {
         if (distanceMovedTowardPositiveDirection != totalDistance &&
                 itIsPossibleToMoveToTheNewPosition(positiveDirection, "floor")) {
 
-                move(Tileset.MOUNTAIN, "floor");
+                move(Tileset.MOUNTAIN);
                 distanceMovedTowardPositiveDirection += 1;
         } else if (distanceMovedTowardNegativeDirection != totalDistance &&
                 itIsPossibleToMoveToTheNewPosition(negativeDirection, "floor")) {
 
-                move(Tileset.MOUNTAIN, "floor");
+                move(Tileset.MOUNTAIN);
                 distanceMovedTowardNegativeDirection += 1;
         } else {
             distanceMovedTowardPositiveDirection = 0;

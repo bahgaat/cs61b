@@ -8,11 +8,11 @@ import java.io.Serializable;
 abstract class Player implements Serializable {
     protected int positionX;
     protected int positionY;
-    protected String typeToAttack;
     protected String newDirection;
 
     /* move the player to the newPosition depending on the newDirection. */
-    void move(TETile typeOfAttacker, String typeToCheck) {
+    void move(TETile typeOfAttacker) {
+        //TODO refactor
         int oldPositionX = positionX;
         int oldPositionY = positionY;
         int newPositionX = positionX;
@@ -31,6 +31,29 @@ abstract class Player implements Serializable {
             positionX -= 1;
             newPositionX = positionX;
         }
+
+        switch (newDirection) {
+            case "up": {
+                positionY += 1;
+                newPositionY = positionY;
+            }
+
+            case "down": {
+                positionY -= 1;
+                newPositionY = positionY;
+            }
+
+            case "right": {
+                positionX += 1;
+                newPositionX = positionX;
+            }
+
+            case "left": {
+                positionX -= 1;
+                newPositionX = positionX;
+            }
+        }
+
         helperMove(this, typeOfAttacker, oldPositionX, oldPositionY, newPositionX, newPositionY);
     }
 

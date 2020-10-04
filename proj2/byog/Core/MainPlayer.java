@@ -3,11 +3,11 @@ package byog.Core;
 import byog.TileEngine.Tileset;
 
 
-class MainPlayer extends Player{
+class MainBasePlayer extends BasePlayer {
     private int points;
     private boolean winTheRound;
 
-   MainPlayer() {
+   MainBasePlayer() {
         Position position = MyWorld.playerPosition;
         positionX = position._x;
         positionY = position._y;
@@ -16,8 +16,8 @@ class MainPlayer extends Player{
 
     @Override
     void attack(){
-        if (itIsPossibleToMoveToTheNewPosition(newDirection, "flower")) {
-            move(Tileset.PLAYER, "flower");
+        if (itIsPossibleToMoveToTheNewPosition(getNewDirection(), "flower")) {
+            move(Tileset.PLAYER);
             points += 1;
         }
     }

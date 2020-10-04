@@ -22,7 +22,7 @@ public class MyWorld implements Serializable {
     static boolean gameOver = false;
 
     /* A queue which stores in it the evil players. */
-    static Queue<Map> queueEvil = new LinkedList<Map>();
+    static Queue<Map> queueEvil = new LinkedList<>();
 
     /* arrayList which stores in it positions, which will be replaced by flowers(points) in the game. */
     static ArrayList<Position> arrayOfPoints = new ArrayList<Position>();
@@ -38,14 +38,15 @@ public class MyWorld implements Serializable {
 
     /* read input , and make decision based on the input. If the input is 'N', get seed from the input and draw the world
     with its  components and then play the game. if the input is 'L', load all the saved objects and play the game. */
-    static void readTheInputBeforeStartingTheGame(InputDevice input, String seed) {
+    static void readTheInputBeforeStartingTheGame(InputDevice input) {
+        //TODO Refactor
         if (input.hasNextChar()) {
-            char nextInputChar = input.nextChar();
+            char nextInputChar = input.getNextChar();
             if (nextInputChar == 'N') {
                 boolean collectedSeed = false;
                 while (!collectedSeed) {
                     if (input.hasNextChar()) {
-                        nextInputChar = input.nextChar();
+                        nextInputChar = input.getNextChar();
                         String convertCharToString = String.valueOf(nextInputChar);
                         if (nextInputChar == 'S') {
                             collectedSeed = true;
@@ -65,6 +66,9 @@ public class MyWorld implements Serializable {
 
     /* draw the world and add all the components. which are mainPlayer, evilPlayer, and one point. */
     static void drawAndAddAllTheComponentsOfTheWorld(long seed, InputDevice input) {
+        /**
+         * TODO Try to isolate @param MainPlayer and EvilPlayer and Point from World
+         */
         world = drawWorld(seed);
         MainPlayer player = new MainPlayer();
         Point point = new Point();
@@ -84,7 +88,7 @@ public class MyWorld implements Serializable {
             input.renderTheWorld(world);
             String newDirection = null;
             if (input.hasNextChar()) {
-                char nextChar = input.nextChar();
+                char nextChar = input.getNextChar();
                 if (nextChar == 'W') {
                     newDirection = "up";
                 } else if (nextChar == 'A') {
@@ -98,10 +102,10 @@ public class MyWorld implements Serializable {
                 }
 
                 if (player.itIsPossibleToMoveToTheNewPosition(newDirection, "floor")) {
-                    player.move(Tileset.PLAYER, "floor");
+                    player.move(Tileset.PLAYER);
                     player.attack();
                 } else if (player.winTheRound()) {
-                    player.move(Tileset.PLAYER, "locked door");
+                    player.move(Tileset.PLAYER);
                     startNewRound(player, point);
                     updateEvilPlayerSpeed(arrayOfEvilPlayers);
                 }
