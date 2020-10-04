@@ -18,8 +18,8 @@ public class Game implements Serializable {
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard()  {
-        InputDevice input = new KeyBoardInput();
-        input.startGame("");
+        InputDevice inputByKeyBoard = new KeyBoardInput();
+        inputByKeyBoard.startGame("");
     }
     
 
@@ -36,9 +36,9 @@ public class Game implements Serializable {
      * @return
      */
 
-    public static void playWithInputString(String inputSeed) {
-        InputDevice input = new InputString(inputSeed);
-        input.startGame(inputSeed);
+    public static void playWithInputString(String input) {
+        InputDevice inputByInputString = new InputString(input);
+        inputByInputString.startGame(input);
     }
 
 }
