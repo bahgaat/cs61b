@@ -96,13 +96,11 @@ class EvilPlayer extends Player {
 
                 move(Tileset.MOUNTAIN, "floor");
                 distanceMovedTowardPositiveDirection += 1;
-
         } else if (distanceMovedTowardNegativeDirection != totalDistance &&
                 itIsPossibleToMoveToTheNewPosition(negativeDirection, "floor")) {
 
                 move(Tileset.MOUNTAIN, "floor");
                 distanceMovedTowardNegativeDirection += 1;
-
         } else {
             distanceMovedTowardPositiveDirection = 0;
             distanceMovedTowardNegativeDirection = 0;

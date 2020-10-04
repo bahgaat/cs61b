@@ -35,7 +35,7 @@ public class MyWorld implements Serializable {
 
     /* read input , and make decision based on the input. If the input is 'N', get seed from the input and draw the world
     with its  components and then play the game. if the input is 'L', load all the saved objects and play the game. */
-    static void readFromTheUserBeforeStartingTheGame(InputDevice input, String seed) {
+    static void readTheInputBeforeStartingTheGame(InputDevice input, String seed) {
         if (input.hasNextChar()) {
             char nextInputChar = input.nextChar();
             if (nextInputChar == 'N') {
@@ -225,10 +225,10 @@ public class MyWorld implements Serializable {
         }
     }
 
-    /* draw to the user either the basic Ui if the argument passed to drawFrame was "Ui" or the argument String. */
+    /* draw to the user either the basic Ui if the argument passed to drawFrame was "Ui" or draw the passed argument. */
     static void drawFrame(String s) {
         StdDraw.setCanvasSize(40 * 16, 40 * 16);
-        Font font = new Font("Monaco", Font.BOLD, 30);
+        Font font = new Font("Monaco", Font.BOLD, 25);
         StdDraw.setFont(font);
         StdDraw.setXscale(0, 40);
         StdDraw.setYscale(0, 40);
@@ -245,10 +245,12 @@ public class MyWorld implements Serializable {
             StdDraw.text(20, 16, "Quit(Q)");
         } else {
             // draw the text
+            font = new Font("Monaco", Font.BOLD, 15);
+            StdDraw.setFont(font);
             StdDraw.text(20, 20, s);
         }
         StdDraw.show();
-        StdDraw.pause(1500);
+        StdDraw.pause(2500);
     }
 
     public static int getRound() {
@@ -270,7 +272,7 @@ public class MyWorld implements Serializable {
         Position upperPosition = new Position(x, y);
         Position bottomPosition = new Position(x, y);
         Position hallWayPosition = new Position(x - 1, y - 1);
-        int i = RandomUtils.uniform(r, 3, 7);
+        int i = RandomUtils.uniform(r, 3, 6);
         drawFirstPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
         return world;
     }
