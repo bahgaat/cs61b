@@ -15,7 +15,7 @@ public class KeyBoardInput implements InputDevice{
     public void startGame(String seed) {
         try {
             MyWorld.drawFrame("Ui");
-            MyWorld.readFromTheUserBeforeStartingTheGame(this, seed);
+            MyWorld.readTheInputBeforeStartingTheGame(this, seed);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,6 +47,7 @@ public class KeyBoardInput implements InputDevice{
 
     @Override
     public void generateTheWorld() {
+        MyWorld.drawFrame("To win the round you have to collect all flowers and go to locked door");
         ter.initialize(MyWorld.WIDTH, MyWorld.HEIGHT);
         long convertSeedFromStringToLong = Long.parseLong(seed);
         MyWorld.drawAndAddAllTheComponentsOfTheWorld(convertSeedFromStringToLong, this);

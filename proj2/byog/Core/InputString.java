@@ -18,7 +18,7 @@ public class InputString implements InputDevice{
     @Override
     public void startGame(String seed) {
         try {
-            MyWorld.readFromTheUserBeforeStartingTheGame(this, seed);
+            MyWorld.readTheInputBeforeStartingTheGame(this, seed);
         } catch (Exception e) {
             e.printStackTrace();
         }
