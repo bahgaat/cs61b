@@ -1,9 +1,7 @@
 package byog.Core;
 
-import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
-import edu.princeton.cs.introcs.In;
 import edu.princeton.cs.introcs.StdDraw;
 import java.awt.*;
 import java.io.*;
@@ -22,8 +20,13 @@ public class MyWorld implements Serializable {
     static final int HEIGHT = 100;
     static TETile[][] world = new TETile[WIDTH][HEIGHT];
     static boolean gameOver = false;
+
+    /* A queue which stores in it the evil players. */
     static Queue<Map> queueEvil = new LinkedList<Map>();
+
+    /* arrayList which stores in it positions, which will be replaced by flowers(points) in the game. */
     static ArrayList<Position> arrayOfPoints = new ArrayList<Position>();
+
     static Position playerPosition;
     private static int i = 0;
     private static boolean itIsOkToMoveHorizontally = true;
