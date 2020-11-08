@@ -29,7 +29,7 @@ public class Percolation {
         Map<Integer, String> mapParentToState;
         for (int row = 0; row < N; row += 1) {
             for (int col = 0; col < N; col += 1) {
-                position = row + "" + col;
+                position = row + "row" + col + "col";
                 mapParentToState = new HashMap<>();
                 mapParentToState.put(i, closed);
                 mapPositionToMap.put(position, mapParentToState);
@@ -49,10 +49,10 @@ public class Percolation {
         int newRow = row;
         int newCol = col;
         if (!isOpen(row, col)) {
-            mapParentToState = mapPositionToMap.get(oldRow + "" + oldCol);
+            mapParentToState = mapPositionToMap.get(oldRow + "row" + oldCol + "col");
             for (Map.Entry<Integer, String> set : mapParentToState.entrySet()) {
                 keyOfTheMainPosition = set.getKey();
-                mapParentToState.replace(set.getKey(), opened);
+                mapParentToState.replace(keyOfTheMainPosition, opened);
             }
 
             int i = 0;
@@ -67,17 +67,19 @@ public class Percolation {
                     newCol -= 1;
                 }
 
-                mapParentToState = mapPositionToMap.get(newRow + "" + newCol);
+                mapParentToState = mapPositionToMap.get(newRow + "row" + newCol + "col");
                 for (Map.Entry<Integer, String> set : mapParentToState.entrySet()) {
                     String state = set.getValue();
                     if (state.equals(opened)) {
-                        weightedQuickUnionUF.union(set.getKey(), keyOfTheMainPosition);
+                        weightedQuickUnionUF.union(keyOfTheMainPosition, set.getKey());
                     }
                 }
                 newRow = oldRow;
                 newCol = oldCol;
                 i += 1;
             }
+
+
         }
     }
 
@@ -85,7 +87,7 @@ public class Percolation {
 
     public boolean isOpen(int row, int col) {
         // is the site (row, col) open?
-        Map<Integer, String>  mapParentToState = mapPositionToMap.get(row + "" + col);
+        Map<Integer, String>  mapParentToState = mapPositionToMap.get(row + "row" + col + "col");
         String state = null;
         for (Map.Entry<Integer, String> set : mapParentToState.entrySet()) {
             state = set.getValue();
@@ -98,14 +100,14 @@ public class Percolation {
         //TODO if this row and col is connected with any above number.eg 1, 2,3 ,4 return true, else false.
         int mainParent = 0;
         String state = null;
-        Map<Integer, String>  mapMainParentToState = mapPositionToMap.get(row + "" + col);
+        Map<Integer, String>  mapMainParentToState = mapPositionToMap.get(row + "row" + col + "col");
         for (Map.Entry<Integer, String> set : mapMainParentToState.entrySet()) {
             mainParent = set.getKey();
             state = set.getValue();
         }
 
         for (int i = 0; i < N; i += 1) {
-            if (weightedQuickUnionUF.connected(mainParent, i) && mainParent != i ||
+            if (weightedQuickUnionUF.connected(i, mainParent) && mainParent != i ||
             mainParent == i && state.equals(opened)) {
                 return true;
             }
@@ -127,12 +129,12 @@ public class Percolation {
         int aboveParent = 0;
         int belowParent = 0;
         for (int i = 0; i < N; i += 1) {
-            mapAboveParentToState = mapPositionToMap.get(aboveRow + "" + i);
+            mapAboveParentToState = mapPositionToMap.get(aboveRow + "row" + i + "col");
             for (Map.Entry<Integer, String> set : mapAboveParentToState.entrySet()) {
                 aboveParent = set.getKey();
             }
             for (int j = 0; j < N; j += 1) {
-                mapBelowParentToState = mapPositionToMap.get(belowRow + "" + j);
+                mapBelowParentToState = mapPositionToMap.get(belowRow + "row" + j + "col");
                 for (Map.Entry<Integer, String> set : mapBelowParentToState.entrySet()) {
                     belowParent = set.getKey();
                 }
