@@ -39,10 +39,13 @@ public class Percolation {
             for (int col = 0; col < N; col += 1) {
                 position = row + "row" + col + "col";
                 mapParentToState = new HashMap<>();
-                if (row == 0) {
+                if (N == 1) {
+                    weightedQuickUnionUF.union(0, i);
+                    mapParentToState.put(i, belowClosed);
+                } else if (row == 0) {
                     weightedQuickUnionUF.union(0, i);
                     mapParentToState.put(i, closed);
-                } else if (row == N * N - 1) {
+                } else if (row == N - 1) {
                     mapParentToState.put(i, belowClosed);
                 } else {
                     mapParentToState.put(i, closed);
