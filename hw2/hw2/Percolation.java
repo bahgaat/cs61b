@@ -1,5 +1,6 @@
 package hw2;
 
+import edu.princeton.cs.algs4.QuickFindUF;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -14,10 +15,13 @@ public class Percolation {
     /* all methods must take constant time but the constructor should be N ^ 2. */
     private final String closed = "closed";
     private final String opened = "opened";
+    private final String belowClosed = "belowClosed";
+    private final String belowOpened = "belowOpened";
     private WeightedQuickUnionUF weightedQuickUnionUF;
     private Map<String, Map<Integer, String>> mapPositionToMap = new HashMap<String, Map<Integer, String>>();
     private int N;
     private int openStates;
+    private boolean percolates = false;
 
 
     //TODO any time you open, Connect with all neighbbors.
@@ -37,10 +41,12 @@ public class Percolation {
                 mapParentToState = new HashMap<>();
                 if (row == 0) {
                     weightedQuickUnionUF.union(0, i);
-                } else if (row == N - 1) {
-                    weightedQuickUnionUF.union(N * N - 1, i);
+                    mapParentToState.put(i, closed);
+                } else if (row == N * N - 1) {
+                    mapParentToState.put(i, belowClosed);
+                } else {
+                    mapParentToState.put(i, closed);
                 }
-                mapParentToState.put(i, closed);
                 mapPositionToMap.put(position, mapParentToState);
                 i += 1;
             }
@@ -63,7 +69,11 @@ public class Percolation {
             mapParentToState = mapPositionToMap.get(oldRow + "row" + oldCol + "col");
             for (Map.Entry<Integer, String> set : mapParentToState.entrySet()) {
                 keyOfTheMainPosition = set.getKey();
-                mapParentToState.replace(keyOfTheMainPosition, opened);
+                if (set.getValue().equals(belowClosed)) {
+                    mapParentToState.replace(keyOfTheMainPosition, belowOpened);
+                } else {
+                    mapParentToState.replace(keyOfTheMainPosition, opened);
+                }
             }
 
             /* connect it with its neighbors. */
@@ -82,7 +92,7 @@ public class Percolation {
                 mapParentToState = mapPositionToMap.get(newRow + "row" + newCol + "col");
                 for (Map.Entry<Integer, String> set : mapParentToState.entrySet()) {
                     String state = set.getValue();
-                    if (state.equals(opened)) {
+                    if (state.equals(opened) || state.equals(belowOpened)) {
                         weightedQuickUnionUF.union(keyOfTheMainPosition, set.getKey());
                     }
                 }
@@ -103,7 +113,7 @@ public class Percolation {
         for (Map.Entry<Integer, String> set : mapParentToState.entrySet()) {
             state = set.getValue();
         }
-        return state.equals(opened);
+        return state.equals(opened) || state.equals(belowOpened);
     }
 
     public boolean isFull(int row, int col) {
@@ -117,7 +127,12 @@ public class Percolation {
             mainParent = set.getKey();
             state = set.getValue();
         }
-        boolean isFull = weightedQuickUnionUF.connected(mainParent, 0) &&  (!state.equals(closed));
+
+        boolean isOpened = state.equals(opened) || state.equals(belowOpened);
+        boolean isFull = weightedQuickUnionUF.connected(mainParent, 0) && isOpened;
+        if (state.equals(belowOpened) && isFull) {
+            percolates = true;
+        }
         return isFull;
 
     }
@@ -129,7 +144,7 @@ public class Percolation {
 
     public boolean percolates() {
         // does the system percolate?
-        return weightedQuickUnionUF.connected(0, N * N - 1);
+        return percolates;
     }
 
     private void checkExceptions(int row, int column) {
