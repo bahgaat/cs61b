@@ -8,11 +8,14 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.*;
 
 public class Percolation {
     /* all methods must take constant time but the constructor should be N ^ 2. */
-    private final String closed = "closed";
-    private final String opened = "opened";
+    private final String emptyClosed = "emptyClosed";
+    private final String emptyOpened = "emptyOpened";
+    private final String fullClosed = "fullClosed";
+    private final String fullOpened = "fullOpened";
     private WeightedQuickUnionUF weightedQuickUnionUF;
     private Map<String, Map<Integer, String>> mapPositionToMap = new HashMap<String, Map<Integer, String>>();
     private int N;
@@ -22,6 +25,9 @@ public class Percolation {
     //TODO any time you open, Connect with all neighbbors.
     public Percolation(int N) {
         // create N-by-N grid, with all sites initially blocked
+        if (N <= 0) {
+            throw new IllegalArgumentException("N must be more than 0");
+        }
         this.N = N;
         weightedQuickUnionUF = new WeightedQuickUnionUF(N * N);
         int i = 0;
@@ -31,7 +37,15 @@ public class Percolation {
             for (int col = 0; col < N; col += 1) {
                 position = row + "row" + col + "col";
                 mapParentToState = new HashMap<>();
-                mapParentToState.put(i, closed);
+                if (row == 0) {
+                    weightedQuickUnionUF.union(0, i);
+                    mapParentToState.put(i, fullClosed);
+                } else if (row == N - 1) {
+                    weightedQuickUnionUF.union(N * N - 1, i);
+                    mapParentToState.put(i, emptyClosed);
+                } else {
+                    mapParentToState.put(i, emptyClosed);
+                }
                 mapPositionToMap.put(position, mapParentToState);
                 i += 1;
             }
@@ -41,18 +55,25 @@ public class Percolation {
 
     public void open(int row, int col) {
         // open the site (row, col) if it is not open already
+        checkExceptions(row, col);
         openStates += 1;
         Map<Integer, String> mapParentToState;
+        Map<Integer, String> mapParentToStateNeighbor;
         int keyOfTheMainPosition = 0;
         int oldRow = row;
         int oldCol = col;
         int newRow = row;
         int newCol = col;
+        boolean isConnectedToFull = false;
         if (!isOpen(row, col)) {
             mapParentToState = mapPositionToMap.get(oldRow + "row" + oldCol + "col");
             for (Map.Entry<Integer, String> set : mapParentToState.entrySet()) {
                 keyOfTheMainPosition = set.getKey();
-                mapParentToState.replace(keyOfTheMainPosition, opened);
+                if (set.getValue().equals(emptyClosed)) {
+                    mapParentToState.replace(keyOfTheMainPosition, emptyOpened);
+                } else if (set.getValue().equals(fullClosed)) {
+                    mapParentToState.replace(keyOfTheMainPosition, fullOpened);
+                }
             }
 
             int i = 0;
@@ -67,19 +88,23 @@ public class Percolation {
                     newCol -= 1;
                 }
 
-                mapParentToState = mapPositionToMap.get(newRow + "row" + newCol + "col");
-                for (Map.Entry<Integer, String> set : mapParentToState.entrySet()) {
+                mapParentToStateNeighbor = mapPositionToMap.get(newRow + "row" + newCol + "col");
+                for (Map.Entry<Integer, String> set : mapParentToStateNeighbor.entrySet()) {
                     String state = set.getValue();
-                    if (state.equals(opened)) {
+                    if (state.equals(emptyOpened)) {
                         weightedQuickUnionUF.union(keyOfTheMainPosition, set.getKey());
+                    } else if (state.equals(fullOpened)) {
+                        weightedQuickUnionUF.union(keyOfTheMainPosition, set.getKey());
+                        isConnectedToFull = true;
                     }
                 }
                 newRow = oldRow;
                 newCol = oldCol;
                 i += 1;
             }
-
-
+            if (isConnectedToFull) {
+                mapParentToState.replace(keyOfTheMainPosition, fullOpened);
+            }
         }
     }
 
@@ -87,17 +112,19 @@ public class Percolation {
 
     public boolean isOpen(int row, int col) {
         // is the site (row, col) open?
+        checkExceptions(row, col);
         Map<Integer, String>  mapParentToState = mapPositionToMap.get(row + "row" + col + "col");
         String state = null;
         for (Map.Entry<Integer, String> set : mapParentToState.entrySet()) {
             state = set.getValue();
         }
-        return state == opened;
+        return state.equals(emptyOpened) || state.equals(fullOpened);
     }
 
     public boolean isFull(int row, int col) {
         // is the site (row, col) full?
         //TODO if this row and col is connected with any above number.eg 1, 2,3 ,4 return true, else false.
+        checkExceptions(row, col);
         int mainParent = 0;
         String state = null;
         Map<Integer, String>  mapMainParentToState = mapPositionToMap.get(row + "row" + col + "col");
@@ -105,14 +132,9 @@ public class Percolation {
             mainParent = set.getKey();
             state = set.getValue();
         }
+        boolean isFull = weightedQuickUnionUF.connected(mainParent, 0) &&  (!state.equals(fullClosed));
+        return isFull;
 
-        for (int i = 0; i < N; i += 1) {
-            if (weightedQuickUnionUF.connected(i, mainParent) && mainParent != i ||
-            mainParent == i && state.equals(opened)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public int numberOfOpenSites() {
@@ -122,28 +144,15 @@ public class Percolation {
 
     public boolean percolates() {
         // does the system percolate?
-        int aboveRow = 0;
-        int belowRow = N - 1;
-        Map<Integer, String>  mapAboveParentToState;
-        Map<Integer, String>  mapBelowParentToState;
-        int aboveParent = 0;
-        int belowParent = 0;
-        for (int i = 0; i < N; i += 1) {
-            mapAboveParentToState = mapPositionToMap.get(aboveRow + "row" + i + "col");
-            for (Map.Entry<Integer, String> set : mapAboveParentToState.entrySet()) {
-                aboveParent = set.getKey();
-            }
-            for (int j = 0; j < N; j += 1) {
-                mapBelowParentToState = mapPositionToMap.get(belowRow + "row" + j + "col");
-                for (Map.Entry<Integer, String> set : mapBelowParentToState.entrySet()) {
-                    belowParent = set.getKey();
-                }
-                if (weightedQuickUnionUF.connected(aboveParent, belowParent)) {
-                    return true;
-                }
-            }
+        return weightedQuickUnionUF.connected(0, N * N - 1);
+    }
+
+    private void checkExceptions(int row, int column) {
+        if (row < 0 || row > N - 1) {
+            throw new IndexOutOfBoundsException("row must be in the range");
+        } else if (column < 0 || column > N - 1) {
+            throw new IndexOutOfBoundsException("column must be in the range");
         }
-        return false;
     }
 
    @Test
