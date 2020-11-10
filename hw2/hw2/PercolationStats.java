@@ -64,4 +64,6 @@ public class PercolationStats {
         return confidenceHigh;
     }
 
+
+
 }
