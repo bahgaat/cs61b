@@ -103,6 +103,7 @@ public class Percolation {
                 newCol = oldCol;
                 i += 1;
             }
+            isFull(oldRow, oldCol);
         }
     }
 
