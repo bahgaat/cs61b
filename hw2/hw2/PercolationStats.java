@@ -5,8 +5,8 @@ import edu.princeton.cs.introcs.StdStats;
 
 
 public class PercolationStats {
-    private double arrayOfThresholds[];
     private int T;
+    private double arrayOfThresholds[];
 
 
     // perform T independent experiments on an N-by-N grid
@@ -35,6 +35,7 @@ public class PercolationStats {
             }
             percolationThreshold = openSites / N * N;
             arrayOfThresholds[arrayIndex] = percolationThreshold;
+            arrayIndex += 1;
             openSites = 0;
             T -= 1;
         }
