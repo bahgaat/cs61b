@@ -2,6 +2,7 @@ package hw2;
 
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.introcs.StdStats;
+import org.junit.Test;
 
 
 public class PercolationStats {
@@ -27,11 +28,14 @@ public class PercolationStats {
         Percolation percolation = pf.make(N);
         int arrayIndex = 0;
         while (T > 0) {
-            while(!percolation.percolates()) {
-                randomRow = StdRandom.uniform(N * N - 1);
-                randomColumn = StdRandom.uniform(N * N - 1);
-                percolation.open(randomRow, randomColumn);
-                openSites += 1;
+            while(!percolation.percolates() && openSites <= N * N) {
+                randomRow = StdRandom.uniform( N - 1);
+                randomColumn = StdRandom.uniform( N - 1);
+                if (!percolation.isOpen(randomRow, randomColumn)) {
+                    percolation.open(randomRow, randomColumn);
+                    openSites += 1;
+                }
+
             }
             percolationThreshold = openSites / N * N;
             arrayOfThresholds[arrayIndex] = percolationThreshold;
@@ -63,6 +67,12 @@ public class PercolationStats {
     public double confidenceHigh() {
         double confidenceHigh = mean() + 1.96 * Math.sqrt(stddev()) / Math.sqrt(T);
         return confidenceHigh;
+    }
+
+    @Test
+    public static void main(String[] args) {
+        PercolationFactory percolationFactory = new PercolationFactory();
+        PercolationStats percolationStats = new PercolationStats(5, 5, percolationFactory);
     }
 
 
