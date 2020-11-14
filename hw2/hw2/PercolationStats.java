@@ -35,6 +35,9 @@ public class PercolationStats {
                     percolation.open(randomRow, randomColumn);
                     openSites += 1;
                 }
+                if (openSites == N * N) {
+                    break;
+                }
 
             }
             percolationThreshold = openSites / N * N;
