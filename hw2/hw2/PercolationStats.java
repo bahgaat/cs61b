@@ -25,10 +25,11 @@ public class PercolationStats {
         int randomColumn;
         int openSites = 0;
         float percolationThreshold;
-        Percolation percolation = pf.make(N);
+        Percolation percolation;
         int arrayIndex = 0;
         int t = T;
         while (t > 0) {
+            percolation = pf.make(N);
             while(!percolation.percolates()) {
                 randomRow = StdRandom.uniform( N );
                 randomColumn = StdRandom.uniform( N );
