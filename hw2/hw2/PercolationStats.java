@@ -28,7 +28,7 @@ public class PercolationStats {
         Percolation percolation = pf.make(N);
         int arrayIndex = 0;
         while (T > 0) {
-            while(!percolation.percolates() && openSites <= N * N) {
+            while(!percolation.percolates()) {
                 randomRow = StdRandom.uniform( N - 1);
                 randomColumn = StdRandom.uniform( N - 1);
                 if (!percolation.isOpen(randomRow, randomColumn)) {
@@ -68,12 +68,14 @@ public class PercolationStats {
         double confidenceHigh = mean() + 1.96 * Math.sqrt(stddev()) / Math.sqrt(T);
         return confidenceHigh;
     }
-
+    /*
     @Test
     public static void main(String[] args) {
         PercolationFactory percolationFactory = new PercolationFactory();
         PercolationStats percolationStats = new PercolationStats(5, 5, percolationFactory);
     }
+
+     */
 
 
 
