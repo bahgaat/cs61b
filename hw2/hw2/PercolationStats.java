@@ -21,10 +21,11 @@ public class PercolationStats {
     }
 
     private void performExperiment(int N, PercolationFactory pf) {
+        double total = N * N;
         int randomRow;
         int randomColumn;
-        int openSites = 0;
-        float percolationThreshold;
+        double openSites = 0;
+        double percolationThreshold;
         Percolation percolation;
         int arrayIndex = 0;
         int t = T;
@@ -38,7 +39,7 @@ public class PercolationStats {
                     openSites += 1;
                 }
             }
-            percolationThreshold = openSites / N * N;
+            percolationThreshold = openSites / total;
             arrayOfThresholds[arrayIndex] = percolationThreshold;
             arrayIndex += 1;
             openSites = 0;
@@ -74,6 +75,8 @@ public class PercolationStats {
     public static void main(String[] args) {
         PercolationFactory percolationFactory = new PercolationFactory();
         PercolationStats percolationStats = new PercolationStats(3, 3, percolationFactory);
+        Double mean = percolationStats.mean();
+        Double dev = percolationStats.stddev();
     }
 
 
