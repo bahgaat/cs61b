@@ -27,24 +27,21 @@ public class PercolationStats {
         float percolationThreshold;
         Percolation percolation = pf.make(N);
         int arrayIndex = 0;
-        while (T > 0) {
+        int t = T;
+        while (t > 0) {
             while(!percolation.percolates()) {
-                randomRow = StdRandom.uniform( N - 1);
-                randomColumn = StdRandom.uniform( N - 1);
+                randomRow = StdRandom.uniform( N );
+                randomColumn = StdRandom.uniform( N );
                 if (!percolation.isOpen(randomRow, randomColumn)) {
                     percolation.open(randomRow, randomColumn);
                     openSites += 1;
                 }
-                if (openSites == N * N) {
-                    break;
-                }
-
             }
             percolationThreshold = openSites / N * N;
             arrayOfThresholds[arrayIndex] = percolationThreshold;
             arrayIndex += 1;
             openSites = 0;
-            T -= 1;
+            t -= 1;
         }
     }
 
@@ -71,14 +68,14 @@ public class PercolationStats {
         double confidenceHigh = mean() + 1.96 * Math.sqrt(stddev()) / Math.sqrt(T);
         return confidenceHigh;
     }
-    /*
+
     @Test
     public static void main(String[] args) {
         PercolationFactory percolationFactory = new PercolationFactory();
-        PercolationStats percolationStats = new PercolationStats(5, 5, percolationFactory);
+        PercolationStats percolationStats = new PercolationStats(3, 3, percolationFactory);
     }
 
-     */
+
 
 
 
