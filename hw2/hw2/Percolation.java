@@ -10,15 +10,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+
 public class Percolation {
     /* all methods must take constant time but the constructor should be N ^ 2. */
     private final int closed = 0;
     private final int opened = 1;
     private WeightedQuickUnionUF weightedQuickUnionUF;
     private WeightedQuickUnionUF weightedQuickUnionUF2;
-    private Map<String, Integer> mapPositionToMap = new HashMap<>(100000);
     private int N;
     private int openStates;
+    private Map<String, Integer> mapPositionToMap = new HashMap<>(N * N);
     private boolean percolates = false;
 
 
