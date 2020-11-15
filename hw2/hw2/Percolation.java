@@ -8,7 +8,6 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 
 public class Percolation {
@@ -17,7 +16,7 @@ public class Percolation {
     private final int opened = 1;
     private WeightedQuickUnionUF weightedQuickUnionUF;
     private WeightedQuickUnionUF weightedQuickUnionUF2;
-    private Map<String, Integer> mapPositionToMap = new TreeMap<>();
+    private Map<String, Integer> mapPositionToMap = new HashMap<>(100000);
     private int N;
     private int openStates;
     private boolean percolates = false;
