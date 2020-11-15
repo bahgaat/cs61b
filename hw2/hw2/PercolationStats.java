@@ -61,16 +61,16 @@ public class PercolationStats {
 
     // low endpoint of 95% confidence interval
     public double confidenceLow() {
-        double confidenceLow = mean() - 1.96 * Math.sqrt(stddev()) / Math.sqrt(T);
+        double confidenceLow = mean() - 1.96 * stddev() / Math.sqrt(T);
         return confidenceLow;
     }
 
     // high endpoint of 95% confidence interval
     public double confidenceHigh() {
-        double confidenceHigh = mean() + 1.96 * Math.sqrt(stddev()) / Math.sqrt(T);
+        double confidenceHigh = mean() + 1.96 * stddev() / Math.sqrt(T);
         return confidenceHigh;
     }
-
+    /*
     @Test
     public static void main(String[] args) {
         PercolationFactory percolationFactory = new PercolationFactory();
@@ -78,6 +78,8 @@ public class PercolationStats {
         Double mean = percolationStats.mean();
         Double dev = percolationStats.stddev();
     }
+
+     */
 
 
 
