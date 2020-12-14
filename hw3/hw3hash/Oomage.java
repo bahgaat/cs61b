@@ -1,4 +1,4 @@
-package hw3.hash;
+package hw3hash;
 
 public interface Oomage {
     void draw(double x, double y, double scalingFactor);
