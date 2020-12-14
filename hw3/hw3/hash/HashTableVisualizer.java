@@ -1,4 +1,4 @@
-package hw3hash;
+package hw3.hash;
 
 import java.util.ArrayList;
 import java.util.List;

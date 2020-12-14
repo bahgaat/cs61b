@@ -1,4 +1,4 @@
-package hw3hash;
+package hw3.hash;
 
 public class Hint {
     public static void main(String[] args) {
