@@ -104,7 +104,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     private void swim(int index) {
         // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
-        /*validateSinkSwimArg(index);*/
+        validateSinkSwimArg(index);
         int parentIndex = parentIndex(index);
         if (index == 1 || contents[index].myPriority > contents[parentIndex].myPriority) {
             return;
@@ -159,19 +159,6 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         }
     }
 
-    /*
-    private int smallest(int rightIndex, int leftIndex) {
-        Node rightChild = contents[rightIndex];
-        Node leftChild = contents[leftIndex];
-        double min = Math.min(rightChild.myPriority, leftChild.myPriority);
-        if (min == rightChild.myPriority) {
-            return rightIndex;
-        } else {
-            return leftIndex;
-        }
-    }
-
-     */
 
     /**
      * Inserts an item with the given priority value. This is enqueue, or offer.
@@ -210,7 +197,6 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public T removeMin() {
-
         T item = contents[1].myItem;
         swap(1, size);
         contents[size] = null;
@@ -249,18 +235,12 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         int rightIndex = rightIndex(rootIndex);
         int leftIndex = leftIndex(rootIndex);
         if (root.myItem.equals(item)) {
-            root.myPriority = priority;
-            int parentIndex = parentIndex(rootIndex);
-            if (contents[parentIndex].myPriority > contents[rootIndex].myPriority) {
-                swim(rootIndex);
-            } else {
-                sink(rootIndex);
-            }
+            helper(root, rootIndex, priority);
         } else if (leftIndex >= contents.length) {
             return;
         } else if (contents[leftIndex] == null) {
             return;
-        } else if (rightIndex > contents.length) {
+        } else if (rightIndex >= contents.length) {
             Node leftRoot = contents[leftIndex];
             helperChangePriority(leftRoot, leftIndex, item, priority);
         } else if (contents[rightIndex] == null) {
@@ -269,6 +249,18 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         } else {
             helperChangePriority(contents[rightIndex], rightIndex, item, priority);
             helperChangePriority(contents[leftIndex], leftIndex, item, priority);
+        }
+    }
+
+    private void helper(Node root, int rootIndex, double priority) {
+        root.myPriority = priority;
+        int parentIndex = parentIndex(rootIndex);
+        if (parentIndex >= 1) {
+            if (contents[parentIndex].myPriority > contents[rootIndex].myPriority) {
+                swim(rootIndex);
+            } else {
+                sink(rootIndex);
+            }
         }
     }
 
