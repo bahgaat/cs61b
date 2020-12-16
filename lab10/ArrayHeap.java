@@ -149,7 +149,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
             Node oldNode = contents[index];
             T oldItem = oldNode.myItem;
             double oldPriority = oldNode.myPriority;
-            int childIndex = smallest(rightIndex, leftIndex);
+            int childIndex = min(rightIndex, leftIndex);
             Node child = contents[childIndex];
             contents[index].myItem = child.myItem;
             contents[index].myPriority = child.myPriority;
@@ -159,6 +159,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         }
     }
 
+    /*
     private int smallest(int rightIndex, int leftIndex) {
         Node rightChild = contents[rightIndex];
         Node leftChild = contents[leftIndex];
@@ -169,6 +170,8 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
             return leftIndex;
         }
     }
+
+     */
 
     /**
      * Inserts an item with the given priority value. This is enqueue, or offer.
