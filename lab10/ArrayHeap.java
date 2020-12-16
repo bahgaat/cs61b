@@ -128,22 +128,16 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         validateSinkSwimArg(index);
         int leftIndex = leftIndex(index);
         int rightIndex = rightIndex(index);
-        if (leftIndex > contents.length || contents[leftIndex] == null) {
+        if (leftIndex >= contents.length) {
             return;
-        } else if (rightIndex > contents.length || contents[rightIndex] == null) {
-            if (contents[index].myPriority < contents[leftIndex].myPriority) {
-                return;
-            } else {
-                Node oldNode = contents[index];
-                T oldItem = oldNode.myItem;
-                double oldPriority = oldNode.myPriority;
-                contents[index].myItem = contents[leftIndex].myItem;
-                contents[index].myPriority = contents[leftIndex].myPriority;
-                contents[leftIndex].myItem = oldItem;
-                contents[leftIndex].myPriority = oldPriority;
-            }
-        } else if (contents[index].myPriority < contents[leftIndex].myPriority &&
-                contents[index].myPriority < contents[rightIndex].myPriority) {
+        } else if (contents[leftIndex] == null) {
+            return;
+        } else if (rightIndex >= contents.length) {
+            changeLeft(index, leftIndex);
+        } else if (contents[rightIndex] == null) {
+            changeLeft(index, leftIndex);
+        } else if (contents[index].myPriority <= contents[leftIndex].myPriority &&
+                contents[index].myPriority <= contents[rightIndex].myPriority) {
             return;
         } else {
             Node oldNode = contents[index];
@@ -156,6 +150,20 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
             child.myItem = oldItem;
             child.myPriority = oldPriority;
             sink(childIndex);
+        }
+    }
+
+    private void changeLeft(int index, int leftIndex) {
+        if (contents[index].myPriority < contents[leftIndex].myPriority) {
+            return;
+        } else {
+            Node oldNode = contents[index];
+            T oldItem = oldNode.myItem;
+            double oldPriority = oldNode.myPriority;
+            contents[index].myItem = contents[leftIndex].myItem;
+            contents[index].myPriority = contents[leftIndex].myPriority;
+            contents[leftIndex].myItem = oldItem;
+            contents[leftIndex].myPriority = oldPriority;
         }
     }
 
