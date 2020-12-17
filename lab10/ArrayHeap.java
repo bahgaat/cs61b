@@ -263,12 +263,12 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     private void helper(Node root, int rootIndex, double priority) {
         root.myPriority = priority;
         int parentIndex = parentIndex(rootIndex);
-        if (parentIndex >= 1) {
-            if (contents[parentIndex].myPriority > contents[rootIndex].myPriority) {
+        if (contents[parentIndex].myPriority > contents[rootIndex].myPriority) {
+            if (parentIndex >= 1) {
                 swim(rootIndex);
-            } else {
-                sink(rootIndex);
             }
+        } else {
+            sink(rootIndex);
         }
     }
 
