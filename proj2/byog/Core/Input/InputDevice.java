@@ -1,4 +1,4 @@
-package byog.Core.Gui.Input;
+package byog.Core.Input;
 
 
 public interface InputDevice {

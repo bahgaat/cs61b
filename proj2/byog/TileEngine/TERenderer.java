@@ -1,9 +1,11 @@
 package byog.TileEngine;
 
+import byog.Core.InteractivityInTheWorld;
 import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.Serializable;
 
 /**
  * Utility class for rendering tiles. You do not need to modify this file. You're welcome
@@ -11,7 +13,7 @@ import java.awt.Font;
  * messing with this renderer, unless you're trying to do something fancy like
  * allowing scrolling of the screen or tracking the player or something similar.
  */
-public class TERenderer {
+public class TERenderer implements Serializable {
     private static final int TILE_SIZE = 16;
     private int width;
     private int height;
@@ -82,8 +84,9 @@ public class TERenderer {
      * value is the width of the screen in tiles, and the max y value is the height of
      * the screen in tiles.
      * @param world the 2D TETile[][] array to render
+     * @param interactivityInTheWorld
      */
-    public void renderFrame(TETile[][] world) {
+    public void renderFrame(TETile[][] world, InteractivityInTheWorld interactivityInTheWorld) {
         int numXTiles = world.length;
         int numYTiles = world[0].length;
         StdDraw.clear(new Color(0, 0, 0));
@@ -94,8 +97,11 @@ public class TERenderer {
                             + " is null.");
                 }
                 world[x][y].draw(x + xOffset, y + yOffset);
+                StdDraw.setPenColor(Color.white);
+                StdDraw.textLeft(5, 73, "Round: " + interactivityInTheWorld.getRound());
             }
         }
+
         StdDraw.show();
     }
 }

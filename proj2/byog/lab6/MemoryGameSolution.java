@@ -51,7 +51,7 @@ public class MemoryGameSolution {
         while (!gameOver) {
             playerTurn = false;
             drawFrame("Round " + round + "! Good luck!");
-            StdDraw.pause(1500);
+
 
 
             String roundString = generateRandomString(round);
@@ -65,7 +65,6 @@ public class MemoryGameSolution {
                 drawFrame("Game Over! Final level: " + round);
             } else {
                 drawFrame("Correct, well done!");
-                StdDraw.pause(1500);
                 round += 1;
             }
         }
@@ -111,7 +110,7 @@ public class MemoryGameSolution {
         int midHeight = height / 2;
 
         StdDraw.clear();
-        StdDraw.clear(Color.black);
+        StdDraw.clear(Color.BLACK);
 
         // Draw the GUI
         if (!gameOver) {

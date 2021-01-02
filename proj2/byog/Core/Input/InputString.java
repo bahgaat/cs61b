@@ -1,6 +1,8 @@
-package byog.Core.Gui.Input;
+package byog.Core.Input;
 
-public class InputString implements InputDevice {
+import java.io.Serializable;
+
+public class InputString implements InputDevice, Serializable {
     private String input;
     private String seed = "";
     private int startSlicingIndex = 0;
@@ -47,6 +49,7 @@ public class InputString implements InputDevice {
     /* collect the seed (the numbers) from the whole input. */
     public String collectTheSeed(String input) {
         seed += input;
+        return seed;
     }
 
 

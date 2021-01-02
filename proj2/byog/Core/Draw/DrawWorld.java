@@ -5,11 +5,15 @@ import byog.Core.RandomUtils;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
+import java.io.Serializable;
 import java.util.*;
+
+//TODO i have problem when adding another evil player after half the game ended, and i made halfGameEnded
+// equal 1 to make the test easier
 
 /* draw the random world. I have divided drawing the world into 2 parts, and every part into 3 parts. */
 /* don't use static unless you want it, don't make it the default */
-class Draw2dWorld {
+public class DrawWorld implements Serializable {
     private final String positive = "positive";
     private final String negative = "negative";
     private final String vertical = "vertical";
@@ -24,8 +28,11 @@ class Draw2dWorld {
     /* A queue which stores in it the evil players. */
     private Queue<Map> queueOfEvilPlayersPositions = new LinkedList<>();
     /* arrayList which stores in it positions, this positions will be replaced by flowers(points) in the game. */
-    private ArrayList<Position> arrayOfPointsPositions = new ArrayList<Position>();
+    private ArrayList<Position> arrayOfFlowersPositions = new ArrayList<Position>();
     private DrawShapes drawShapes;
+    private Position upperPosition;
+    private Position bottomPosition;
+    private Position hallWayPosition;
 
 
     /* Constructor. */
@@ -33,7 +40,7 @@ class Draw2dWorld {
         this.drawShapes = drawShapes;
     }
 
-    Position getStartMainPlayerPosition() {
+    public Position getStartMainPlayerPosition() {
         int startPlayerPositionX = startMainPlayerPosition.getX();
         int startPlayerPositionY = startMainPlayerPosition.getY();
         Position copyOfStartMainPlayerPosition = new Position(startPlayerPositionX, startPlayerPositionY);
@@ -41,7 +48,7 @@ class Draw2dWorld {
     }
 
 
-    Position getDoorPosition() {
+    public Position getDoorPosition() {
         int doorXPosition = doorPosition.getX();
         int doorYPosition = doorPosition.getY();
         Position copyOfDoorPosition = new Position(doorXPosition, doorYPosition);
@@ -60,278 +67,219 @@ class Draw2dWorld {
         return WIDTH;
     }
 
-    void setPositionInWorld(int positionX, int positionY, TETile type) {
-
+    public void setPositionInWorld(int positionX, int positionY, TETile type) {
+        world[positionX][positionY] = type;
     }
 
     Queue<Map> getQueueEvil() {
         return new LinkedList<Map>(queueOfEvilPlayersPositions);
     }
 
-    Map pollFromQueueEvil() {
-        queueOfEvilPlayersPositions.poll();
+    public Map pollFromQueueEvil() {
+        return queueOfEvilPlayersPositions.poll();
     }
 
-    ArrayList<Position> getArrayOfPoints() {
-        ArrayList<Position> copyOfArrayOfPoints = new ArrayList<Position>(arrayOfPointsPositions);
-        return copyOfArrayOfPoints;
+    public ArrayList<Position> getArrayOfFlowersPositions() {
+        ArrayList<Position> copyOfArrayOfFlowersPositions = new ArrayList<Position>(arrayOfFlowersPositions);
+        return copyOfArrayOfFlowersPositions;
     }
 
-    Position getPositionFromArrayOfPointsPositions(int index) {
-        Position position = arrayOfPointsPositions.get(index);
+    Position getPositionFromArrayOfFlowersPositions(int index) {
+        Position position = arrayOfFlowersPositions.get(index);
         return new Position(position.getX(), position.getY());
     }
 
 
     /* draw the whole world, I divide the drawing into 2 parts.*/
-    void  drawWorld(long seed) {
+    public void drawWorld(long seed) {
         Random r = new Random(seed);
         int y = RandomUtils.uniform(r, 60, 64);
         int x = RandomUtils.uniform(r, 80, 85);
 
+
+        drawEmptyWorld();
+
+        upperPosition = new Position(x, y);
+        bottomPosition = new Position(x, y);
+        hallWayPosition = new Position(x - 1, y - 1);
+        int i = RandomUtils.uniform(r, 3, 6);
+        drawFirstPartOfTheWorld(i, r);
+        addEvilPlayerToTheQueueEvil(horizontal, hallWayPosition);
+        drawSecondPartOfTheWorld(i, r);
+    }
+
+    private void drawEmptyWorld() {
         for (int p = 0; p < WIDTH; p += 1) {
             for (int g = 0; g < HEIGHT; g += 1) {
                 world[p][g] = Tileset.NOTHING;
             }
         }
-        /*
-        ArrayListsOfPositions arrayListsOfPositions = new ArrayListsOfPositions();
-
-         */
-        Position upperPosition = new Position(x, y);
-        Position bottomPosition = new Position(x, y);
-        Position hallWayPosition = new Position(x - 1, y - 1);
-        int i = RandomUtils.uniform(r, 3, 6);
-        drawFirstPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
     }
 
     /* draw first part of the world. it moves horizontally until it cant move more because
     of the space, and then start drawing second part. I divide drawing the first part
     into  3 parts. Upper wall, Bottom wall, Hallway. and I add evil player which moves horizontally in the
     game. */
-    private void drawFirstPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
-                                         Position hallWayPosition, int i, Random r) {
+    private void drawFirstPartOfTheWorld( int i, Random r) {
 
         int j = 0;
         while (itIsOkToMoveHorizontally) {
             int randomNumber = r.nextInt(4);
-            drawUpperWallOfTheFirstPartOfTheWorld(world, upperPosition, j, i, randomNumber, r);
+            drawUpperWallOfTheFirstPartOfTheWorld(j, i, randomNumber, r);
             if (itIsOkToMoveHorizontally) {
-                drawBottomWallOfTheFirstPartOfTheWorld(world, bottomPosition, j, i, randomNumber, r);
-                drawHallWayOfTheFirstPartOfTheWorld(world, hallWayPosition, j, i, randomNumber, r);
+                drawBottomWallOfTheFirstPartOfTheWorld( j, i, randomNumber, r);
+                drawHallWayOfTheFirstPartOfTheWorld( j, i, randomNumber, r);
             }
             j += 1;
         }
-        addEvilPlayerToTheQueueEvil(horizontal, hallWayPosition);
-        drawSecondPartOfTheWorld(world, upperPosition, bottomPosition, hallWayPosition, i, r);
-
     }
 
-    private void draw(TETile type, Map map, Position position) {
-        /*
-        DrawShapes.ArrayListsOfPositions arrayListsOfPositions = drawShapes.getArrayListsOfPositions();
-        ArrayList<Integer> arrayOfXPositions = arrayListsOfPositions.getArrayOfPositionX();
-        ArrayList<Integer> arrayOfYPositions = arrayListsOfPositions.getArrayOfPositionY();
-        int lengthOfBothArrays =  arrayListsOfPositions.getArrayOfPositionX().size();
-         */
-        arrayOfx = map.getValue(x);
-        arrayOfy = map.getValue(y);
 
-        int index = 0;
-        while (lengthOfBothArrays > 0) {
-            world[position.getX() + arrayOfX.get(index)][position.getY() + arrayOfY.get(index)] = type;
-            index += 1;
-        }
-        position.setX(position.getX() +arrayOfX.get(index) );
-        position.setY(position.getY() + arrayOfY.get(index));
-        putArrayListsToStartingPoint(arrayListsOfPositions);
-    }
-
-    private void putArrayListsToStartingPoint(DrawShapes.ArrayListsOfPositions arrayListsOfPositions) {
-
-        ArrayList<Integer> arrayListOfXPositions = new ArrayList<Integer>();
-        ArrayList<Integer> arrayListOfYPositions = new ArrayList<Integer>();
-        arrayListsOfPositions.setArrayOfXPositions(arrayListOfXPositions);
-        arrayListsOfPositions.setArrayOfYPositions(arrayListOfYPositions);
+    private void putMapToStartingPoint(Map<Character, ArrayList<Integer>> mapOfDirections) {
+        mapOfDirections.replace('x', new ArrayList<Integer>());
+        mapOfDirections.replace('y', new ArrayList<Integer>());
+        drawShapes.setMapOfDirections(mapOfDirections);
     }
 
     /* draw upper wall of the first part of the world, which moves toward left. */
-    private void drawUpperWallOfTheFirstPartOfTheWorld(TETile[][] world, Position upperPosition,
-                                                       int j, int i, int randomNumber, Random r) {
+    private void drawUpperWallOfTheFirstPartOfTheWorld(int j, int i, int randomNumber, Random r) {
 
         int spaceNeededForTheBiggestRoomTobeDrawn = i * 6;
-        if (upperPosition._x < spaceNeededForTheBiggestRoomTobeDrawn) {
+        if (upperPosition.getX() < spaceNeededForTheBiggestRoomTobeDrawn) {
             itIsOkToMoveHorizontally = false;
         } else if (j == 0 && randomNumber >= 2) {
-            /* don't access with static class, put object in the constructor and then play with them. */
-            Map map = drawShapes.drawLine(upperPosition, i,
-                    horizontal , negative);
-            drawShapes.drawLStartFromVerticalLine(world, upperPosition, i, i, negative);
+            drawShapes.drawLine(i, horizontal , negative);
+            drawShapes.drawLStartFromVerticalLine(i, i, negative);
         } else if (j == 0 && randomNumber < 2) {
-            drawShapes.drawLine(upperPosition, i * 2, horizontal, negative);
+            drawShapes.drawLine(i * 2, horizontal, negative);
         } else if (randomNumber == 0) {
-            drawShapes.drawBottomHalfSquare(world, upperPosition, i + j, i + j,
-                    i + j);
-            drawShapes.drawLStartFromVerticalLine(world, upperPosition, i + j, i + j,
-                    negative);
+            drawShapes.drawBottomHalfSquare(i + j, i + j, i + j);
+            drawShapes.drawLStartFromVerticalLine(i + j, i + j, negative);
         } else if (randomNumber == 1) {
-            drawShapes.drawBottomHalfSquare(world, upperPosition, i + j, i + j,
-                    i + j);
-            drawShapes.drawLine(upperPosition, i, horizontal, positive);
-            drawShapes.drawLine(upperPosition, i * 2, horizontal, negative);
+            drawShapes.drawBottomHalfSquare(i + j, i + j, i + j);
+            drawShapes.drawLine(i, horizontal, positive);
+            drawShapes.drawLine(i * 2, horizontal, negative);
         } else if (randomNumber == 2) {
-            drawShapes.drawLine(upperPosition, i * 4, horizontal, negative);
+            drawShapes.drawLine(i * 4, horizontal, negative);
         } else if (randomNumber == 3) {
-            drawShapes.drawOppositeLStartFromVerticalLine(world, upperPosition, i + j + 2,
-                    i, positive);
-            drawShapes.drawBottomHalfSquare(world, upperPosition, i + j, i * 2,
-                    i + j);
-            drawShapes.drawOppositeOfLStartFromHorizontalLine(world, upperPosition, i - 2,
-                    i + j + 2, negative);
-            drawShapes.drawLine(upperPosition, i * 2, horizontal, negative);
+            drawShapes.drawOppositeLStartFromVerticalLine(i + j + 2, i, positive);
+            drawShapes.drawBottomHalfSquare(i + j, i * 2, i + j);
+            drawShapes.drawOppositeOfLStartFromHorizontalLine(i - 2, i + j + 2, negative);
+            drawShapes.drawLine(i * 2, horizontal, negative);
         }
-        draw(Tileset.WALL, map, position);
+        draw(Tileset.WALL, upperPosition);
     }
 
     /* draw bottom wall of the first part of the world, which moves toward left. */
-    private void drawBottomWallOfTheFirstPartOfTheWorld(TETile[][] world, Position bottomPosition,
-                                                        int j, int i, int randomNumber, Random r) {
+    private void drawBottomWallOfTheFirstPartOfTheWorld(int j, int i, int randomNumber, Random r) {
 
         if (j == 0 && randomNumber >= 2) {
-            drawShapes.drawLine(bottomPosition, i + 2, vertical, negative);
-            drawShapes.drawLine(bottomPosition, i * 2 - 1, horizontal, negative);
+            drawShapes.drawLine(i + 2, vertical, negative);
+            drawShapes.drawLine(i * 2 - 1, horizontal, negative);
         } else if (j == 0 && randomNumber < 2) {
-            drawShapes.drawUpperHalfSquare(world, bottomPosition, i * 2, i,
-                    i * 2 - 2);
-            drawShapes.drawLine(bottomPosition, i + 1, horizontal, negative);
+            drawShapes.drawUpperHalfSquare(i * 2, i, i * 2 - 2);
+            drawShapes.drawLine(i + 1, horizontal, negative);
         } else if (randomNumber == 0) {
-            drawShapes.drawLStartFromVerticalLine(world, bottomPosition, i + j,
-                    (i + j) * 2 - 1, negative);
+            drawShapes.drawLStartFromVerticalLine(i + j, (i + j) * 2 - 1, negative);
         } else if (randomNumber == 1) {
-            drawShapes.drawUpperHalfSquare(world, bottomPosition, i + j, i + j + 3,
-                    i + j);
-            drawShapes.drawLine(bottomPosition, i, horizontal, positive);
-            drawShapes.drawLine(bottomPosition, i * 2 - 3, horizontal, negative);
+            drawShapes.drawUpperHalfSquare(i + j, i + j + 3, i + j);
+            drawShapes.drawLine(i, horizontal, positive);
+            drawShapes.drawLine(i * 2 - 3, horizontal, negative);
         } else if (randomNumber == 2) {
-            drawShapes.drawLStartFromVerticalLine(world, bottomPosition, i + j + 2,
-                    i + j + 2, positive);
-            drawShapes.drawUpperHalfSquare(world, bottomPosition, i + j + 2, i + j + 2,
-                    i + j);
-            drawShapes.drawLStartFromHorizontalLine(world, bottomPosition, i, i + j + 4, positive);
-            drawShapes.drawLine(bottomPosition, i * 3 + 1, horizontal, negative);
+            drawShapes.drawLStartFromVerticalLine(i + j + 2, i + j + 2, positive);
+            drawShapes.drawUpperHalfSquare(i + j + 2, i + j + 2,i + j);
+            drawShapes.drawLStartFromHorizontalLine(i, i + j + 4, positive);
+            drawShapes.drawLine(i * 3 + 1, horizontal, negative);
         } else if (randomNumber == 3) {
-            drawShapes.drawLine(bottomPosition, i * 2 - (i - 2) + i + 1, horizontal, negative);
+            drawShapes.drawLine(i * 2 - (i - 2) + i + 1, horizontal, negative);
         }
-        draw(Tileset.WALL);
+        draw(Tileset.WALL, bottomPosition);
     }
 
 
     /* draw hallway of the first part of the game, which moves toward left. and add positions to arrayOfPoints
     which will be replaced later as a points (flowers). */
-    private void drawHallWayOfTheFirstPartOfTheWorld(TETile[][] world, Position hallWayPosition,
-                                                     int j, int i, int randomNumber, Random r) {
+    private void drawHallWayOfTheFirstPartOfTheWorld(int j, int i, int randomNumber, Random r) {
 
         if (j == 0 && randomNumber >= 2) {
-            drawHallWayOfTheFirstPartWhenSatisfyFirstCondition(world, hallWayPosition, j, i);
+            drawHallWayOfTheFirstPartWhenSatisfyFirstCondition(j, i);
         }  else if (j == 0 && randomNumber < 2) {
-            drawHallWayOfTheFirstPartWhenSatisfySecondCondition(world, hallWayPosition, j, i);
+            drawHallWayOfTheFirstPartWhenSatisfySecondCondition(j, i);
         } else if (randomNumber == 0) {
-            drawHallWayOfTheFirstPartWhenSatisfyThirdCondition(world, hallWayPosition, j, i);
+            drawHallWayOfTheFirstPartWhenSatisfyThirdCondition(j, i);
         } else if (randomNumber == 1) {
-            drawHallWayOfTheFirstPartWhenSatisfyFourthCondition(world, hallWayPosition, j, i);
+            drawHallWayOfTheFirstPartWhenSatisfyFourthCondition(j, i);
         } else if (randomNumber == 2) {
-            drawHallWayOfTheFirstPartWhenSatisfyFifthCondition(world, hallWayPosition, j, i);
+            drawHallWayOfTheFirstPartWhenSatisfyFifthCondition(j, i);
         } else if (randomNumber == 3) {
-            drawHallWayOfTheFirstWhenSatisfySixthCondition(world, hallWayPosition, j, i);
+            drawHallWayOfTheFirstWhenSatisfySixthCondition(j, i);
         }
-        draw(Tileset.FLOOR);
+        draw(Tileset.FLOOR, hallWayPosition);
     }
 
-    private void drawHallWayOfTheFirstPartWhenSatisfyFirstCondition (TETile[][] world, Position hallWayPosition,
-                                                                     int j, int i) {
+    private void drawHallWayOfTheFirstPartWhenSatisfyFirstCondition(int j, int i) {
 
-        drawShapes.drawBottomRectangle(world, hallWayPosition, i, i - 2, negative);
-        addPointsPositionToArrayOfPoints(hallWayPosition);
-        drawShapes.drawLStartFromVerticalLine(world, hallWayPosition, i, i + 1, negative);
+        drawShapes.drawBottomRectangle(i, i - 2, negative);
+        addFLowerPositionToArrayOfFlowers();
+        drawShapes.drawLStartFromVerticalLine(i, i + 1, negative);
     }
 
-    private void  drawHallWayOfTheFirstPartWhenSatisfySecondCondition (TETile[][] world, Position hallWayPosition,
-                                                                       int j, int i) {
+    private void  drawHallWayOfTheFirstPartWhenSatisfySecondCondition(int j, int i) {
 
-        drawShapes.drawBottomRectangle(world, hallWayPosition, (i * 2) - 2, i - 2,
-                negative);
-        addPointsPositionToArrayOfPoints(hallWayPosition);
-        drawShapes.drawLine(hallWayPosition, i + 2, horizontal, negative);
+        drawShapes.drawBottomRectangle((i * 2) - 2, i - 2, negative);
+        addFLowerPositionToArrayOfFlowers();
+        drawShapes.drawLine(i + 2, horizontal, negative);
     }
 
-    private void drawHallWayOfTheFirstPartWhenSatisfyThirdCondition (TETile[][] world, Position hallWayPosition,
-                                                                     int j, int i) {
+    private void drawHallWayOfTheFirstPartWhenSatisfyThirdCondition(int j, int i) {
 
-        drawShapes.drawLine(hallWayPosition, 2, horizontal, negative);
-        drawShapes.drawUpperRectangle(world, hallWayPosition, i + j, (i + j) - 2,
-                negative);
-        drawShapes.drawBottomRectangle(world, hallWayPosition, i + j, i + j - 2,
-                positive);
-        addPointsPositionToArrayOfPoints(hallWayPosition);
-        drawShapes.drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, i + j - 2,
-                i + j, positive);
-        drawShapes.drawLine(hallWayPosition, i + j + 1, horizontal, negative);
+        drawShapes.drawLine(2, horizontal, negative);
+        drawShapes.drawUpperRectangle(i + j, (i + j) - 2, negative);
+        drawShapes.drawBottomRectangle(i + j, i + j - 2, positive);
+        addFLowerPositionToArrayOfFlowers();
+        drawShapes.drawOppositeOfLStartFromHorizontalLine(i + j - 2, i + j, positive);
+        drawShapes.drawLine(i + j + 1, horizontal, negative);
     }
 
-    private void drawHallWayOfTheFirstPartWhenSatisfyFourthCondition (TETile[][] world, Position hallWayPosition,
-                                                                      int j, int i) {
+    private void drawHallWayOfTheFirstPartWhenSatisfyFourthCondition(int j, int i) {
 
-        drawShapes.drawLine(hallWayPosition, 2, horizontal, negative);
-        drawShapes.drawLine(hallWayPosition, 2, vertical, positive);
-        drawShapes.drawUpperRectangle(world, hallWayPosition, i + j - 1,
-                i + j - 2, negative);
-        drawShapes.drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, i + j - 2,
-                3, negative);
-        drawShapes.drawBottomRectangle(world, hallWayPosition, i + j - 1, i + j + 3 - 2,
-                negative);
-        addPointsPositionToArrayOfPoints(hallWayPosition);
-        drawShapes.drawLStartFromHorizontalLine(world, hallWayPosition, i + j + 3 - 2, 2,
-                negative);
-        drawShapes.drawLine(hallWayPosition, (i * 2) + j - 1, horizontal, negative);
+        drawShapes.drawLine(2, horizontal, negative);
+        drawShapes.drawLine(2, vertical, positive);
+        drawShapes.drawUpperRectangle(i + j - 1, i + j - 2, negative);
+        drawShapes.drawOppositeOfLStartFromHorizontalLine(i + j - 2, 3, negative);
+        drawShapes.drawBottomRectangle( i + j - 1, i + j + 3 - 2, negative);
+        addFLowerPositionToArrayOfFlowers();
+        drawShapes.drawLStartFromHorizontalLine( i + j + 3 - 2, 2, negative);
+        drawShapes.drawLine((i * 2) + j - 1, horizontal, negative);
     }
 
-    private void drawHallWayOfTheFirstPartWhenSatisfyFifthCondition (TETile[][] world, Position hallWayPosition,
-                                                                     int j, int i) {
+    private void drawHallWayOfTheFirstPartWhenSatisfyFifthCondition(int j, int i) {
 
-        drawShapes.drawLine(hallWayPosition, 2, horizontal, negative);
-        drawShapes.drawBottomRectangle(world, hallWayPosition, i + j + 4, i - 2,
-                 negative);
-        drawShapes.drawLStartFromVerticalLine(world, hallWayPosition, i + j + 4, i,
-                 positive);
-        drawShapes.drawBottomRectangle(world, hallWayPosition, i + j, i + j,
-                 positive);
-        addPointsPositionToArrayOfPoints(hallWayPosition);
-        drawShapes.drawLStartFromHorizontalLine(world, hallWayPosition, (i + j + 1) + (i - 2),
-                i + j + 4, positive);
-        drawShapes.drawLine(hallWayPosition, i * 3 + 2, horizontal, negative);
+        drawShapes.drawLine(2, horizontal, negative);
+        drawShapes.drawBottomRectangle(i + j + 4, i - 2, negative);
+        drawShapes.drawLStartFromVerticalLine(i + j + 4, i, positive);
+        drawShapes.drawBottomRectangle(i+ j, i + j, positive);
+        addFLowerPositionToArrayOfFlowers();
+        drawShapes.drawLStartFromHorizontalLine((i + j + 1) + (i - 2), i + j + 4, positive);
+        drawShapes.drawLine(i * 3 + 2, horizontal, negative);
     }
 
-    private void drawHallWayOfTheFirstWhenSatisfySixthCondition (TETile[][] world, Position hallWayPosition,
-                                                                 int j, int i) {
+    private void drawHallWayOfTheFirstWhenSatisfySixthCondition(int j, int i) {
 
-        drawShapes.drawLine(hallWayPosition, 2, horizontal, negative);
-        drawShapes.drawUpperRectangle(world, hallWayPosition, i + j + 3, i - (i - 2),
-              negative);
-        drawShapes.drawLine(hallWayPosition, i + j + 4, vertical, positive);
-        drawShapes.drawUpperRectangle(world, hallWayPosition, i + j - 2, i * 2 - 1 - (i - 2),
-                 positive);
-        addPointsPositionToArrayOfPoints(hallWayPosition);
+        drawShapes.drawLine(2, horizontal, negative);
+        drawShapes.drawUpperRectangle(i + j + 3, i - (i - 2), negative);
+        drawShapes.drawLine(i + j + 4, vertical, positive);
+        drawShapes.drawUpperRectangle(i + j - 2, i * 2 - 1 - (i - 2), positive);
+        addFLowerPositionToArrayOfFlowers();
         if (i > 3) {
-            drawShapes.drawLine(hallWayPosition, i * 2 - (i - 2), horizontal, negative);
-            drawShapes.drawUpperRectangle(world, hallWayPosition, i + j - 2, i - 2 - 1,
-                     negative);
-            drawShapes.drawOppositeOfLStartFromHorizontalLine(world, hallWayPosition, i - 2,
-                    i + j + 4,  negative);
-            drawShapes.drawLine(hallWayPosition, i * 2 + 1, horizontal, negative);
+            drawShapes.drawLine(i * 2 - (i - 2), horizontal, negative);
+            drawShapes.drawUpperRectangle(i + j - 2, i - 2 - 1, negative);
+            drawShapes.drawOppositeOfLStartFromHorizontalLine( i - 2, i + j + 4,  negative);
+            drawShapes.drawLine(i * 2 + 1, horizontal, negative);
         } else {
-            drawShapes.drawLine(hallWayPosition, i + 1, horizontal, negative);
-            drawShapes.drawLine(hallWayPosition, i + j + 4, vertical, negative);
-            drawShapes.drawLine(hallWayPosition, i * 2 + 1, horizontal, negative);
+            drawShapes.drawLine(i + 1, horizontal, negative);
+            drawShapes.drawLine(i + j + 4, vertical, negative);
+            drawShapes.drawLine(i * 2 + 1, horizontal, negative);
         }
     }
 
@@ -339,167 +287,176 @@ class Draw2dWorld {
     /* draw second part of the world. it takes L shape and then moves vertically
     until it can't move more and then the drawing is ended. I divide drawing the second part into 3 parts
     Upper wall, Bottom wall, and hallway. */
-    private void drawSecondPartOfTheWorld(TETile[][] world, Position upperPosition, Position bottomPosition,
-                                          Position hallWayPosition, int i, Random r) {
+    private void drawSecondPartOfTheWorld(int i, Random r) {
 
         int j = 0;
         i = RandomUtils.uniform(r, 3, 5 );
         while (itIsOkToMoveVertically) {
             int randomNumber = r.nextInt(3);
-            drawUpperWallOfTheSecondPartOfTheWorld(world, upperPosition, j, i, randomNumber);
+            drawUpperWallOfTheSecondPartOfTheWorld(j, i, randomNumber);
             if (itIsOkToMoveVertically) {
-                drawBottomWallOfTheSecondPartOfTheWorld(world, bottomPosition, j, i, randomNumber);
-                drawHallWayOfTheSecondPartOfTheWorld(world, hallWayPosition, j, i, randomNumber);
+                drawBottomWallOfTheSecondPartOfTheWorld( j, i, randomNumber);
+                drawHallWayOfTheSecondPartOfTheWorld( j, i, randomNumber);
             }
             j += 1;
         }
-        drawShapes.drawLine(bottomPosition, 2, horizontal, positive);
-        startMainPlayerPosition = new Position(hallWayPosition._x, hallWayPosition._y - 1);
+        drawShapes.drawLine(2, horizontal, positive);
+        draw(Tileset.WALL, bottomPosition);
+        startMainPlayerPosition = new Position(hallWayPosition.getX(), hallWayPosition.getY() - 1);
     }
 
+
     /* draw upper wall of the second part of the world. which moves toward up. */
-    private void drawUpperWallOfTheSecondPartOfTheWorld(TETile[][] world, Position upperPosition, int j, int i,
-                                                        int randomNumber) {
+    private void drawUpperWallOfTheSecondPartOfTheWorld(int j, int i, int randomNumber) {
 
         int spaceNeededForTheBiggestRoomTobeDrawn  = i * 2 + 3;
         int maximumHeight = 78;
         if (j == 0) {
-            drawShapes.drawLine(upperPosition, 3, horizontal, negative);
-            while (upperPosition._y > 28) {
-                drawShapes.drawLine(upperPosition, 2, vertical, negative);
+            drawShapes.drawLine(3, horizontal, negative);
+            draw(Tileset.WALL, upperPosition);
+            while (upperPosition.getY() > 28) {
+                drawShapes.drawLine(2, vertical, negative);
+                draw(Tileset.WALL, upperPosition);
             }
-            while (upperPosition._x < 89) {
-                drawShapes.drawLine(upperPosition, 2, horizontal, positive);
+            while (upperPosition.getX() < 89) {
+                drawShapes.drawLine(2, horizontal, positive);
+                draw(Tileset.WALL, upperPosition);
             }
-            drawShapes.drawLStartFromHorizontalLine(world, upperPosition, 3, i + 2,
-                    negative);
-        } else if (maximumHeight < upperPosition._y + spaceNeededForTheBiggestRoomTobeDrawn) {
+            drawShapes.drawLStartFromHorizontalLine(3, i + 2, negative);
+        } else if (maximumHeight < upperPosition.getY() + spaceNeededForTheBiggestRoomTobeDrawn) {
             itIsOkToMoveVertically = false;
         } else if (randomNumber == 0) {
-            drawShapes.drawLeftHalfSquare(world, upperPosition, i, i, i);
-            drawShapes.drawLine(upperPosition, i, vertical, positive);
+            drawShapes.drawLeftHalfSquare(i, i, i);
+            drawShapes.drawLine(i, vertical, positive);
         } else if (randomNumber == 1) {
-            drawShapes.drawLeftHalfSquare(world, upperPosition, i + 2, i + 2,
-                    i + 2);
-            drawShapes.drawLine(upperPosition, i, vertical, negative);
-            drawShapes.drawLine(upperPosition, i * 2, vertical, positive);
+            drawShapes.drawLeftHalfSquare( i + 2, i + 2, i + 2);
+            drawShapes.drawLine(i, vertical, negative);
+            drawShapes.drawLine(i * 2, vertical, positive);
         } else if (randomNumber == 2) {
-            drawShapes.drawLine(upperPosition, i * 2 + 2, vertical, positive);
+            drawShapes.drawLine(i * 2 + 2, vertical, positive);
         }
-        draw(Tileset.WALL);
+        draw(Tileset.WALL, upperPosition);
     }
 
     /* draw bottom wall of the second part of the world. which moves toward up. */
-    private void drawBottomWallOfTheSecondPartOfTheWorld(TETile[][] world, Position bottomPosition,
-                                                         int j, int i, int randomNumber) {
+    private void drawBottomWallOfTheSecondPartOfTheWorld(int j, int i, int randomNumber) {
         if (j == 0) {
-            while (bottomPosition._y > 30) {
-                drawShapes.drawLine(bottomPosition, 2, vertical, negative);
+            while (bottomPosition.getY() > 30) {
+                drawShapes.drawLine(2, vertical, negative);
+                draw(Tileset.WALL, bottomPosition);
             }
-            while (bottomPosition._x < 89) {
-                drawShapes.drawLine(bottomPosition, 2, horizontal, positive);
+            while (bottomPosition.getX() < 89) {
+                drawShapes.drawLine(2, horizontal, positive);
+                draw(Tileset.WALL, bottomPosition);
             }
-            drawShapes.drawLine(bottomPosition, i - 2, vertical, positive);
-            draw(Tileset.WALL);
-            drawShapes.drawLine(bottomPosition, 2, vertical, positive);
-            doorPosition = new Position(bottomPosition._x, bottomPosition._y - 1);
-            draw(Tileset.LOCKED_DOOR);
-            drawShapes.drawLine(bottomPosition,  2, vertical, positive);
+            drawShapes.drawLine(i - 2, vertical, positive);
+            draw(Tileset.WALL, bottomPosition);
+            drawShapes.drawLine(2, vertical, positive);
+            /*doorPosition = new Position(bottomPosition.getX(), bottomPosition.getY() - 1);*/
+            draw(Tileset.LOCKED_DOOR, bottomPosition);
+            Position secondEvilPlayerPosition = new Position(bottomPosition.getX() + 1,
+                    bottomPosition.getY());
+            addEvilPlayerToTheQueueEvil(vertical, secondEvilPlayerPosition);
+            drawShapes.drawLine(2, vertical, positive);
         } else if (randomNumber == 0) {
-            drawShapes.drawRightHalfSquare(world, bottomPosition, i, i, i);
-            drawShapes.drawLine(bottomPosition, i, vertical, positive);
+            drawShapes.drawRightHalfSquare(i, i, i);
+            drawShapes.drawLine(i, vertical, positive);
         } else if (randomNumber == 1) {
-            drawShapes.drawLine(bottomPosition, i * 2 + 2, vertical, positive);
+            drawShapes.drawLine(i * 2 + 2, vertical, positive);
         } else if (randomNumber == 2) {
-            drawShapes.drawRightHalfSquare(world, bottomPosition, i + 2, i * 2,
-                    i + 2);
-            drawShapes.drawLine(bottomPosition, i * 2 - 2, vertical, negative);
-            drawShapes.drawLine(bottomPosition, i * 2, vertical, positive);
+            drawShapes.drawRightHalfSquare(i + 2, i * 2, i + 2);
+            drawShapes.drawLine(i * 2 - 2, vertical, negative);
+            drawShapes.drawLine(i * 2, vertical, positive);
         }
-        draw(Tileset.WALL);
+        draw(Tileset.WALL, bottomPosition);
     }
 
     /* draw hallway of the second part of the world. which moves toward up. and add random room positions in arraylist
     which will be replaced later as points (flowers). */
-    private void drawHallWayOfTheSecondPartOfTheWorld(TETile[][] world, Position hallWayPosition,
-                                                      int j, int i, int randomNumber) {
+    private void drawHallWayOfTheSecondPartOfTheWorld(int j, int i, int randomNumber) {
         if (j == 0) {
-            drawHallWayOfTheSecondPartWhenSatisfyFirstCondition(world, hallWayPosition,
-                    j, i, randomNumber);
+            drawHallWayOfTheSecondPartWhenSatisfyFirstCondition(j, i, randomNumber);
         } else if (randomNumber == 0) {
-            drawHallWayOfTheSecondPartWhenSatisfySecondCondition(world, hallWayPosition,
-                            j, i, randomNumber);
+            drawHallWayOfTheSecondPartWhenSatisfySecondCondition(j, i, randomNumber);
         } else if (randomNumber == 1) {
-            drawHallWayOfTheSecondPartWhenSatisfyThirdCondition(world, hallWayPosition,
-                    j, i, randomNumber);
+            drawHallWayOfTheSecondPartWhenSatisfyThirdCondition(j, i, randomNumber);
         } else if (randomNumber == 2) {
-            drawHallWayOfTheSecondPartWhenSatisfyFourthCondition(world, hallWayPosition,
-                    j, i, randomNumber);
+            drawHallWayOfTheSecondPartWhenSatisfyFourthCondition(j, i, randomNumber);
         }
+        draw(Tileset.FLOOR, hallWayPosition);
     }
 
-    private void drawHallWayOfTheSecondPartWhenSatisfyFirstCondition(TETile[][] world, Position hallWayPosition,
-                                                                     int j, int i, int randomNumber) {
+    private void drawHallWayOfTheSecondPartWhenSatisfyFirstCondition(int j, int i, int randomNumber) {
 
-        drawShapes.drawLine(hallWayPosition, 2, horizontal, negative);
-        while (hallWayPosition._y > 29) {
-            drawShapes.drawLine(hallWayPosition, 2, vertical, negative);
+        drawShapes.drawLine(2, horizontal, negative);
+        draw(Tileset.FLOOR, hallWayPosition);
+        while (hallWayPosition.getY() > 29) {
+            drawShapes.drawLine(2, vertical, negative);
+            draw(Tileset.FLOOR, hallWayPosition);
         }
-        while (hallWayPosition._x < 89) {
-            drawShapes.drawLine(hallWayPosition, 2, horizontal, positive);
+        while (hallWayPosition.getX() < 89) {
+            drawShapes.drawLine(2, horizontal, positive);
+            draw(Tileset.FLOOR, hallWayPosition);
         }
-        addPointsPositionToArrayOfPoints(hallWayPosition);
-        drawShapes.drawLStartFromHorizontalLine(world, hallWayPosition, 2, i + 1,
-                negative);
-        addEvilPlayerToTheQueueEvil(vertical, hallWayPosition);
+        addFLowerPositionToArrayOfFlowers();
+        drawShapes.drawLStartFromHorizontalLine(2, i + 1, negative);
     }
 
-    private void drawHallWayOfTheSecondPartWhenSatisfySecondCondition(TETile[][] world, Position hallWayPosition,
-                                                                      int j, int i, int randomNumber) {
+    private void drawHallWayOfTheSecondPartWhenSatisfySecondCondition(int j, int i, int randomNumber) {
 
-        drawShapes.drawLine(hallWayPosition, 2, vertical, positive);
-        drawShapes.drawUpperRectangle(world, hallWayPosition, i - 2, i, negative);
-        drawShapes.drawLine(hallWayPosition, i, horizontal, positive);
-        drawShapes.drawUpperRectangle(world, hallWayPosition, i - 2, i, positive);
-        addPointsPositionToArrayOfPoints(hallWayPosition);
-        drawShapes.drawLStartFromHorizontalLine(world, hallWayPosition, i, i - 1,
-                positive);
-        drawShapes.drawLine(hallWayPosition, i, vertical, positive);
+        drawShapes.drawLine(2, vertical, positive);
+        drawShapes.drawUpperRectangle(i - 2, i, negative);
+        drawShapes.drawLine(i, horizontal, positive);
+        drawShapes.drawUpperRectangle(i - 2, i, positive);
+        addFLowerPositionToArrayOfFlowers();
+        drawShapes.drawLStartFromHorizontalLine(i, i - 1, positive);
+        drawShapes.drawLine(i, vertical, positive);
     }
 
-    private void drawHallWayOfTheSecondPartWhenSatisfyThirdCondition(TETile[][] world, Position hallWayPosition,
-                                                                     int j, int i, int randomNumber) {
+    private void drawHallWayOfTheSecondPartWhenSatisfyThirdCondition(int j, int i, int randomNumber) {
 
-        drawShapes.drawLine(hallWayPosition, 2, vertical, positive);
-        drawShapes.drawLine(hallWayPosition, 3, horizontal, positive);
-        drawShapes.drawUpperRectangle(world, hallWayPosition, i, i, positive);
-        addPointsPositionToArrayOfPoints(hallWayPosition);
-        drawShapes.drawLine(hallWayPosition, i + 2, horizontal, negative);
-        drawShapes.drawLine(hallWayPosition, i * 2 + 1, vertical, positive);
+        drawShapes.drawLine(2, vertical, positive);
+        drawShapes.drawLine(3, horizontal, positive);
+        drawShapes.drawUpperRectangle(i, i, positive);
+        addFLowerPositionToArrayOfFlowers();
+        drawShapes.drawLine(i + 2, horizontal, negative);
+        drawShapes.drawLine(i * 2 + 1, vertical, positive);
     }
 
-    private void drawHallWayOfTheSecondPartWhenSatisfyFourthCondition(TETile[][] world, Position hallWayPosition,
-                                                                      int j, int i, int randomNumber) {
+    private void drawHallWayOfTheSecondPartWhenSatisfyFourthCondition(int j, int i, int randomNumber) {
 
-        drawShapes.drawLine(hallWayPosition, 2, vertical, positive);
-        drawShapes.drawLine(hallWayPosition, 3, horizontal, negative);
-        drawShapes.drawUpperRectangle(world, hallWayPosition, i * 2 - 2, i, negative);
-        addPointsPositionToArrayOfPoints(hallWayPosition);
-        drawShapes.drawLine(hallWayPosition, i + 2, horizontal, positive);
-        drawShapes.drawLine(hallWayPosition, i * 2 + 1, vertical, positive);
+        drawShapes.drawLine(2, vertical, positive);
+        drawShapes.drawLine(3, horizontal, negative);
+        drawShapes.drawUpperRectangle(i * 2 - 2, i, negative);
+        addFLowerPositionToArrayOfFlowers();
+        drawShapes.drawLine(i + 2, horizontal, positive);
+        drawShapes.drawLine(i * 2 + 1, vertical, positive);
     }
 
-    static void addPointsPositionToArrayOfPoints(Position hallWayPosition) {
-        Position pointPosition = new Position(hallWayPosition._x, hallWayPosition._y);
-        arrayOfPointsPositions.add(pointPosition);
+    private void draw(TETile type, Position position) {
+        Map<Character, ArrayList<Integer>> mapOfDirections = drawShapes.geMapOfDirections();
+        ArrayList<Integer> distancesToAddToX = mapOfDirections.get('x');
+        ArrayList<Integer> distancesToAddToY = mapOfDirections.get('y');
+        int index = 0;
+        while (distancesToAddToX.size() > index) {
+            world[position.getX() + distancesToAddToX.get(index)][position.getY() + distancesToAddToY.get(index)] = type;
+            position.setX(position.getX() + distancesToAddToX.get(index));
+            position.setY(position.getY() + distancesToAddToY.get(index));
+            index += 1;
+        }
+        putMapToStartingPoint(mapOfDirections);
     }
 
-    static void addEvilPlayerToTheQueueEvil(String position, Position hallWayPosition) {
-        Position evilPosition = new Position(hallWayPosition._x, hallWayPosition._y);
+    void addFLowerPositionToArrayOfFlowers() {
+        Position pointPosition = new Position(hallWayPosition.getX(), hallWayPosition.getY());
+        arrayOfFlowersPositions.add(pointPosition);
+    }
+
+    void addEvilPlayerToTheQueueEvil(String direction, Position position) {
+        Position evilPosition = new Position(position.getX(), position.getY());
         Map<String, Position> map = new HashMap<String, Position>();
-        map.put(position, evilPosition);
+        map.put(direction, evilPosition);
         queueOfEvilPlayersPositions.add(map);
     }
-
 
 }

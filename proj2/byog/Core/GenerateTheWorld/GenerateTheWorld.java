@@ -1,22 +1,17 @@
-package byog.Core.RenderTheWorld;
+package byog.Core.GenerateTheWorld;
 
-import byog.Core.Draw.DrawFrame;
 import byog.Core.Input.InputDevice;
-import byog.Core.InteractivityInTheWorld;
 import byog.Core.SaveAndLoadGame;
 import byog.TileEngine.TETile;
 //TODO Make all renders in a package and so on
 
-public interface RenderTheWorld {
+public interface GenerateTheWorld {
 
 
-    void generateTheWorldAfterLoading(SaveAndLoadGame saveAndLoadGame);
+    TETile[][] generateTheWorldAfterLoadingAndPlayTheGame(GenerateTheWorld generateTheWorld, InputDevice input,
+                                            SaveAndLoadGame saveAndLoadGame);
 
-    TETile[][] generateTheWorldAndPlayTheGame(RenderTheWorld renderTheWorld, InputDevice input,
-                                              String seed, SaveAndLoadGame saveAndLoadGame, DrawFrame drawFrame);
-
-
-    default void renderTheWorld(TETile[][] world, InteractivityInTheWorld interactivityInTheWorld){}
-
+    TETile[][] generateTheWorldAndPlayTheGame(GenerateTheWorld generateTheWorld, InputDevice input,
+                                              String seed, SaveAndLoadGame saveAndLoadGame);
 
 }

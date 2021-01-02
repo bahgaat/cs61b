@@ -1,6 +1,5 @@
 package byog.Core.Gui;
 
-import byog.Core.Draw.DrawFrame;
 import byog.Core.Draw.DrawWorld;
 import byog.Core.EndTheGame.EndTheGame;
 import byog.Core.Input.InputDevice;
@@ -8,14 +7,13 @@ import byog.Core.InteractivityInTheWorld;
 import byog.Core.Players.EvilPlayer;
 import byog.Core.Players.MainPlayer;
 import byog.Core.Position;
-import byog.Core.RenderTheWorld.RenderTheWorld;
 import byog.Core.SaveAndLoadGame;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
 import java.util.ArrayList;
 
-public class GuiInteractivityInTheGame {
+public class GuiInteractivityInTheGame<T> extends Gui {
     private InteractivityInTheWorld interactivityInTheWorld;
     private DrawWorld drawWorld;
 
@@ -26,13 +24,19 @@ public class GuiInteractivityInTheGame {
 
     /* play the game. This including moving the mainPlayer toward his direction, and moving evilPlayer ,his speed
         depends on the round. The higher the round, the faster the evilPlayer. */
-    // TODO you can't pass the gui.
-    public void playGame(RenderTheWorld renderTheWorld, InputDevice input, SaveAndLoadGame saveAndLoadGame,
-                         EndTheGame endTheGame, DrawFrame drawFrame) {
+    public void playGame(EndTheGame endTheGame, InputDevice input, SaveAndLoadGame saveAndLoadGame) {
         int i = 0;
+        boolean moreThanHalfGameEnded = false;
         while (!endTheGame.isTheGameEnded()) {
             TETile[][] world = drawWorld.getWorld();
-            renderTheWorld.renderTheWorld(world);
+            if (type.equals("keyBoard")) {
+                ter.renderFrame(world, interactivityInTheWorld);
+            }
+
+            moveTheEvilPlayerAndAttackTheMain(i);
+            i += 1;
+
+
             String newDirection = null;
             if (input.hasNextChar()) {
                 char nextInputChar = input.getNextChar();
@@ -40,72 +44,92 @@ public class GuiInteractivityInTheGame {
                 switch (nextInputChar) {
                     case 'W':
                         newDirection = "up";
+                        break;
                     case 'A':
                         newDirection = "left";
+                        break;
                     case 'S':
                         newDirection = "down";
+                        break;
                     case 'D':
                         newDirection = "right";
+                        break;
                     case 'Q':
-                        saveAndLoadGame.setFileNameToBeSaved("interactivity");
-                        saveAndLoadGame.saveGame(this);
+                        /*saveAndLoadGame.setFileNameToBeSaved("interactivity");*/
+                        ArrayList<T> arrayList = new ArrayList<>();
+                        arrayList.add((T) drawWorld);
+                        arrayList.add((T) interactivityInTheWorld);
+                        saveAndLoadGame.saveGame(arrayList);
+                        interactivityInTheWorld.theUserQuitTheGame();
+                        ifTypeIsKeyBoardDisplayToUser("We will save your efforts, See you soon.");
+                        break;
                 }
 
-                moveTheMainPlayerToTheNewPosition(newDirection, drawFrame);
-                moveTheEvilPlayerAndAttackTheMain(i);
+                if (newDirection != null) {
+                    moveTheMainPlayerToTheNewPosition(newDirection);
 
-
-                /* if halfGame is ended the game has to be much harder and this happens by adding another evilPlayer
-                 that attacks vertically. */
-                if (interactivityInTheWorld.isHalfGameEnded()) {
-                    interactivityInTheWorld.addEvilPlayerToTheWorld();
+                    /* if halfGame is ended the game has to be much harder and this happens
+                    by adding another evilPlayer that attacks vertically. */
+                    if (interactivityInTheWorld.isHalfGameEnded() && moreThanHalfGameEnded == false) {
+                        interactivityInTheWorld.addEvilPlayerToTheWorld();
+                        moreThanHalfGameEnded = true;
+                    }
                 }
             }
+
         }
-        drawFrame.display( "gameOver, you reached round" + interactivityInTheWorld.getRound());
+
+        if (interactivityInTheWorld.isGameOver()) {
+            ifTypeIsKeyBoardDisplayToUser("gameOver, you reached round" + interactivityInTheWorld.getRound());
+        }
+
     }
 
     /* move mainPlayer to the NewPosition and start New round if the player gained all the points. */
-    private void moveTheMainPlayerToTheNewPosition(String newDirection, DrawFrame drawFrame) {
+    private void moveTheMainPlayerToTheNewPosition(String newDirection) {
 
         MainPlayer mainPlayer = interactivityInTheWorld.getMainPlayer();
         Position newPositionOfThePlayer = mainPlayer.NewPositionOfThePlayer(newDirection);
-        int round = interactivityInTheWorld.getRound();
-        int pointsOfMainPlayer = mainPlayer.getPoints();
-        boolean theNewPositionIsPoint = interactivityInTheWorld.itIsPossibleToMoveToTheNewPosition
+        boolean isTheNewPositionFlower = interactivityInTheWorld.itIsPossibleToMoveToTheNewPosition
                 (newPositionOfThePlayer, Tileset.FLOWER);
 
-        boolean theNewPositionIsFloor = interactivityInTheWorld.itIsPossibleToMoveToTheNewPosition
+        boolean isTheNewPositionFloor = interactivityInTheWorld.itIsPossibleToMoveToTheNewPosition
                 (newPositionOfThePlayer, Tileset.FLOOR);
 
-        if (pointsOfMainPlayer == round) {
-            startNewRound(mainPlayer, drawFrame);
-        } else if (theNewPositionIsPoint) {
+        if (isTheRoundEnded(mainPlayer, newPositionOfThePlayer)) {
+            startNewRound(mainPlayer);
+        } else if (isTheNewPositionFlower) {
             interactivityInTheWorld.move(mainPlayer, newPositionOfThePlayer, Tileset.FLOWER);
-            mainPlayer.addOnePoint();
-        } else if (theNewPositionIsFloor) {
+            interactivityInTheWorld.addOnePointToTheMainPlayer();
+        } else if (isTheNewPositionFloor) {
             interactivityInTheWorld.move(mainPlayer, newPositionOfThePlayer, Tileset.FLOOR);
         }
 
     }
 
+    private boolean isTheRoundEnded(MainPlayer mainPlayer, Position newPositionOfThePlayer) {
+        int round = interactivityInTheWorld.getRound();
+        int pointsOfMainPlayer = mainPlayer.getPoints();
+        return round == pointsOfMainPlayer && interactivityInTheWorld.itIsPossibleToMoveToTheNewPosition(
+                newPositionOfThePlayer, Tileset.LOCKED_DOOR);
+    }
+
     /* start newRound in the game, and this happens when the MainPlayer win the round. The new round
     will be harder. For example, the evilPlayer will be faster and the points (flowers) will be more. */
-    private void startNewRound(MainPlayer player, DrawFrame drawFrame) {
-        player.setPlayerToStartPosition();
-        Position doorPosition = drawWorld.getDoorPosition();
-        int doorPositionX = doorPosition.getX();
-        int doorPositionY = doorPosition.getY();
-        drawWorld.setPositionInWorld(doorPositionX, doorPositionY, Tileset.LOCKED_DOOR);
-        int round = interactivityInTheWorld.getRound();
+    private void startNewRound(MainPlayer player) {
+        drawWorld.setPositionInWorld(player.getPositionX(), player.getPositionY(), Tileset.FLOOR);
+        player.setToStartPosition();
+        interactivityInTheWorld.putPlayerInTheStartingPosition(player, player.getType());
         interactivityInTheWorld.addRound();
+        player.setPoints(0);
+        int round = interactivityInTheWorld.getRound();
         int x = 0;
-        while (round  > x) {
+        while (round > x) {
             try {
-                interactivityInTheWorld.addPoint(x);
+                interactivityInTheWorld.addFlowerToTheWorld(x);
                 x += 1;
             } catch (Exception e) {
-                drawFrame.display("Congratulations, You have won the game");
+                ifTypeIsKeyBoardDisplayToUser("Congratulations, You have won the game");
             }
         }
         ArrayList<EvilPlayer> arrayOfEvilPlayers = interactivityInTheWorld.getArrayOfEvilPlayers();
@@ -122,6 +146,5 @@ public class GuiInteractivityInTheGame {
                 interactivityInTheWorld.moveUntilReachesTheWall(evilPlayer);
             }
         }
-        i += 1;
     }
 }

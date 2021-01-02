@@ -1,6 +1,18 @@
-package byog.Core.Gui.GuiEndTheGame;
+package byog.Core.EndTheGame;
 
-import byog.Core.Gui.Gui;
+import byog.Core.InteractivityInTheWorld;
 
-public class GuiEndTheGameWhenUsingKeyBoard extends Gui implements GuiEndTheGame {
+import java.io.Serializable;
+
+public class EndTheGameWhenUsingKeyBoard implements EndTheGame, Serializable {
+    private InteractivityInTheWorld interactivityInTheWorld;
+
+    public EndTheGameWhenUsingKeyBoard(InteractivityInTheWorld interactivityInTheWorld) {
+        this.interactivityInTheWorld = interactivityInTheWorld;
+    }
+
+    @Override
+    public boolean isTheGameEnded() {
+        return interactivityInTheWorld.isGameOver() || interactivityInTheWorld.isTheUserQuitTheGame();
+    }
 }

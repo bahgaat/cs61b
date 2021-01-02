@@ -1,14 +1,14 @@
-package byog.Core.RenderTheWorld;
+package byog.Core.GenerateTheWorld;
 
 import byog.Core.Draw.DrawShapes;
 import byog.Core.Draw.DrawWorld;
-import byog.Core.InteractivityInTheWorld;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GenerateDrawWorld {
+public class GenerateClassDrawWorld implements Serializable {
 
     protected DrawWorld initializeDrawWorld() {
         Map<Character, ArrayList<Integer>> mapOfDirections = new HashMap<>();

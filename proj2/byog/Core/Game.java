@@ -1,10 +1,17 @@
 package byog.Core;
 
-import byog.TileEngine.TERenderer;
+import byog.Core.GenerateTheWorld.GenerateTheWorld;
+import byog.Core.GenerateTheWorld.GenerateTheWorldWhenUsingInputString;
+import byog.Core.GenerateTheWorld.GenerateTheWorldWhenUsingKeyBoard;
+import byog.Core.Gui.GuiInteractivityInTheGame;
+import byog.Core.Input.InputDevice;
+import byog.Core.Input.InputString;
+import byog.Core.Input.KeyBoardInput;
+import byog.Core.Gui.GuiStartingTheGame;
 import byog.TileEngine.TETile;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+
 
 
 public class Game implements Serializable {
@@ -18,8 +25,13 @@ public class Game implements Serializable {
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard()  {
-        InputDevice inputByKeyBoard = new KeyBoardInput();
-        inputByKeyBoard.startGame("");
+        InputDevice keyBoardInput = new KeyBoardInput();
+        GenerateTheWorld generateTheWorldWhenUsingKeyBoard = new GenerateTheWorldWhenUsingKeyBoard();
+        SaveAndLoadGame<GuiInteractivityInTheGame> saveAndLoadGame = new SaveAndLoadGame<> ("interactivity");
+        GuiStartingTheGame guiStartingTheGame = new GuiStartingTheGame("keyBoard");
+        guiStartingTheGame.display("Ui");
+        guiStartingTheGame.readTheInputBeforeStartingTheGame(keyBoardInput, generateTheWorldWhenUsingKeyBoard,
+                saveAndLoadGame);
     }
     
 
@@ -36,9 +48,14 @@ public class Game implements Serializable {
      * @return
      */
 
-    public static void playWithInputString(String input) {
-        InputDevice inputByInputString = new InputString(input);
-        inputByInputString.startGame(input);
+    public TETile[][] playWithInputString(String input) {
+        InputDevice inputString = new InputString(input);
+        GenerateTheWorld generateTheWorldWhenUsingInputString = new GenerateTheWorldWhenUsingInputString();
+        SaveAndLoadGame<InteractivityInTheWorld> saveAndLoadGame = new SaveAndLoadGame<> ("interactivity");
+        GuiStartingTheGame guiStartingTheGame = new GuiStartingTheGame("input");
+        TETile[][] world = guiStartingTheGame.readTheInputBeforeStartingTheGame(inputString,
+                generateTheWorldWhenUsingInputString, saveAndLoadGame);
+        return world;
     }
 
 }

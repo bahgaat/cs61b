@@ -1,6 +1,5 @@
 package byog.Core;
 
-import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 
 import java.io.Serializable;
@@ -16,8 +15,8 @@ public class Main implements Serializable {
             System.exit(0);
         } else if (args.length == 1) {
             Game game = new Game();
-            game.playWithInputString(args[0]);
-            System.out.println(TETile.toString(MyWorld.world));
+            TETile[][] world = game.playWithInputString(args[0]);
+            System.out.println(TETile.toString(world));
         } else {
             Game game = new Game();
             game.playWithKeyboard();

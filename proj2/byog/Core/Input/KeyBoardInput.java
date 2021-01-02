@@ -1,9 +1,12 @@
-package byog.Core.Gui.Input;
+package byog.Core.Input;
 
 import edu.princeton.cs.introcs.StdDraw;
- /* anything that i put it by keyboard, i have to put it her.
+
+import java.io.Serializable;
+
+/* anything that i put it by keyboard, i have to put it her.
   */
-public class KeyBoardInput implements InputDevice {
+public class KeyBoardInput implements InputDevice, Serializable {
     private String seed = "";
 
 

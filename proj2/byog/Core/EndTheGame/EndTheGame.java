@@ -1,6 +1,7 @@
-package byog.Core.Gui.GuiEndTheGame;
+package byog.Core.EndTheGame;
 
 
-public interface GuiEndTheGame{
+public interface EndTheGame {
 
+    boolean isTheGameEnded();
 }

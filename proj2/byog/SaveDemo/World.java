@@ -14,7 +14,6 @@ public class World implements Serializable {
     private List<Square> squares;
     private Random r = new Random();
 
-
     public World() {
         squares = new ArrayList<Square>();
     }
