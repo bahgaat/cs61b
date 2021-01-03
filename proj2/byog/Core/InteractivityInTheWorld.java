@@ -113,7 +113,7 @@ public class InteractivityInTheWorld implements Serializable {
         int newPositionYOfPlayer = newPositionOfThePlayer.getY();
         TETile[][] world = drawWorld.getWorld();
         TETile newPositionInTheWorld  = world[newPositionXOfPlayer][newPositionYOfPlayer];
-        return newPositionInTheWorld == typeToCheck;
+        return newPositionInTheWorld.equals(typeToCheck);
     }
 
     public void move(BasePlayer player, Position newPositionOfThePlayer, TETile typeToMoveTo) {
@@ -225,6 +225,7 @@ public class InteractivityInTheWorld implements Serializable {
         }
         return distanceMovedTowardDirection;
     }
+
 }
 
 

@@ -1,15 +1,11 @@
 package byog.Core.Draw;
-
 import byog.Core.Position;
 import byog.Core.RandomUtils;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
-
 import java.io.Serializable;
 import java.util.*;
 
-//TODO i have problem when adding another evil player after half the game ended, and i made halfGameEnded
-// equal 1 to make the test easier
 
 /* draw the random world. I have divided drawing the world into 2 parts, and every part into 3 parts. */
 /* don't use static unless you want it, don't make it the default */

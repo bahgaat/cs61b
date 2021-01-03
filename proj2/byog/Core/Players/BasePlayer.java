@@ -1,8 +1,6 @@
 package byog.Core.Players;
-
 import byog.Core.Position;
 import byog.TileEngine.TETile;
-import byog.TileEngine.Tileset;
 
 import java.io.Serializable;
 
@@ -16,8 +14,6 @@ public abstract class BasePlayer implements Serializable {
     private int positionX;
     private int positionY;
 
-
-    //TODO use getters instead https://dzone.com/articles/java-getter-and-setter-basics-common-mistakes-and
     public int getPositionX() {
         return positionX;
     }

@@ -1,8 +1,4 @@
 package byog.Core;
-
-import byog.Core.Gui.GuiInteractivityInTheGame;
-import byog.SaveDemo.World;
-
 import java.io.*;
 import java.util.ArrayList;
 
@@ -14,16 +10,9 @@ public class SaveAndLoadGame<T> implements Serializable {
         this.fileNameToBeSaved = fileNameToBeSaved;
     }
 
-    /*
-    public void setFileNameToBeSaved(String fileNameToBeSaved) {
-        this.fileNameToBeSaved = fileNameToBeSaved;
-    }
-
-     */
 
     /* save the needed object. */
     public void saveGame(ArrayList<T> saveToFile) {
-        //TODO Save only interactivityInTheWorld object, No need to save all these
         File f = new File(fileNameToBeSaved);
         try {
             FileOutputStream fos = new FileOutputStream(f);

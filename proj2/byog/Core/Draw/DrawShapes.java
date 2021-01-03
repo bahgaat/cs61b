@@ -1,8 +1,4 @@
 package byog.Core.Draw;
-
-import byog.Core.Position;
-import byog.TileEngine.TETile;
-
 import java.io.Serializable;
 import java.util.Map;
 

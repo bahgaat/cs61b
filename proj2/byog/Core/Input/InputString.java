@@ -17,7 +17,6 @@ public class InputString implements InputDevice, Serializable {
         return lengthOfInput;
     }
 
-    //Todo make getter and setter for input.length
 
     public InputString(String input) {
         this.input = input;

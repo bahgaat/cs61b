@@ -7,15 +7,13 @@ import java.io.Serializable;
 
 public class EndTheGameWhenUsingInputString implements Serializable, EndTheGame {
     private InputString inputString;
-    private InteractivityInTheWorld interactivityInTheWorld;
 
-    public EndTheGameWhenUsingInputString(InputString inputString, InteractivityInTheWorld interactivityInTheWorld) {
+    public EndTheGameWhenUsingInputString(InputString inputString) {
         this.inputString = inputString;
-        this.interactivityInTheWorld = interactivityInTheWorld;
     }
 
     @Override
-    public boolean isTheGameEnded() {
+    public boolean isTheGameEnded(InteractivityInTheWorld interactivityInTheWorld) {
         int lengthOfInput = inputString.getLengthOfInput();
         int endSlicingIndex = inputString.getEndSlicingIndex();
         return lengthOfInput < endSlicingIndex || interactivityInTheWorld.isTheUserQuitTheGame();

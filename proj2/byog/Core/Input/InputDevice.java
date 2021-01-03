@@ -2,8 +2,6 @@ package byog.Core.Input;
 
 
 public interface InputDevice {
-    //Todo i have to make 2 functions startGame. one to keyboard and one to input string
-    // eg, i can do startGameWithInput and startGameWithoutInput
 
     boolean hasNextChar();
 

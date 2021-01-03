@@ -1,8 +1,6 @@
 package byog.Core.GenerateTheWorld;
-
 import byog.Core.Draw.DrawShapes;
 import byog.Core.Draw.DrawWorld;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;

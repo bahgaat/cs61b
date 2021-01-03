@@ -6,15 +6,6 @@ import java.awt.*;
 import java.io.Serializable;
 
 public abstract class Gui implements Serializable {
-    protected String type;
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     /* draw to the user either the basic Ui if the argument passed to drawFrame was "Ui" or draw the passed argument. */
     public void display(String s) {
@@ -44,7 +35,7 @@ public abstract class Gui implements Serializable {
         StdDraw.pause(2500);
     }
 
-    protected void ifTypeIsKeyBoardDisplayToUser(String s) {
+    protected void ifTypeIsKeyBoardDisplayToUser(String s, String type) {
         if (type.equals("keyBoard")) {
             display(s);
         }

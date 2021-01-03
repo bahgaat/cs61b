@@ -1,13 +1,15 @@
 package byog.Core;
-
-import byog.Core.GenerateTheWorld.GenerateTheWorld;
-import byog.Core.GenerateTheWorld.GenerateTheWorldWhenUsingInputString;
-import byog.Core.GenerateTheWorld.GenerateTheWorldWhenUsingKeyBoard;
+import byog.Core.EndTheGame.EndTheGameWhenUsingInputString;
+import byog.Core.EndTheGame.EndTheGameWhenUsingKeyBoard;
+import byog.Core.GenerateTheWorld.GenerateWorld;
+import byog.Core.GenerateTheWorld.GenerateWorldWhenUsingInputString;
+import byog.Core.GenerateTheWorld.GenerateWorldWhenUsingKeyBoard;
 import byog.Core.Gui.GuiInteractivityInTheGame;
 import byog.Core.Input.InputDevice;
 import byog.Core.Input.InputString;
 import byog.Core.Input.KeyBoardInput;
 import byog.Core.Gui.GuiStartingTheGame;
+import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 
 import java.io.Serializable;
@@ -26,12 +28,16 @@ public class Game implements Serializable {
      */
     public void playWithKeyboard()  {
         InputDevice keyBoardInput = new KeyBoardInput();
-        GenerateTheWorld generateTheWorldWhenUsingKeyBoard = new GenerateTheWorldWhenUsingKeyBoard();
-        SaveAndLoadGame<GuiInteractivityInTheGame> saveAndLoadGame = new SaveAndLoadGame<> ("interactivity");
-        GuiStartingTheGame guiStartingTheGame = new GuiStartingTheGame("keyBoard");
+        SaveAndLoadGame<GuiInteractivityInTheGame> saveAndLoadGame = new SaveAndLoadGame<> (
+                "interactivity");
+        GuiStartingTheGame guiStartingTheGame = new GuiStartingTheGame();
         guiStartingTheGame.display("Ui");
-        guiStartingTheGame.readTheInputBeforeStartingTheGame(keyBoardInput, generateTheWorldWhenUsingKeyBoard,
-                saveAndLoadGame);
+        TERenderer ter = new TERenderer();
+        GenerateWorldWhenUsingKeyBoard generateWorldWhenUsingKeyBoard =
+                new GenerateWorldWhenUsingKeyBoard(ter);
+        EndTheGameWhenUsingKeyBoard endTheGameWhenUsingKeyBoard = new EndTheGameWhenUsingKeyBoard();
+        guiStartingTheGame.readTheInputBeforeStartingTheGame(keyBoardInput, generateWorldWhenUsingKeyBoard,
+                saveAndLoadGame, ter, endTheGameWhenUsingKeyBoard, "keyBoard");
     }
     
 
@@ -50,11 +56,16 @@ public class Game implements Serializable {
 
     public TETile[][] playWithInputString(String input) {
         InputDevice inputString = new InputString(input);
-        GenerateTheWorld generateTheWorldWhenUsingInputString = new GenerateTheWorldWhenUsingInputString();
-        SaveAndLoadGame<InteractivityInTheWorld> saveAndLoadGame = new SaveAndLoadGame<> ("interactivity");
-        GuiStartingTheGame guiStartingTheGame = new GuiStartingTheGame("input");
+        SaveAndLoadGame<GuiInteractivityInTheGame> saveAndLoadGame = new SaveAndLoadGame<> (
+                "interactivity");
+        GuiStartingTheGame guiStartingTheGame = new GuiStartingTheGame();
+        GenerateWorld generateTheWorldWhenUsingInputString = new GenerateWorldWhenUsingInputString();
+        TERenderer ter = new TERenderer();
+        EndTheGameWhenUsingInputString endTheGameWhenUsingInputString =
+                new EndTheGameWhenUsingInputString((InputString) inputString);
         TETile[][] world = guiStartingTheGame.readTheInputBeforeStartingTheGame(inputString,
-                generateTheWorldWhenUsingInputString, saveAndLoadGame);
+                generateTheWorldWhenUsingInputString, saveAndLoadGame, ter, endTheGameWhenUsingInputString,
+                "input");
         return world;
     }
 

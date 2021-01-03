@@ -8,10 +8,11 @@ import byog.Core.Players.EvilPlayer;
 import byog.Core.Players.MainPlayer;
 import byog.Core.Position;
 import byog.Core.SaveAndLoadGame;
+import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
-
 import java.util.ArrayList;
+
 
 public class GuiInteractivityInTheGame<T> extends Gui {
     private InteractivityInTheWorld interactivityInTheWorld;
@@ -24,10 +25,11 @@ public class GuiInteractivityInTheGame<T> extends Gui {
 
     /* play the game. This including moving the mainPlayer toward his direction, and moving evilPlayer ,his speed
         depends on the round. The higher the round, the faster the evilPlayer. */
-    public void playGame(EndTheGame endTheGame, InputDevice input, SaveAndLoadGame saveAndLoadGame) {
+    public void playGame(EndTheGame endTheGame, InputDevice input, SaveAndLoadGame saveAndLoadGame,
+                         TERenderer ter, String type) {
         int i = 0;
         boolean moreThanHalfGameEnded = false;
-        while (!endTheGame.isTheGameEnded()) {
+        while (!endTheGame.isTheGameEnded(interactivityInTheWorld)) {
             TETile[][] world = drawWorld.getWorld();
             if (type.equals("keyBoard")) {
                 ter.renderFrame(world, interactivityInTheWorld);
@@ -36,12 +38,11 @@ public class GuiInteractivityInTheGame<T> extends Gui {
             moveTheEvilPlayerAndAttackTheMain(i);
             i += 1;
 
-
             String newDirection = null;
             if (input.hasNextChar()) {
                 char nextInputChar = input.getNextChar();
-                // TODO search about ignore case because if anyone insert small 'w'.
-                switch (nextInputChar) {
+                char nextInputCharInSensitive = Character.toUpperCase(nextInputChar);
+                switch (nextInputCharInSensitive) {
                     case 'W':
                         newDirection = "up";
                         break;
@@ -55,18 +56,17 @@ public class GuiInteractivityInTheGame<T> extends Gui {
                         newDirection = "right";
                         break;
                     case 'Q':
-                        /*saveAndLoadGame.setFileNameToBeSaved("interactivity");*/
                         ArrayList<T> arrayList = new ArrayList<>();
                         arrayList.add((T) drawWorld);
                         arrayList.add((T) interactivityInTheWorld);
                         saveAndLoadGame.saveGame(arrayList);
                         interactivityInTheWorld.theUserQuitTheGame();
-                        ifTypeIsKeyBoardDisplayToUser("We will save your efforts, See you soon.");
+                        ifTypeIsKeyBoardDisplayToUser("We will save your efforts, See you soon.", type);
                         break;
                 }
 
                 if (newDirection != null) {
-                    moveTheMainPlayerToTheNewPosition(newDirection);
+                    moveTheMainPlayerToTheNewPosition(newDirection, type);
 
                     /* if halfGame is ended the game has to be much harder and this happens
                     by adding another evilPlayer that attacks vertically. */
@@ -76,17 +76,17 @@ public class GuiInteractivityInTheGame<T> extends Gui {
                     }
                 }
             }
-
         }
 
         if (interactivityInTheWorld.isGameOver()) {
-            ifTypeIsKeyBoardDisplayToUser("gameOver, you reached round" + interactivityInTheWorld.getRound());
+            ifTypeIsKeyBoardDisplayToUser("gameOver, you reached round" +
+                    interactivityInTheWorld.getRound(), type);
         }
 
     }
 
     /* move mainPlayer to the NewPosition and start New round if the player gained all the points. */
-    private void moveTheMainPlayerToTheNewPosition(String newDirection) {
+    private void moveTheMainPlayerToTheNewPosition(String newDirection, String type) {
 
         MainPlayer mainPlayer = interactivityInTheWorld.getMainPlayer();
         Position newPositionOfThePlayer = mainPlayer.NewPositionOfThePlayer(newDirection);
@@ -97,7 +97,7 @@ public class GuiInteractivityInTheGame<T> extends Gui {
                 (newPositionOfThePlayer, Tileset.FLOOR);
 
         if (isTheRoundEnded(mainPlayer, newPositionOfThePlayer)) {
-            startNewRound(mainPlayer);
+            startNewRound(mainPlayer, type);
         } else if (isTheNewPositionFlower) {
             interactivityInTheWorld.move(mainPlayer, newPositionOfThePlayer, Tileset.FLOWER);
             interactivityInTheWorld.addOnePointToTheMainPlayer();
@@ -116,7 +116,7 @@ public class GuiInteractivityInTheGame<T> extends Gui {
 
     /* start newRound in the game, and this happens when the MainPlayer win the round. The new round
     will be harder. For example, the evilPlayer will be faster and the points (flowers) will be more. */
-    private void startNewRound(MainPlayer player) {
+    private void startNewRound(MainPlayer player, String type) {
         drawWorld.setPositionInWorld(player.getPositionX(), player.getPositionY(), Tileset.FLOOR);
         player.setToStartPosition();
         interactivityInTheWorld.putPlayerInTheStartingPosition(player, player.getType());
@@ -129,7 +129,7 @@ public class GuiInteractivityInTheGame<T> extends Gui {
                 interactivityInTheWorld.addFlowerToTheWorld(x);
                 x += 1;
             } catch (Exception e) {
-                ifTypeIsKeyBoardDisplayToUser("Congratulations, You have won the game");
+                ifTypeIsKeyBoardDisplayToUser("Congratulations, You have won the game", type);
             }
         }
         ArrayList<EvilPlayer> arrayOfEvilPlayers = interactivityInTheWorld.getArrayOfEvilPlayers();
@@ -147,4 +147,5 @@ public class GuiInteractivityInTheGame<T> extends Gui {
             }
         }
     }
+
 }

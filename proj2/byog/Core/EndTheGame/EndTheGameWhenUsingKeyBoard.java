@@ -1,18 +1,11 @@
 package byog.Core.EndTheGame;
-
 import byog.Core.InteractivityInTheWorld;
-
 import java.io.Serializable;
 
 public class EndTheGameWhenUsingKeyBoard implements EndTheGame, Serializable {
-    private InteractivityInTheWorld interactivityInTheWorld;
-
-    public EndTheGameWhenUsingKeyBoard(InteractivityInTheWorld interactivityInTheWorld) {
-        this.interactivityInTheWorld = interactivityInTheWorld;
-    }
 
     @Override
-    public boolean isTheGameEnded() {
+    public boolean isTheGameEnded(InteractivityInTheWorld interactivityInTheWorld) {
         return interactivityInTheWorld.isGameOver() || interactivityInTheWorld.isTheUserQuitTheGame();
     }
 }
