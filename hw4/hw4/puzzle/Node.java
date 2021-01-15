@@ -21,7 +21,8 @@ public class Node implements Comparable<Node> {
     public int compareTo(Node node2) {
         int totalDistanceNode1 = helperCompare(this);
         int totalDistanceNode2 = helperCompare(node2);
-        return totalDistanceNode1 - totalDistanceNode2;
+        int answer = totalDistanceNode1 - totalDistanceNode2;
+        return answer;
     }
 
     private int helperCompare(Node node) {

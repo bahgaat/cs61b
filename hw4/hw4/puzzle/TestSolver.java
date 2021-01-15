@@ -73,10 +73,11 @@ public class TestSolver {
             }
             Word w = new Word(wps.start, wps.goal);
             Solver s = new Solver(w);
-            /*String errorMessage = "Wrong number of moves solving "
-                                  + wps.start + "->" + wps.goal;*/
+            String errorMessage = "Wrong number of moves solving "
+                                  + wps.start + "->" + wps.goal;
             int actual = s.moves();
             int expected = wps.numMoves;
+            assertEquals(errorMessage ,expected, actual);
         }
     }
 

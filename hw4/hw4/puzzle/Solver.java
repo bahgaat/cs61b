@@ -7,6 +7,7 @@ import java.util.PriorityQueue;
 public class Solver {
     int minMovesToReachGoal;
     ArrayList<WorldState> sequenceFromInitialToGoal;
+    int debug = 0;
 
 
     public Solver(WorldState initial) {
@@ -30,17 +31,21 @@ public class Solver {
     private void iterateOverTheNeighbors(Iterable<WorldState> neighbors, PriorityQueue<Node> priorityQueue,
                                          Node node) {
 
+        WorldState worldState;
+        Node newNode;
         Iterator<WorldState> iterator = neighbors.iterator();
         while (iterator.hasNext()) {
-            WorldState worldState = iterator.next();
-            Node newNode = new Node(worldState, minMovesToReachGoal, node, node.parentNode);
+            worldState = iterator.next();
+            newNode = new Node(worldState, minMovesToReachGoal, node, node.parentNode);
             if (newNode.grandParent != null) {
                 WorldState worldStateGrandParent = newNode.grandParent.worldState;
                 if (!worldState.equals(worldStateGrandParent)) {
                     priorityQueue.add(newNode);
+                    debug += 1;
                 }
             } else {
                 priorityQueue.add(newNode);
+                debug += 1;
             }
         }
     }

@@ -1,10 +1,7 @@
 package hw4.puzzle;
-import java.util.*;
 import edu.princeton.cs.algs4.Queue;
 
 public class Board implements WorldState  {
-    HashMap<Integer, int[]> goalHashMap = new HashMap<>();
-    HashMap<Integer, int[]> actualHashMap = new HashMap<>();
     private int[][] tiles;
     private int n;
     private final int BLANK = 0;
@@ -14,14 +11,9 @@ public class Board implements WorldState  {
         int colsLength = tiles[0].length;
         this.n = rowsLength;
         this.tiles = new int[rowsLength][colsLength];
-        int x = 1;
         for (int i = 0; i < rowsLength; i += 1) {
             for (int j = 0; j < colsLength; j += 1) {
                 this.tiles[i][j] = tiles[i][j];
-                int[] arr = new int[]{i, j};
-                goalHashMap.put(x, arr);
-                actualHashMap.put(tiles[i][j], arr);
-                x += 1;
             }
         }
     }
@@ -90,18 +82,26 @@ public class Board implements WorldState  {
 
     public int manhattan() {
         int result = 0;
-        int[] goalArray;
-        int[] actualArray;
+        int num;
+        int numMinusOne;
+        int row;
+        int col;
         int rowDifference;
         int colDifference;
         int difference;
-        for (int i = 1; i < n * n; i += 1) {
-            goalArray = goalHashMap.get(i);
-            actualArray = actualHashMap.get(i);
-            rowDifference = Math.abs(goalArray[0] - actualArray[0]);
-            colDifference = Math.abs(goalArray[1] - actualArray[1]);
-            difference = rowDifference + colDifference;
-            result += difference;
+        for (int i = 0; i < n ; i += 1) {
+            for (int j = 0; j < n; j += 1) {
+                num = tileAt(i, j);
+                if (num != 0) {
+                    numMinusOne = num - 1;
+                    row = numMinusOne / n;
+                    col = num - 1 - (n * row);
+                    rowDifference = Math.abs(row - i);
+                    colDifference = Math.abs(col - j);
+                    difference = rowDifference + colDifference;
+                    result += difference;
+                }
+            }
         }
         return result;
     }
