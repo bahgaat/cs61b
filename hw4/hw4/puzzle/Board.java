@@ -113,17 +113,38 @@ public class Board implements WorldState  {
 
 
     public boolean equals(Object y) {
-        Board board2 = (Board) y;
-        for (int i = 0; i < n; i += 1) {
-            for (int j = 0; j < n; j += 1) {
-                if (tiles[i][j] != board2.tiles[i][j]) {
-                    return false;
+        if (y == null) {
+            return false;
+        } else if (y.getClass() == this.getClass()) {
+            Board comp = (Board) y;
+            if (comp.size() == this.size()) {
+                for (int i = 0; i < this.size(); i++) {
+                    for (int j = 0; j < this.size(); j++) {
+                        if (comp.tileAt(i, j) != this.tileAt(i, j)) {
+                            return false;
+                        }
+                    }
                 }
+
+                return true;
             }
         }
-        return true;
 
+        return false;
     }
+
+
+    public int hashCode() {
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                sum = (sum + tiles[i][j]) * 31;
+            }
+        }
+        return sum;
+    }
+
+
 
 
     public String toString() {
