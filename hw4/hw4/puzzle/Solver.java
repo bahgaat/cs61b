@@ -4,31 +4,31 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 import edu.princeton.cs.algs4.Stack;
+import edu.princeton.cs.algs4.MinPQ;
 
 public class Solver {
     int minMovesToReachGoal;
     private Stack<WorldState> path;
-    ArrayList<WorldState> sequenceFromInitialToGoal;
     int debug = 0;
 
     public Solver(WorldState initial) {
         Node goal = null;
-        sequenceFromInitialToGoal = new ArrayList<WorldState>();
-        sequenceFromInitialToGoal.add(initial);
         minMovesToReachGoal = 0;
         path = new Stack<>();
+        MinPQ<Node> priorityQueue = new MinPQ<>();
         Node node = new Node(initial, minMovesToReachGoal, null, null);
-        PriorityQueue<Node> priorityQueue = new PriorityQueue<Node>();
-        priorityQueue.add(node);
-        node = priorityQueue.remove();
-        while (!node.worldState.isGoal()) {
+        priorityQueue.insert(node);
+        while (!priorityQueue.isEmpty()) {
+            node = priorityQueue.delMin();
             minMovesToReachGoal += 1;
+            if (node.worldState.isGoal()) {
+                goal = node;
+                break;
+            }
             Iterable<WorldState> neighbors = node.worldState.neighbors();
             iterateOverTheNeighbors(neighbors, priorityQueue, node);
-            node = priorityQueue.remove();
-            sequenceFromInitialToGoal.add(node.worldState);
+            node = priorityQueue.delMin();
         }
-        goal = node;
         while (goal != null) {
             path.push(goal.worldState);
             goal = goal.parentNode;
@@ -36,7 +36,7 @@ public class Solver {
 
     }
 
-    private void iterateOverTheNeighbors(Iterable<WorldState> neighbors, PriorityQueue<Node> priorityQueue,
+    private void iterateOverTheNeighbors(Iterable<WorldState> neighbors, MinPQ<Node> priorityQueue,
                                          Node node) {
 
         WorldState worldState;
@@ -48,11 +48,11 @@ public class Solver {
             if (newNode.grandParent != null) {
                 WorldState worldStateGrandParent = newNode.grandParent.worldState;
                 if (!worldState.equals(worldStateGrandParent)) {
-                    priorityQueue.add(newNode);
+                    priorityQueue.insert(newNode);
                     debug += 1;
                 }
             } else {
-                priorityQueue.add(newNode);
+                priorityQueue.insert(newNode);
                 debug += 1;
             }
         }
