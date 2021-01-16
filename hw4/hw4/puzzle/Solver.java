@@ -18,17 +18,14 @@ public class Solver {
         MinPQ<Node> priorityQueue = new MinPQ<>();
         Node node = new Node(initial, minMovesToReachGoal, null, null);
         priorityQueue.insert(node);
-        while (!priorityQueue.isEmpty()) {
-            node = priorityQueue.delMin();
+        node = priorityQueue.delMin();
+        while (!node.worldState.isGoal()) {
             minMovesToReachGoal += 1;
-            if (node.worldState.isGoal()) {
-                goal = node;
-                break;
-            }
             Iterable<WorldState> neighbors = node.worldState.neighbors();
             iterateOverTheNeighbors(neighbors, priorityQueue, node);
             node = priorityQueue.delMin();
         }
+        goal = node;
         while (goal != null) {
             path.push(goal.worldState);
             goal = goal.parentNode;

@@ -18,6 +18,7 @@ public class Node implements Comparable<Node> {
     }
 
 
+
     @Override
     public int compareTo(Node node2) {
         int totalDistanceNode1 = helperCompare(this);
