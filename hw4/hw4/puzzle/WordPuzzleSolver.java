@@ -7,14 +7,13 @@ public class WordPuzzleSolver {
      * your basic functionality.
      **********************************************************************/
     public static void main(String[] args) {
-        String start = "side";
-        String goal = "wiki";
+        String start = "rouge";
+        String goal = "matter";
 
         Word startState = new Word(start, goal);
         Solver solver = new Solver(startState);
 
         StdOut.println("Minimum number of moves = " + solver.moves());
-        StdOut.println(solver.debug);
         for (WorldState ws : solver.solution()) {
             StdOut.println(ws);
         }

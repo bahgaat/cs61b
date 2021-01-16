@@ -1,4 +1,5 @@
 package hw4.puzzle;
+import java.util.*;
 
 public class Node implements Comparable<Node> {
     WorldState worldState;

@@ -3,17 +3,20 @@ package hw4.puzzle;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.PriorityQueue;
+import edu.princeton.cs.algs4.Stack;
 
 public class Solver {
     int minMovesToReachGoal;
+    private Stack<WorldState> path;
     ArrayList<WorldState> sequenceFromInitialToGoal;
     int debug = 0;
 
-
     public Solver(WorldState initial) {
+        Node goal = null;
         sequenceFromInitialToGoal = new ArrayList<WorldState>();
         sequenceFromInitialToGoal.add(initial);
         minMovesToReachGoal = 0;
+        path = new Stack<>();
         Node node = new Node(initial, minMovesToReachGoal, null, null);
         PriorityQueue<Node> priorityQueue = new PriorityQueue<Node>();
         priorityQueue.add(node);
@@ -24,6 +27,11 @@ public class Solver {
             iterateOverTheNeighbors(neighbors, priorityQueue, node);
             node = priorityQueue.remove();
             sequenceFromInitialToGoal.add(node.worldState);
+        }
+        goal = node;
+        while (goal != null) {
+            path.push(goal.worldState);
+            goal = goal.parentNode;
         }
 
     }
@@ -51,12 +59,11 @@ public class Solver {
     }
 
     public int moves() {
-        return minMovesToReachGoal;
+        return path.size() - 1;
     }
 
     public Iterable<WorldState> solution() {
-        return sequenceFromInitialToGoal;
+        return path;
     }
 
 }
-
