@@ -31,11 +31,8 @@ public class MazeBreadthFirstPaths extends MazeExplorer {
         Queue<Integer> fringe = new LinkedList<>();
         fringe.add(s);
         marked[s] = true;
-        while (!fringe.isEmpty()) {
-            int s = fringe.poll();
-            if (s == t) {
-                break;
-            }
+        int s = fringe.poll();
+        while (s != t) {
             for (int w : maze.adj(s)) {
                 if (!marked[w]) {
                     fringe.add(w);
@@ -44,13 +41,12 @@ public class MazeBreadthFirstPaths extends MazeExplorer {
                     edgeTo[w] = s;
                     distTo[w] = distTo[s] + 1;
                     announce();
-
                 }
             }
+            s = fringe.poll();
 
         }
 
-        // TODO: Your code here. Don't forget to update distTo, edgeTo, and marked, as well as call announce()
     }
 
 
