@@ -11,7 +11,6 @@ public class Rasterer {
 
     public Rasterer() {
 
-        // YOUR CODE HERE
     }
 
     /**
@@ -89,9 +88,22 @@ public class Rasterer {
                 lrlatTheUserRequested, spaceBetweenUppAndLowerLat, MapServer.ROOT_LRLAT, countNumOfRows);
 
 
-        //TODO Important: the first file in the answer has the same or about the same upperlat and upperlong of the params
-        // and the last file has the same or about the same lowerlat and lowerlang of the params.
         Map<String, Object> results = new HashMap<>();
+        addAllNeededValuesToMap(results, numbOfRowsToBeDisplayed, numberOfColToBeDisplayed, xOfTheFirstImage,
+                yOfTheFirstImage, depthOfTheImages, lrlongOfTheFirstMatchedImage, spaceBetweenUppAndLowerLong,
+                spaceBetweenUppAndLowerLat, lrlatOfTheFirstMatchedImage, ullongOfTheFirstImage, ullatOfTheFirstImage);
+        return results;
+        //TODO maybe try to clean the code by putting some global variables instead of passing many times to the functions
+
+    }
+
+    private void addAllNeededValuesToMap(Map<String, Object> results, int numbOfRowsToBeDisplayed,
+                                         int numberOfColToBeDisplayed, int xOfTheFirstImage,
+                                         int yOfTheFirstImage, int depthOfTheImages, Double lrlongOfTheFirstMatchedImage,
+                                         Double spaceBetweenUppAndLowerLong, Double spaceBetweenUppAndLowerLat,
+                                         Double lrlatOfTheFirstMatchedImage,
+                                         Double ullongOfTheFirstImage, Double ullatOfTheFirstImage) {
+
         String[][] matchedImages = new String[numbOfRowsToBeDisplayed][numberOfColToBeDisplayed];
         putMatchedImagesInThArr(matchedImages, numbOfRowsToBeDisplayed, numberOfColToBeDisplayed,
                 xOfTheFirstImage, yOfTheFirstImage, depthOfTheImages);
@@ -106,13 +118,6 @@ public class Rasterer {
         results.put("raster_lr_lat", lrlatOfTheLastMatchedImage);
         results.put("render_grid", matchedImages);
         results.put("query_success", true);
-        for (int row = 0; row < numbOfRowsToBeDisplayed; row += 1) {
-            for (int col = 0; col < numberOfColToBeDisplayed; col += 1) {
-                System.out.println(matchedImages[row][col]);
-            }
-        }
-        return results;
-
     }
 
     /* iterate through the matched images and add them to the array(matchedImages). */
