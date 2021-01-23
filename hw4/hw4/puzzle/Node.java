@@ -33,6 +33,8 @@ public class Node implements Comparable<Node> {
             node.estimatedDistance = node.worldState.estimatedDistanceToGoal();
             node.distanceComputed = true;
         }
+
+        node.estimatedDistance = node.worldState.estimatedDistanceToGoal();
         int totalDistanceNode = movesNodeFromFirstNode + node.estimatedDistance;
         return totalDistanceNode;
     }

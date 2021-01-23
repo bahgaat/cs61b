@@ -46,11 +46,9 @@ public class Solver {
                 WorldState worldStateGrandParent = newNode.grandParent.worldState;
                 if (!worldState.equals(worldStateGrandParent)) {
                     priorityQueue.insert(newNode);
-                    debug += 1;
                 }
             } else {
                 priorityQueue.insert(newNode);
-                debug += 1;
             }
         }
     }

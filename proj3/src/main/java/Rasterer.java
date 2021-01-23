@@ -1,5 +1,5 @@
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * This class provides all code necessary to take a query box and produce
@@ -10,6 +10,7 @@ import java.util.Map;
 public class Rasterer {
 
     public Rasterer() {
+
         // YOUR CODE HERE
     }
 
@@ -41,12 +42,121 @@ public class Rasterer {
      * "query_success" : Boolean, whether the query was able to successfully complete; don't
      *                    forget to set this to true on success! <br>
      */
+
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
-        // System.out.println(params);
+        Double lrlonTheUserRequested = params.get("lrlon");
+        Double ullonTheUserRequested = params.get("ullon");
+        Double ullatTheUserRequested = params.get("ullat");
+        Double lrlatTheUserRequested = params.get("lrlat");
+        Double widthTheUserRequested = params.get("w");
+        Double LonDPP = (lrlonTheUserRequested - ullonTheUserRequested) / (widthTheUserRequested);
+        int depthOfTheImages = findDepthOfTheImages(LonDPP);
+
+        /* calculate the ullatOf_dDepth_x0_y0, ullongOf_dDepth_x0_y0, lrlatOf_dDepth_x0_y0, and lrlongOf_dDpeth_x0_y0
+        to help me in finding the needed files. */
+        Double ullatOf_dDepth_x0_y0 = MapServer.ROOT_ULLAT;
+        Double ullongOf_dDepth_x0_y0 = MapServer.ROOT_ULLON;
+        Double lrlatOf_dDepth_x0_y0 = MapServer.ROOT_LRLAT;
+        Double lrlongOf_dDpeth_x0_y0 = MapServer.ROOT_LRLON;
+        Double spaceBetweenUppAndLowerLat = ((ullatOf_dDepth_x0_y0 - lrlatOf_dDepth_x0_y0) / (Math.pow(2, depthOfTheImages)));
+        Double spaceBetweenUppAndLowerLong = ((ullongOf_dDepth_x0_y0 - lrlongOf_dDpeth_x0_y0) / (Math.pow(2, depthOfTheImages)));
+        lrlatOf_dDepth_x0_y0 = ullatOf_dDepth_x0_y0 - spaceBetweenUppAndLowerLat;
+        lrlongOf_dDpeth_x0_y0 = ullongOf_dDepth_x0_y0 - spaceBetweenUppAndLowerLong;
+
+        /* calculate x and y values of the first matched file. */
+        int xOfTheFirstImage = (int) ((ullonTheUserRequested - ullongOf_dDepth_x0_y0) / (-spaceBetweenUppAndLowerLong));
+        int yOfTheFirstImage = (int) ((ullatTheUserRequested - ullatOf_dDepth_x0_y0) / (-spaceBetweenUppAndLowerLat));
+
+        //TODO needed spaces when testing spaceInDepth7long = -0.0006866455 and spaceInDepth7Lat = 0.0005421337
+        //TODO needed spaces when testing spaceInDepth2Long = -0.02197265625 and spaceInDepth2Lat = 0.01734827842
+
+        /* calculate ullong, ullat, llrat, llrlon of the first matched file. */
+        Double ullongOfTheFirstImage = (xOfTheFirstImage * spaceBetweenUppAndLowerLong) - (ullongOf_dDepth_x0_y0);
+        Double ullatOfTheFirstImage = (yOfTheFirstImage * spaceBetweenUppAndLowerLat) - (ullatOf_dDepth_x0_y0);
+        ullongOfTheFirstImage = (ullongOfTheFirstImage) * -1;
+        ullatOfTheFirstImage = (ullatOfTheFirstImage) * -1;
+        Double lrlatOfTheFirstMatchedImage = ullatOfTheFirstImage - spaceBetweenUppAndLowerLat;
+        Double lrlongOfTheFirstMatchedImage = ullongOfTheFirstImage - spaceBetweenUppAndLowerLong;
+
+
+        /* find number of columns and rows that will be displayed to the user. */
+        Count countNumOfCol = new CountNumOfCol();
+        int numberOfColToBeDisplayed = calcNumThatWillBeDisplayedToUser(ullongOfTheFirstImage, lrlongOfTheFirstMatchedImage,
+                lrlonTheUserRequested, spaceBetweenUppAndLowerLong, MapServer.ROOT_LRLON, countNumOfCol);
+
+        Count countNumOfRows = new CountNumOfRows();
+        int numbOfRowsToBeDisplayed = calcNumThatWillBeDisplayedToUser(ullatOfTheFirstImage, lrlatOfTheFirstMatchedImage,
+                lrlatTheUserRequested, spaceBetweenUppAndLowerLat, MapServer.ROOT_LRLAT, countNumOfRows);
+
+
+        //TODO Important: the first file in the answer has the same or about the same upperlat and upperlong of the params
+        // and the last file has the same or about the same lowerlat and lowerlang of the params.
         Map<String, Object> results = new HashMap<>();
-        System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
-                           + "your browser.");
+        String[][] matchedImages = new String[numbOfRowsToBeDisplayed][numberOfColToBeDisplayed];
+        putMatchedImagesInThArr(matchedImages, numbOfRowsToBeDisplayed, numberOfColToBeDisplayed,
+                xOfTheFirstImage, yOfTheFirstImage, depthOfTheImages);
+        Double lrlongOfTheLastMatchedImage = lrlongOfTheFirstMatchedImage -
+                (spaceBetweenUppAndLowerLong * (numberOfColToBeDisplayed - 1));
+        Double lrlatOfTheLastMatchedImage = lrlatOfTheFirstMatchedImage -
+                (spaceBetweenUppAndLowerLat * (numbOfRowsToBeDisplayed - 1));
+        results.put("raster_ul_lon", ullongOfTheFirstImage);
+        results.put("raster_ul_lat", ullatOfTheFirstImage);
+        results.put("depth", depthOfTheImages);
+        results.put("raster_lr_lon", lrlongOfTheLastMatchedImage);
+        results.put("raster_lr_lat", lrlatOfTheLastMatchedImage);
+        results.put("render_grid", matchedImages);
+        results.put("query_success", true);
+        for (int row = 0; row < numbOfRowsToBeDisplayed; row += 1) {
+            for (int col = 0; col < numberOfColToBeDisplayed; col += 1) {
+                System.out.println(matchedImages[row][col]);
+            }
+        }
         return results;
+
     }
+
+    /* iterate through the matched images and add them to the array(matchedImages). */
+    private void putMatchedImagesInThArr(String[][] matchedImages, int numbOfRowsToBeDisplayed,
+                              int numberOfColToBeDisplayed, int xOfTheFirstImage, int yOfTheFirstImage,
+                              int depthOfTheImages) {
+        int xOfTheImage = xOfTheFirstImage;
+        int yOfTheImage = yOfTheFirstImage;
+        for (int row = 0; row < numbOfRowsToBeDisplayed; row += 1) {
+            xOfTheImage = xOfTheFirstImage;
+            for (int col = 0; col < numberOfColToBeDisplayed; col += 1) {
+                matchedImages[row][col] = "d"+depthOfTheImages+"_x"+xOfTheImage+"_y"+yOfTheImage+".png";
+                xOfTheImage += 1;
+            }
+            yOfTheImage += 1;
+        }
+    }
+
+    /* calculate num of columns or rows that will be displayed to the user from the given query. */
+    private int calcNumThatWillBeDisplayedToUser(Double ulOfTheFirstFile, Double lrOfTheFirstFile,
+                                           Double lrTheUserRequested, Double spaceBetweenUppAndLower,
+                                           Double max, Count countNum) {
+        int num = 1;
+        Double helperUl = ulOfTheFirstFile;
+        Double helperLr = lrOfTheFirstFile;
+        while (countNum.notMatchedTheRequestedQuery(lrTheUserRequested, helperLr, max)) {
+            helperUl  = helperLr;
+            helperLr = helperLr - spaceBetweenUppAndLower;
+            num += 1;
+        }
+        return num;
+    }
+
+
+    private int findDepthOfTheImages(Double queryLonDPP) {
+        int depth = 0;
+        Double LonDPP = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE);
+        /* This is the LonDPP of depth 0. */
+        while (LonDPP > queryLonDPP && depth < 7) {
+            LonDPP = LonDPP * 0.5;
+            depth += 1;
+        }
+        return depth;
+    }
+
 
 }
