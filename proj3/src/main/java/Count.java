@@ -1,3 +1,3 @@
-public interface Helper {
-    boolean continue();
+interface Count {
+    boolean notMatchedTheRequestedQuery(Double lrTheUserRequested, Double helperLr, Double max);
 }

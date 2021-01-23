@@ -1,4 +1,7 @@
-package PACKAGE_NAME;
+class CountNumOfCol implements Count {
 
-public class CountNumOfCol {
+    @Override
+    public boolean notMatchedTheRequestedQuery(Double lrlonTheUserRequested, Double helperLrlon, Double max) {
+        return lrlonTheUserRequested > helperLrlon && helperLrlon < max;
+    }
 }
