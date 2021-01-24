@@ -52,24 +52,24 @@ public class Rasterer {
         int depthOfTheImages = findDepthOfTheImages(LonDPP);
 
         /* calculate the ullatOf_dDepth_x0_y0, ullongOf_dDepth_x0_y0, lrlatOf_dDepth_x0_y0, and lrlongOf_dDpeth_x0_y0
-        to help me in finding the needed files. */
+        to help me in finding the needed images. */
         Double ullatOf_dDepth_x0_y0 = MapServer.ROOT_ULLAT;
         Double ullongOf_dDepth_x0_y0 = MapServer.ROOT_ULLON;
         Double lrlatOf_dDepth_x0_y0 = MapServer.ROOT_LRLAT;
         Double lrlongOf_dDpeth_x0_y0 = MapServer.ROOT_LRLON;
-        Double spaceBetweenUppAndLowerLat = ((ullatOf_dDepth_x0_y0 - lrlatOf_dDepth_x0_y0) / (Math.pow(2, depthOfTheImages)));
-        Double spaceBetweenUppAndLowerLong = ((ullongOf_dDepth_x0_y0 - lrlongOf_dDpeth_x0_y0) / (Math.pow(2, depthOfTheImages)));
+        Double spaceBetweenUppAndLowerLat = ((ullatOf_dDepth_x0_y0 - lrlatOf_dDepth_x0_y0) /
+                (Math.pow(2, depthOfTheImages)));
+        Double spaceBetweenUppAndLowerLong = ((ullongOf_dDepth_x0_y0 - lrlongOf_dDpeth_x0_y0) /
+                (Math.pow(2, depthOfTheImages)));
         lrlatOf_dDepth_x0_y0 = ullatOf_dDepth_x0_y0 - spaceBetweenUppAndLowerLat;
         lrlongOf_dDpeth_x0_y0 = ullongOf_dDepth_x0_y0 - spaceBetweenUppAndLowerLong;
 
-        /* calculate x and y values of the first matched file. */
+        /* calculate x and y values of the first matched image. */
         int xOfTheFirstImage = (int) ((ullonTheUserRequested - ullongOf_dDepth_x0_y0) / (-spaceBetweenUppAndLowerLong));
         int yOfTheFirstImage = (int) ((ullatTheUserRequested - ullatOf_dDepth_x0_y0) / (-spaceBetweenUppAndLowerLat));
 
-        //TODO needed spaces when testing spaceInDepth7long = -0.0006866455 and spaceInDepth7Lat = 0.0005421337
-        //TODO needed spaces when testing spaceInDepth2Long = -0.02197265625 and spaceInDepth2Lat = 0.01734827842
 
-        /* calculate ullong, ullat, llrat, llrlon of the first matched file. */
+        /* calculate ullong, ullat, llrat, llrlon of the first matched image. */
         Double ullongOfTheFirstImage = (xOfTheFirstImage * spaceBetweenUppAndLowerLong) - (ullongOf_dDepth_x0_y0);
         Double ullatOfTheFirstImage = (yOfTheFirstImage * spaceBetweenUppAndLowerLat) - (ullatOf_dDepth_x0_y0);
         ullongOfTheFirstImage = (ullongOfTheFirstImage) * -1;
@@ -93,8 +93,6 @@ public class Rasterer {
                 yOfTheFirstImage, depthOfTheImages, lrlongOfTheFirstMatchedImage, spaceBetweenUppAndLowerLong,
                 spaceBetweenUppAndLowerLat, lrlatOfTheFirstMatchedImage, ullongOfTheFirstImage, ullatOfTheFirstImage);
         return results;
-        //TODO maybe try to clean the code by putting some global variables instead of passing many times to the functions
-
     }
 
     private void addAllNeededValuesToMap(Map<String, Object> results, int numbOfRowsToBeDisplayed,
@@ -124,6 +122,7 @@ public class Rasterer {
     private void putMatchedImagesInThArr(String[][] matchedImages, int numbOfRowsToBeDisplayed,
                               int numberOfColToBeDisplayed, int xOfTheFirstImage, int yOfTheFirstImage,
                               int depthOfTheImages) {
+
         int xOfTheImage = xOfTheFirstImage;
         int yOfTheImage = yOfTheFirstImage;
         for (int row = 0; row < numbOfRowsToBeDisplayed; row += 1) {
@@ -137,12 +136,12 @@ public class Rasterer {
     }
 
     /* calculate num of columns or rows that will be displayed to the user from the given query. */
-    private int calcNumThatWillBeDisplayedToUser(Double ulOfTheFirstFile, Double lrOfTheFirstFile,
+    private int calcNumThatWillBeDisplayedToUser(Double ulOfTheFirstImage, Double lrOfTheFirstImage,
                                            Double lrTheUserRequested, Double spaceBetweenUppAndLower,
                                            Double max, Count countNum) {
         int num = 1;
-        Double helperUl = ulOfTheFirstFile;
-        Double helperLr = lrOfTheFirstFile;
+        Double helperUl = ulOfTheFirstImage;
+        Double helperLr = lrOfTheFirstImage;
         while (countNum.notMatchedTheRequestedQuery(lrTheUserRequested, helperLr, max)) {
             helperUl  = helperLr;
             helperLr = helperLr - spaceBetweenUppAndLower;
@@ -151,7 +150,7 @@ public class Rasterer {
         return num;
     }
 
-
+    /* find depth of the matched images. */
     private int findDepthOfTheImages(Double queryLonDPP) {
         int depth = 0;
         Double LonDPP = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE);
