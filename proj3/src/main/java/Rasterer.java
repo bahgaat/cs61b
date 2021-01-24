@@ -80,12 +80,14 @@ public class Rasterer {
 
         /* find number of columns and rows that will be displayed to the user. */
         Count countNumOfCol = new CountNumOfCol();
-        int numberOfColToBeDisplayed = calcNumThatWillBeDisplayedToUser(ullongOfTheFirstImage, lrlongOfTheFirstMatchedImage,
-                lrlonTheUserRequested, spaceBetweenUppAndLowerLong, MapServer.ROOT_LRLON, countNumOfCol);
+        int numberOfColToBeDisplayed = calcNumThatWillBeDisplayedToUser(ullongOfTheFirstImage,
+                lrlongOfTheFirstMatchedImage, lrlonTheUserRequested, spaceBetweenUppAndLowerLong,
+                MapServer.ROOT_LRLON, countNumOfCol);
 
         Count countNumOfRows = new CountNumOfRows();
-        int numbOfRowsToBeDisplayed = calcNumThatWillBeDisplayedToUser(ullatOfTheFirstImage, lrlatOfTheFirstMatchedImage,
-                lrlatTheUserRequested, spaceBetweenUppAndLowerLat, MapServer.ROOT_LRLAT, countNumOfRows);
+        int numbOfRowsToBeDisplayed = calcNumThatWillBeDisplayedToUser(ullatOfTheFirstImage,
+                lrlatOfTheFirstMatchedImage, lrlatTheUserRequested, spaceBetweenUppAndLowerLat,
+                MapServer.ROOT_LRLAT, countNumOfRows);
 
 
         Map<String, Object> results = new HashMap<>();
@@ -97,7 +99,8 @@ public class Rasterer {
 
     private void addAllNeededValuesToMap(Map<String, Object> results, int numbOfRowsToBeDisplayed,
                                          int numberOfColToBeDisplayed, int xOfTheFirstImage,
-                                         int yOfTheFirstImage, int depthOfTheImages, Double lrlongOfTheFirstMatchedImage,
+                                         int yOfTheFirstImage, int depthOfTheImages,
+                                         Double lrlongOfTheFirstMatchedImage,
                                          Double spaceBetweenUppAndLowerLong, Double spaceBetweenUppAndLowerLat,
                                          Double lrlatOfTheFirstMatchedImage,
                                          Double ullongOfTheFirstImage, Double ullatOfTheFirstImage) {
