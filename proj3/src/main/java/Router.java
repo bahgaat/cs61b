@@ -93,6 +93,7 @@ public class Router {
     private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId) {
 
         ArrayList<Long> reversePath = new ArrayList<>();
+        /*
         long nodeIdParent = mapNodeIdToItsParent.get(nodeId);
         while (nodeId != closestNodeIdToStartPointId) {
             reversePath.add(nodeId);
@@ -101,6 +102,9 @@ public class Router {
         }
         reversePath.add(closestNodeIdToStartPointId);
         Collections.reverse(reversePath);
+        return reversePath;
+         */
+        reversePath.add(nodeId);
         return reversePath;
     }
 
