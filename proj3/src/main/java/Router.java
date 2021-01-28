@@ -100,13 +100,17 @@ public class Router {
             nodeIdParent = mapNodeIdToItsParent.get(nodeIdParent);
         }
         reversePath.add(closestNodeIdToStartPointId);
+        return reversePath;
 
         /* return path in the visited order.*/
+        /*
         ArrayList<Long> path = new ArrayList<>();
         while (reversePath.size() != 0) {
             path.add(reversePath.pop());
         }
         return path;
+
+         */
 
     }
 
