@@ -41,7 +41,10 @@ public class Router {
         mapNodeIdToItsParent.put(closestNodeIdToStartPointId, closestNodeIdToStartPointId);
         long nodeId = pq.removeMin();
         long goalNodeId = closestNodeIdToEndPointId;
-        while (nodeId != goalNodeId) {
+        while (pq.size() != 0) {
+            if (nodeId == goalNodeId) {
+                break;
+            }
             Iterable<Long> neighbors = g.adjacent(nodeId);
             addNeighborsToPq(neighbors, pq, nodeId, g, closestNodeIdToStartPointId,
                     closestNodeIdToEndPointId);
@@ -100,17 +103,16 @@ public class Router {
             nodeIdParent = mapNodeIdToItsParent.get(nodeIdParent);
         }
         reversePath.add(closestNodeIdToStartPointId);
-        return reversePath;
 
         /* return path in the visited order.*/
-        /*
+
         ArrayList<Long> path = new ArrayList<>();
         while (reversePath.size() != 0) {
             path.add(reversePath.pop());
         }
         return path;
 
-         */
+
 
     }
 
