@@ -33,38 +33,46 @@ public class Router {
                                           double destlon, double destlat) {
 
         mapNodeIdToBestDist  = new HashMap<>();
-        addToMapNodeIdToBestDist(g);
         mapNodeIdToItsParent = new HashMap<>();
         long closestNodeIdToStartPointId = g.closest(stlon, stlat);
         long closestNodeIdToEndPointId = g.closest(destlon, destlat);
-        NodeComparator nodeComparator = new NodeComparator(mapNodeIdToBestDist,
-                closestNodeIdToEndPointId, g);
-        PriorityQueue<Long> pq = new PriorityQueue<Long> (nodeComparator);
-        pq.add(closestNodeIdToStartPointId);
+        ExtrinsicPQ<Long> pq = new ArrayHeap<> ();
+        addToMapNodeIdToBestDist(g, closestNodeIdToStartPointId, pq);
         mapNodeIdToItsParent.put(closestNodeIdToStartPointId, closestNodeIdToStartPointId);
-        long nodeId = pq.poll();
+        long nodeId = pq.removeMin();
         long goalNodeId = closestNodeIdToEndPointId;
         while (nodeId != goalNodeId) {
             Iterable<Long> neighbors = g.adjacent(nodeId);
-            addNeighborsToPq(neighbors, pq, nodeId, g, closestNodeIdToStartPointId);
-            nodeId = pq.poll();
+            addNeighborsToPq(neighbors, pq, nodeId, g, closestNodeIdToStartPointId,
+                    closestNodeIdToEndPointId);
+            nodeId = pq.removeMin();
         }
         return listOfNodesId(nodeId, closestNodeIdToStartPointId);
     }
 
 
-    private static void addToMapNodeIdToBestDist(GraphDB g) {
+    private static void addToMapNodeIdToBestDist(GraphDB g, long closestNodeIdToStartPointId,
+                                                 ExtrinsicPQ<Long> pq) {
+
         Iterable<Long> vertices = g.vertices();
         double pInfiniteDouble = Double.POSITIVE_INFINITY;
         Iterator<Long> iterator = vertices.iterator();
         while (iterator.hasNext()) {
-            mapNodeIdToBestDist.put(iterator.next(), pInfiniteDouble);
+            long nodeId = iterator.next();
+            if (nodeId == closestNodeIdToStartPointId) {
+                mapNodeIdToBestDist.put(nodeId, (double) 0);
+                pq.insert(closestNodeIdToStartPointId, 0);
+            } else {
+                mapNodeIdToBestDist.put(nodeId, pInfiniteDouble);
+                pq.insert(nodeId, pInfiniteDouble);
+            }
         }
     }
 
-    private static void addNeighborsToPq(Iterable<Long> neighbors, PriorityQueue<Long> pq,
+    private static void addNeighborsToPq(Iterable<Long> neighbors, ExtrinsicPQ<Long> pq,
                                          long parentNodeId,
-                                         GraphDB g, long closestNodeIdToStartPointId) {
+                                         GraphDB g, long closestNodeIdToStartPointId,
+                                         long closestNodeIdToEndPointId) {
 
         Iterator<Long> iterator = neighbors.iterator();
         while (iterator.hasNext()) {
@@ -73,9 +81,10 @@ public class Router {
             double totalDist = distFormStartToParen + g.distance(parentNodeId, nodeId);
             double bestDist = mapNodeIdToBestDist.get(nodeId);
             if (totalDist < bestDist) {
-                pq.remove(nodeId);
                 mapNodeIdToBestDist.replace(nodeId, totalDist);
-                pq.add(nodeId);
+                double nodeHeuristicDis = g.distance(nodeId, closestNodeIdToEndPointId);
+                double priority = totalDist + nodeHeuristicDis;
+                pq.changePriority(nodeId, priority);
                 mapNodeIdToItsParent.put(nodeId, parentNodeId);
             }
         }
@@ -91,16 +100,14 @@ public class Router {
             nodeIdParent = mapNodeIdToItsParent.get(nodeIdParent);
         }
         reversePath.add(closestNodeIdToStartPointId);
-        return reversePath;
 
-        /* return path in the visited order.
+        /* return path in the visited order.*/
         ArrayList<Long> path = new ArrayList<>();
         while (reversePath.size() != 0) {
             path.add(reversePath.pop());
         }
         return path;
 
-         */
     }
 
     /**
