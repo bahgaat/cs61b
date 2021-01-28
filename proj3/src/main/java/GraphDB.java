@@ -1,3 +1,8 @@
+/*import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import sun.awt.image.ImageWatched;
+import sun.jvm.hotspot.oops.Array;
+ */
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -6,7 +11,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -24,8 +29,17 @@ public class GraphDB {
     /**
      * Example constructor shows how to create and start an XML parser.
      * You do not need to modify this constructor, but you're welcome to do so.
+     *
      * @param dbPath Path to the XML file to be parsed.
      */
+    private HashMap<Long, ArrayList<Long>> mapNodesIdToTheirAdjId = new HashMap<>();
+    private HashMap<Long, Node> mapNodesIdToTheWholeNode = new HashMap<>();
+    private ArrayList<Way> arrayListOfWays = new ArrayList<>();
+
+    public HashMap<Long, Node> getMapNodesIdToTheWholeNode() {
+        return (HashMap<Long, Node>) mapNodesIdToTheWholeNode.clone();
+    }
+
     public GraphDB(String dbPath) {
         try {
             File inputFile = new File(dbPath);
@@ -44,6 +58,7 @@ public class GraphDB {
 
     /**
      * Helper to process strings into their "cleaned" form, ignoring punctuation and capitalization.
+     *
      * @param s Input string.
      * @return Cleaned string.
      */
@@ -52,36 +67,51 @@ public class GraphDB {
     }
 
     /**
-     *  Remove nodes with no connections from the graph.
-     *  While this does not guarantee that any two nodes in the remaining graph are connected,
-     *  we can reasonably assume this since typically roads are connected.
+     * Remove nodes with no connections from the graph.
+     * While this does not guarantee that any two nodes in the remaining graph are connected,
+     * we can reasonably assume this since typically roads are connected.
      */
     private void clean() {
-        // TODO: Your code here.
+        Iterator<Long> verticesId = vertices().iterator();
+        ArrayList<Long> unConnectedVerticesId = new ArrayList<>();
+        long vertexId = 0;
+        while (verticesId.hasNext()) {
+            vertexId = verticesId.next();
+            ArrayList<Long> adjacent = (ArrayList<Long>) adjacent(vertexId);
+            if (adjacent.size() == 0) {
+                unConnectedVerticesId.add(vertexId);
+            }
+        }
+        for (int i = 0; i < unConnectedVerticesId.size(); i += 1) {
+            removeNode(unConnectedVerticesId.get(i));
+        }
     }
 
     /**
      * Returns an iterable of all vertex IDs in the graph.
+     *
      * @return An iterable of id's of all vertices in the graph.
      */
     Iterable<Long> vertices() {
-        //YOUR CODE HERE, this currently returns only an empty list.
-        return new ArrayList<Long>();
+        return mapNodesIdToTheirAdjId.keySet();
     }
 
     /**
      * Returns ids of all vertices adjacent to v.
+     *
      * @param v The id of the vertex we are looking adjacent to.
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return null;
+        ArrayList<Long> adjacent = mapNodesIdToTheirAdjId.get(v);
+        return adjacent;
     }
 
     /**
      * Returns the great-circle distance between vertices v and w in miles.
      * Assumes the lon/lat methods are implemented properly.
      * <a href="https://www.movable-type.co.uk/scripts/latlong.html">Source</a>.
+     *
      * @param v The id of the first vertex.
      * @param w The id of the second vertex.
      * @return The great-circle distance between the two locations from the graph.
@@ -109,6 +139,7 @@ public class GraphDB {
      * end point.
      * Assumes the lon/lat methods are implemented properly.
      * <a href="https://www.movable-type.co.uk/scripts/latlong.html">Source</a>.
+     *
      * @param v The id of the first vertex.
      * @param w The id of the second vertex.
      * @return The initial bearing between the vertices.
@@ -131,29 +162,73 @@ public class GraphDB {
 
     /**
      * Returns the vertex closest to the given longitude and latitude.
+     *
      * @param lon The target longitude.
      * @param lat The target latitude.
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        return 0;
+        long closestVertexId = 0;
+        double distance1 = Integer.MAX_VALUE;
+        Iterator<Long> verticesId = vertices().iterator();
+        while (verticesId.hasNext()) {
+            long vertexId = verticesId.next();
+            double distance2 = distance(lon, lat, lon(vertexId), lat(vertexId));
+            if (distance1 > distance2) {
+                closestVertexId = vertexId;
+                distance1 = distance2;
+            }
+        }
+        return closestVertexId;
     }
 
     /**
      * Gets the longitude of a vertex.
+     *
      * @param v The id of the vertex.
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return 0;
+        Node node = mapNodesIdToTheWholeNode.get(v);
+        String lon = node.getLon();
+        return Double.parseDouble(lon);
     }
 
     /**
      * Gets the latitude of a vertex.
+     *
      * @param v The id of the vertex.
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return 0;
+        Node node = mapNodesIdToTheWholeNode.get(v);
+        String lat = node.getLat();
+        return Double.parseDouble(lat);
     }
+
+    void addNode(Node node) {
+        String nodeId = node.getId();
+        ArrayList<Long> arrayListOfAdjNodesId = new ArrayList<>();
+        Long nodeIdToLong = Long.parseLong(nodeId);
+        mapNodesIdToTheirAdjId.put(nodeIdToLong, arrayListOfAdjNodesId);
+        mapNodesIdToTheWholeNode.put(nodeIdToLong, node);
+    }
+
+    /* by getting the nodes id. addEDge between those nodes. */
+    void addEdge(String node1Id, String node2Id) {
+        ArrayList<Long> arraylistOfAdjNode1Id = mapNodesIdToTheirAdjId.get(Long.parseLong(node1Id));
+        arraylistOfAdjNode1Id.add(Long.parseLong(node2Id));
+        ArrayList<Long> arraylistOfAdjNode2Id = mapNodesIdToTheirAdjId.get(Long.parseLong(node2Id));
+        arraylistOfAdjNode2Id.add(Long.parseLong(node1Id));
+    }
+
+    void addWay(Way way) {
+        arrayListOfWays.add(way);
+    }
+
+    void removeNode(Long vertexId) {
+        mapNodesIdToTheWholeNode.remove(vertexId);
+        mapNodesIdToTheirAdjId.remove(vertexId);
+    }
+
 }
