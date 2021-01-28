@@ -222,9 +222,10 @@ public class GraphDB {
         arraylistOfAdjNode2Id.add(Long.parseLong(node1Id));
     }
 
-    void addWay(Way way) {
+    /*void addWay(Way way) {
         arrayListOfWays.add(way);
     }
+    */
 
     void removeNode(Long vertexId) {
         mapNodesIdToTheWholeNode.remove(vertexId);

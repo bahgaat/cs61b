@@ -117,7 +117,7 @@ public class GraphBuildingHandler extends DefaultHandler {
                     graph.addEdge(arrayOfNodesId.get(i), arrayOfNodesId.get(i + 1));
                 }
             }
-            graph.addWay(way);
+            /*graph.addWay(way);*/
         }
     }
 
