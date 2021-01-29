@@ -38,12 +38,11 @@ public class Router {
         long closestNodeIdToEndPointId = g.closest(destlon, destlat);
         ExtrinsicPQ<Long> pq = new ArrayHeap<> ();
         addToMapNodeIdToBestDist(g, closestNodeIdToStartPointId, pq);
-        mapNodeIdToItsParent.put(closestNodeIdToStartPointId, (long) 0);
         long nodeId = pq.removeMin();
         long goalNodeId = closestNodeIdToEndPointId;
         nodeId = obtainTheClosestNodeToEndPoint(nodeId, goalNodeId, pq,
                 closestNodeIdToEndPointId, closestNodeIdToStartPointId, g);
-        return listOfNodesId(nodeId);
+        return listOfNodesId(nodeId, closestNodeIdToStartPointId);
     }
 
     private static long obtainTheClosestNodeToEndPoint(long nodeId,  long goalNodeId
@@ -76,6 +75,7 @@ public class Router {
                 mapNodeIdToBestDist.put(nodeId, pInfiniteDouble);
                 pq.insert(nodeId, pInfiniteDouble);
             }
+            mapNodeIdToItsParent.put(nodeId, (long) 0);
         }
     }
 
@@ -95,21 +95,19 @@ public class Router {
                 double nodeHeuristicDis = g.distance(nodeId, closestNodeIdToEndPointId);
                 double priority = totalDist + nodeHeuristicDis;
                 pq.changePriority(nodeId, priority);
-                mapNodeIdToItsParent.put(nodeId, parentNodeId);
+                mapNodeIdToItsParent.replace(nodeId, parentNodeId);
             }
         }
     }
 
-    private static List<Long> listOfNodesId(long nodeId) {
+    private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId) {
 
-        //TODO the problem is in this function. */
         ArrayList<Long> reversePath = new ArrayList<>();
-        while (nodeId != 0) {
+        while (nodeId != closestNodeIdToStartPointId && nodeId != 0) {
             reversePath.add(nodeId);
             nodeId = mapNodeIdToItsParent.get(nodeId);
         }
-
-        //TODO 91846663 and 3386879834 are repeated so many times.       /*
+        reversePath.add(nodeId);
         Collections.reverse(reversePath);
         return reversePath;
     }
