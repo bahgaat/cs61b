@@ -41,13 +41,15 @@ public class Router {
         mapNodeIdToItsParent.put(closestNodeIdToStartPointId, closestNodeIdToStartPointId);
         long nodeId = pq.removeMin();
         long goalNodeId = closestNodeIdToEndPointId;
+        int size = 0;
         while (nodeId != goalNodeId && pq.size() > 0) {
             Iterable<Long> neighbors = g.adjacent(nodeId);
             addNeighborsToPq(neighbors, pq, nodeId, g, closestNodeIdToStartPointId,
                     closestNodeIdToEndPointId);
             nodeId = pq.removeMin();
+            size += 1;
         }
-        return listOfNodesId(nodeId, closestNodeIdToStartPointId);
+        return listOfNodesId(nodeId, closestNodeIdToStartPointId, size);
     }
 
 
@@ -90,7 +92,7 @@ public class Router {
         }
     }
 
-    private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId) {
+    private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId, int size) {
 
         //TODO the problem is in this function. */
         ArrayList<Long> reversePath = new ArrayList<>();
@@ -102,10 +104,12 @@ public class Router {
             nodeIdParent = mapNodeIdToItsParent.get(nodeIdParent);
         }
          */
-        reversePath.add(nodeId);
-        reversePath.add(nodeIdParent);
-        reversePath.add(mapNodeIdToItsParent.get(nodeIdParent));
-        reversePath.add(mapNodeIdToItsParent.get(mapNodeIdToItsParent.get(nodeIdParent)));
+        while (size  > 0) {
+            reversePath.add(nodeId);
+            nodeId = nodeIdParent;
+            nodeIdParent = mapNodeIdToItsParent.get(nodeIdParent);
+            size -= 1;
+        }
         Collections.reverse(reversePath);
         return reversePath;
     }
