@@ -92,19 +92,18 @@ public class Router {
 
     private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId) {
 
+        //TODO the problem is in this function. */
         ArrayList<Long> reversePath = new ArrayList<>();
-        /*
         long nodeIdParent = mapNodeIdToItsParent.get(nodeId);
-        while (nodeId != closestNodeIdToStartPointId) {
+        int size = 35;
+        while (size > 0) {
             reversePath.add(nodeId);
             nodeId = nodeIdParent;
             nodeIdParent = mapNodeIdToItsParent.get(nodeIdParent);
+            size -= 1;
         }
         reversePath.add(closestNodeIdToStartPointId);
         Collections.reverse(reversePath);
-        return reversePath;
-         */
-        reversePath.add(nodeId);
         return reversePath;
     }
 
