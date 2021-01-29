@@ -95,14 +95,17 @@ public class Router {
         //TODO the problem is in this function. */
         ArrayList<Long> reversePath = new ArrayList<>();
         long nodeIdParent = mapNodeIdToItsParent.get(nodeId);
-        int size = 35;
-        while (size > 0) {
+        /*
+        while (nodeId != closestNodeIdToStartPointId) {
             reversePath.add(nodeId);
             nodeId = nodeIdParent;
             nodeIdParent = mapNodeIdToItsParent.get(nodeIdParent);
-            size -= 1;
         }
-        reversePath.add(closestNodeIdToStartPointId);
+         */
+        reversePath.add(nodeId);
+        reversePath.add(nodeIdParent);
+        reversePath.add(mapNodeIdToItsParent.get(nodeIdParent));
+        reversePath.add(mapNodeIdToItsParent.get(mapNodeIdToItsParent.get(nodeIdParent)));
         Collections.reverse(reversePath);
         return reversePath;
     }
