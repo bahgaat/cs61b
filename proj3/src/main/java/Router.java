@@ -75,7 +75,6 @@ public class Router {
                 mapNodeIdToBestDist.put(nodeId, pInfiniteDouble);
                 pq.insert(nodeId, pInfiniteDouble);
             }
-            mapNodeIdToItsParent.put(nodeId, (long) 0);
         }
     }
 
@@ -95,7 +94,7 @@ public class Router {
                 double nodeHeuristicDis = g.distance(nodeId, closestNodeIdToEndPointId);
                 double priority = totalDist + nodeHeuristicDis;
                 pq.changePriority(nodeId, priority);
-                mapNodeIdToItsParent.replace(nodeId, parentNodeId);
+                mapNodeIdToItsParent.put(nodeId, parentNodeId);
             }
         }
     }
@@ -103,9 +102,13 @@ public class Router {
     private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId) {
 
         ArrayList<Long> reversePath = new ArrayList<>();
-        while (nodeId != closestNodeIdToStartPointId && nodeId != 0) {
+        while (nodeId != closestNodeIdToStartPointId) {
             reversePath.add(nodeId);
-            nodeId = mapNodeIdToItsParent.get(nodeId);
+            if (mapNodeIdToItsParent.containsKey(nodeId)) {
+                nodeId = mapNodeIdToItsParent.get(nodeId);
+            } else {
+                break;
+            }
         }
         reversePath.add(nodeId);
         Collections.reverse(reversePath);
