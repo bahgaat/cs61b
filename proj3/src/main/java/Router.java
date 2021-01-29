@@ -38,18 +38,25 @@ public class Router {
         long closestNodeIdToEndPointId = g.closest(destlon, destlat);
         ExtrinsicPQ<Long> pq = new ArrayHeap<> ();
         addToMapNodeIdToBestDist(g, closestNodeIdToStartPointId, pq);
-        mapNodeIdToItsParent.put(closestNodeIdToStartPointId, closestNodeIdToStartPointId);
+        mapNodeIdToItsParent.put(closestNodeIdToStartPointId, (long) 0);
         long nodeId = pq.removeMin();
         long goalNodeId = closestNodeIdToEndPointId;
-        int size = 0;
+        nodeId = obtainTheClosestNodeToEndPoint(nodeId, goalNodeId, pq,
+                closestNodeIdToEndPointId, closestNodeIdToStartPointId, g);
+        return listOfNodesId(nodeId);
+    }
+
+    private static long obtainTheClosestNodeToEndPoint(long nodeId,  long goalNodeId
+            , ExtrinsicPQ<Long> pq, long closestNodeIdToEndPointId, long closestNodeIdToStartPointId,
+                                                       GraphDB g) {
+
         while (nodeId != goalNodeId && pq.size() > 0) {
             Iterable<Long> neighbors = g.adjacent(nodeId);
             addNeighborsToPq(neighbors, pq, nodeId, g, closestNodeIdToStartPointId,
                     closestNodeIdToEndPointId);
             nodeId = pq.removeMin();
-            size += 1;
         }
-        return listOfNodesId(nodeId, closestNodeIdToStartPointId, size);
+        return nodeId;
     }
 
 
@@ -59,8 +66,9 @@ public class Router {
         Iterable<Long> vertices = g.vertices();
         double pInfiniteDouble = Double.POSITIVE_INFINITY;
         Iterator<Long> iterator = vertices.iterator();
+        long nodeId;
         while (iterator.hasNext()) {
-            long nodeId = iterator.next();
+            nodeId = iterator.next();
             if (nodeId == closestNodeIdToStartPointId) {
                 mapNodeIdToBestDist.put(nodeId, (double) 0);
                 pq.insert(closestNodeIdToStartPointId, 0);
@@ -79,7 +87,7 @@ public class Router {
         Iterator<Long> iterator = neighbors.iterator();
         while (iterator.hasNext()) {
             long nodeId = iterator.next();
-            double distFormStartToParen = g.distance(closestNodeIdToStartPointId, parentNodeId);
+            double distFormStartToParen = mapNodeIdToBestDist.get(parentNodeId);
             double totalDist = distFormStartToParen + g.distance(parentNodeId, nodeId);
             double bestDist = mapNodeIdToBestDist.get(nodeId);
             if (totalDist < bestDist) {
@@ -92,24 +100,16 @@ public class Router {
         }
     }
 
-    private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId, int size) {
+    private static List<Long> listOfNodesId(long nodeId) {
 
         //TODO the problem is in this function. */
         ArrayList<Long> reversePath = new ArrayList<>();
-        long nodeIdParent = mapNodeIdToItsParent.get(nodeId);
-        /*
-        while (nodeId != closestNodeIdToStartPointId) {
+        while (nodeId != 0) {
             reversePath.add(nodeId);
-            nodeId = nodeIdParent;
-            nodeIdParent = mapNodeIdToItsParent.get(nodeIdParent);
+            nodeId = mapNodeIdToItsParent.get(nodeId);
         }
-         */
-        while (size  > 0) {
-            reversePath.add(nodeId);
-            nodeId = nodeIdParent;
-            nodeIdParent = mapNodeIdToItsParent.get(nodeIdParent);
-            size -= 1;
-        }
+
+        //TODO 91846663 and 3386879834 are repeated so many times.       /*
         Collections.reverse(reversePath);
         return reversePath;
     }
