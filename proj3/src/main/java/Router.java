@@ -104,11 +104,7 @@ public class Router {
         ArrayList<Long> reversePath = new ArrayList<>();
         while (nodeId != closestNodeIdToStartPointId) {
             reversePath.add(nodeId);
-            if (mapNodeIdToItsParent.containsKey(nodeId)) {
-                nodeId = mapNodeIdToItsParent.get(nodeId);
-            } else {
-                break;
-            }
+            nodeId = mapNodeIdToItsParent.get(nodeId);
         }
         reversePath.add(nodeId);
         Collections.reverse(reversePath);
