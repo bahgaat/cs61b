@@ -101,18 +101,14 @@ public class Router {
 
     private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId) {
 
-        ArrayList<Long> path = new ArrayList<>();
-        try {
-            while (nodeId != closestNodeIdToStartPointId) {
-                path.add(0, nodeId);
-                nodeId = mapNodeIdToItsParent.get(nodeId);
-            }
-        } catch (Exception e) {
-            path.add(0, nodeId);
-            return path;
+        ArrayList<Long> reversePath = new ArrayList<>();
+        while (nodeId != closestNodeIdToStartPointId) {
+            reversePath.add(nodeId);
+            nodeId = mapNodeIdToItsParent.get(nodeId);
         }
-        path.add(0, nodeId);
-        return path;
+        reversePath.add(nodeId);
+        Collections.reverse(reversePath);
+        return reversePath;
     }
 
     /**
@@ -152,7 +148,7 @@ public class Router {
 
         /** Default name for an unknown way. */
         public static final String UNKNOWN_ROAD = "unknown road";
-        
+
         /** Static initializer. */
         static {
             DIRECTIONS[START] = "Start";
@@ -236,8 +232,8 @@ public class Router {
         public boolean equals(Object o) {
             if (o instanceof NavigationDirection) {
                 return direction == ((NavigationDirection) o).direction
-                    && way.equals(((NavigationDirection) o).way)
-                    && distance == ((NavigationDirection) o).distance;
+                        && way.equals(((NavigationDirection) o).way)
+                        && distance == ((NavigationDirection) o).distance;
             }
             return false;
         }
@@ -248,3 +244,5 @@ public class Router {
         }
     }
 }
+
+
