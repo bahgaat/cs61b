@@ -16,7 +16,7 @@ import java.util.*;
 public class Router {
     private static HashMap<Long, Double> mapNodeIdToBestDist;
     private static HashMap<Long, Long> mapNodeIdToItsParent;
-    private static HashSet<Long> marked;
+    /*private static HashSet<Long> marked;*/
 
 
     /**
@@ -35,7 +35,7 @@ public class Router {
 
         mapNodeIdToBestDist  = new HashMap<>();
         mapNodeIdToItsParent = new HashMap<>();
-        marked = new HashSet<>();
+        /*marked = new HashSet<>();*/
         long closestNodeIdToStartPointId = g.closest(stlon, stlat);
         long closestNodeIdToEndPointId = g.closest(destlon, destlat);
         ExtrinsicPQ<Long> pq = new ArrayHeap<> ();
@@ -53,14 +53,22 @@ public class Router {
                                                        GraphDB g) {
 
         while (nodeId != goalNodeId) {
-            marked.add(nodeId);
+            /*marked.add(nodeId);*/
             Iterable<Long> neighbors = g.adjacent(nodeId);
             addNeighborsToPq(neighbors, pq, nodeId, g, closestNodeIdToStartPointId,
                     closestNodeIdToEndPointId);
+            if (pq.size() == 0) {
+                break;
+            }
             nodeId = pq.removeMin();
+            /*
             if (marked.contains(nodeId)) {
                 continue;
             }
+
+             */
+
+
         }
         return nodeId;
     }
@@ -80,7 +88,7 @@ public class Router {
             } else {
                 mapNodeIdToBestDist.put(nodeId, pInfiniteDouble);
             }
-            mapNodeIdToItsParent.put(nodeId, 0L);
+            /*mapNodeIdToItsParent.put(nodeId, 0L);*/
         }
     }
 
@@ -100,7 +108,7 @@ public class Router {
                 double nodeHeuristicDis = g.distance(nodeId, closestNodeIdToEndPointId);
                 double priority = totalDist + nodeHeuristicDis;
                 pq.insert(nodeId, priority);
-                mapNodeIdToItsParent.replace(nodeId, parentNodeId);
+                mapNodeIdToItsParent.put(nodeId, parentNodeId);
             }
         }
     }
@@ -108,7 +116,7 @@ public class Router {
     private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId) {
 
         ArrayList<Long> reversePath = new ArrayList<>();
-        while (nodeId != closestNodeIdToStartPointId && nodeId != 0L) {
+        while (nodeId != closestNodeIdToStartPointId) {
             reversePath.add(nodeId);
             nodeId = mapNodeIdToItsParent.get(nodeId);
         }
