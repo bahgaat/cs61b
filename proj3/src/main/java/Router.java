@@ -16,6 +16,7 @@ import java.util.*;
 public class Router {
     private static HashMap<Long, Double> mapNodeIdToBestDist;
     private static HashMap<Long, Long> mapNodeIdToItsParent;
+    private static HashSet<Long> marked;
 
 
     /**
@@ -34,10 +35,12 @@ public class Router {
 
         mapNodeIdToBestDist  = new HashMap<>();
         mapNodeIdToItsParent = new HashMap<>();
+        marked = new HashSet<>();
         long closestNodeIdToStartPointId = g.closest(stlon, stlat);
         long closestNodeIdToEndPointId = g.closest(destlon, destlat);
         ExtrinsicPQ<Long> pq = new ArrayHeap<> ();
         addToMapNodeIdToBestDist(g, closestNodeIdToStartPointId, pq);
+        pq.insert(closestNodeIdToStartPointId, 0);
         long nodeId = pq.removeMin();
         long goalNodeId = closestNodeIdToEndPointId;
         nodeId = obtainTheClosestNodeToEndPoint(nodeId, goalNodeId, pq,
@@ -49,11 +52,15 @@ public class Router {
             , ExtrinsicPQ<Long> pq, long closestNodeIdToEndPointId, long closestNodeIdToStartPointId,
                                                        GraphDB g) {
 
-        while (nodeId != goalNodeId && pq.size() > 0) {
+        while (nodeId != goalNodeId) {
+            marked.add(nodeId);
             Iterable<Long> neighbors = g.adjacent(nodeId);
             addNeighborsToPq(neighbors, pq, nodeId, g, closestNodeIdToStartPointId,
                     closestNodeIdToEndPointId);
             nodeId = pq.removeMin();
+            if (marked.contains(nodeId)) {
+                continue;
+            }
         }
         return nodeId;
     }
@@ -70,10 +77,8 @@ public class Router {
             nodeId = iterator.next();
             if (nodeId == closestNodeIdToStartPointId) {
                 mapNodeIdToBestDist.put(nodeId, (double) 0);
-                pq.insert(closestNodeIdToStartPointId, 0);
             } else {
                 mapNodeIdToBestDist.put(nodeId, pInfiniteDouble);
-                pq.insert(nodeId, pInfiniteDouble);
             }
             mapNodeIdToItsParent.put(nodeId, 0L);
         }
@@ -94,11 +99,8 @@ public class Router {
                 mapNodeIdToBestDist.replace(nodeId, totalDist);
                 double nodeHeuristicDis = g.distance(nodeId, closestNodeIdToEndPointId);
                 double priority = totalDist + nodeHeuristicDis;
-                pq.changePriority(nodeId, priority);
+                pq.insert(nodeId, priority);
                 mapNodeIdToItsParent.replace(nodeId, parentNodeId);
-            }
-            if (nodeId == closestNodeIdToEndPointId) {
-                break;
             }
         }
     }
