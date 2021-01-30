@@ -14,8 +14,8 @@ import java.util.*;
  * down to the priority you use to order your vertices.
  */
 public class Router {
-    private static HashMap<Long, Double> mapNodeIdToBestDist;
-    private static HashMap<Long, Long> mapNodeIdToItsParent;
+    private static HashMap<Long, Double> nodeIdToBestDist;
+    private static HashMap<Long, Long> nodeIdToItsParent;
 
 
     /**
@@ -32,16 +32,33 @@ public class Router {
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                    double destlon, double destlat) {
 
-        mapNodeIdToBestDist  = new HashMap<>();
-        mapNodeIdToItsParent = new HashMap<>();
+        nodeIdToBestDist  = new HashMap<>();
+        nodeIdToItsParent = new HashMap<>();
         long closestNodeIdToStartPointId = g.closest(stlon, stlat);
         long closestNodeIdToEndPointId = g.closest(destlon, destlat);
         ExtrinsicPQ<Long> pq = new ArrayHeap<> ();
-        addToMapNodeIdToBestDist(g, closestNodeIdToStartPointId, pq);
+        addNodeIdToBestDist(g, closestNodeIdToStartPointId);
         pq.insert(closestNodeIdToStartPointId, 0);
         long nodeId = obtainTheClosestNodeToEndPoint(pq,
                 closestNodeIdToEndPointId, closestNodeIdToStartPointId, g);
         return listOfNodesId(nodeId, closestNodeIdToStartPointId);
+    }
+
+    /* put start distance to each node id in the map. */
+    private static void addNodeIdToBestDist(GraphDB g, long closestNodeIdToStartPointId) {
+
+        Iterable<Long> vertices = g.vertices();
+        double pInfiniteDouble = Double.POSITIVE_INFINITY;
+        Iterator<Long> iterator = vertices.iterator();
+        long nodeId;
+        while (iterator.hasNext()) {
+            nodeId = iterator.next();
+            if (nodeId == closestNodeIdToStartPointId) {
+                nodeIdToBestDist.put(nodeId, (double) 0);
+            } else {
+                nodeIdToBestDist.put(nodeId, pInfiniteDouble);
+            }
+        }
     }
 
     private static long obtainTheClosestNodeToEndPoint(ExtrinsicPQ<Long> pq, long closestNodeIdToEndPointId,
@@ -54,59 +71,38 @@ public class Router {
                 break;
             }
             Iterable<Long> neighbors = g.adjacent(nodeId);
-            addNeighborsToPq(neighbors, pq, nodeId, g, closestNodeIdToStartPointId,
-                    closestNodeIdToEndPointId);
-
+            addNeighborsToPq(neighbors, pq, nodeId, g,    closestNodeIdToEndPointId);
         }
         return nodeId;
     }
 
 
-    private static void addToMapNodeIdToBestDist(GraphDB g, long closestNodeIdToStartPointId,
-                                                 ExtrinsicPQ<Long> pq) {
-
-        Iterable<Long> vertices = g.vertices();
-        double pInfiniteDouble = Double.POSITIVE_INFINITY;
-        Iterator<Long> iterator = vertices.iterator();
-        long nodeId;
-        while (iterator.hasNext()) {
-            nodeId = iterator.next();
-            if (nodeId == closestNodeIdToStartPointId) {
-                mapNodeIdToBestDist.put(nodeId, (double) 0);
-            } else {
-                mapNodeIdToBestDist.put(nodeId, pInfiniteDouble);
-            }
-            /*mapNodeIdToItsParent.put(nodeId, 0L);*/
-        }
-    }
-
     private static void addNeighborsToPq(Iterable<Long> neighbors, ExtrinsicPQ<Long> pq,
-                                         long parentNodeId,
-                                         GraphDB g, long closestNodeIdToStartPointId,
-                                         long closestNodeIdToEndPointId) {
+                                         long parentNodeId, GraphDB g, long closestNodeIdToEndPointId) {
 
         Iterator<Long> iterator = neighbors.iterator();
         while (iterator.hasNext()) {
             long nodeId = iterator.next();
-            double distFormStartToParen = mapNodeIdToBestDist.get(parentNodeId);
+            double distFormStartToParen = nodeIdToBestDist.get(parentNodeId);
             double totalDist = distFormStartToParen + g.distance(parentNodeId, nodeId);
-            double bestDist = mapNodeIdToBestDist.get(nodeId);
+            double bestDist = nodeIdToBestDist.get(nodeId);
             if (totalDist < bestDist) {
-                mapNodeIdToBestDist.replace(nodeId, totalDist);
+                nodeIdToBestDist.replace(nodeId, totalDist);
                 double nodeHeuristicDis = g.distance(nodeId, closestNodeIdToEndPointId);
                 double priority = totalDist + nodeHeuristicDis;
                 pq.insert(nodeId, priority);
-                mapNodeIdToItsParent.put(nodeId, parentNodeId);
+                nodeIdToItsParent.put(nodeId, parentNodeId);
             }
         }
     }
 
+    /* return list of nodes id in the visited order. */
     private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId) {
 
         ArrayList<Long> reversePath = new ArrayList<>();
         while (nodeId != closestNodeIdToStartPointId) {
             reversePath.add(nodeId);
-            nodeId = mapNodeIdToItsParent.get(nodeId);
+            nodeId = nodeIdToItsParent.get(nodeId);
         }
         reversePath.add(nodeId);
         Collections.reverse(reversePath);
