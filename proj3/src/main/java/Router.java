@@ -30,7 +30,7 @@ public class Router {
      * @return A list of node id's in the order visited on the shortest path.
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
-                                          double destlon, double destlat) {
+                                   double destlon, double destlat) {
 
         mapNodeIdToBestDist  = new HashMap<>();
         mapNodeIdToItsParent = new HashMap<>();
@@ -45,7 +45,7 @@ public class Router {
         return listOfNodesId(nodeId, closestNodeIdToStartPointId);
     }
 
-    private static long obtainTheClosestNodeToEndPoint(long nodeId,  long goalNodeId
+    private static long obtainTheClosestNodeToEndPoint(long nodeId, long goalNodeId
             , ExtrinsicPQ<Long> pq, long closestNodeIdToEndPointId, long closestNodeIdToStartPointId,
                                                        GraphDB g) {
 
@@ -75,6 +75,7 @@ public class Router {
                 mapNodeIdToBestDist.put(nodeId, pInfiniteDouble);
                 pq.insert(nodeId, pInfiniteDouble);
             }
+            mapNodeIdToItsParent.put(nodeId, 0L);
         }
     }
 
@@ -94,21 +95,20 @@ public class Router {
                 double nodeHeuristicDis = g.distance(nodeId, closestNodeIdToEndPointId);
                 double priority = totalDist + nodeHeuristicDis;
                 pq.changePriority(nodeId, priority);
-                mapNodeIdToItsParent.put(nodeId, parentNodeId);
+                mapNodeIdToItsParent.replace(nodeId, parentNodeId);
+            }
+            if (nodeId == closestNodeIdToEndPointId) {
+                break;
             }
         }
     }
 
     private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId) {
 
-        boolean t = false;
         ArrayList<Long> reversePath = new ArrayList<>();
-        while (nodeId != closestNodeIdToStartPointId) {
+        while (nodeId != closestNodeIdToStartPointId && nodeId != 0L) {
             reversePath.add(nodeId);
             nodeId = mapNodeIdToItsParent.get(nodeId);
-            if (Objects.isNull(nodeId)) {
-                return reversePath;
-            }
         }
         reversePath.add(nodeId);
         Collections.reverse(reversePath);
