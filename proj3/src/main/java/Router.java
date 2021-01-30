@@ -14,6 +14,7 @@ import java.util.*;
 public class Router {
     private static HashMap<Long, Double> nodeIdToBestDist;
     private static HashMap<Long, Long> nodeIdToItsParent;
+    private static boolean reached = false;
     /**
 
      * Return a List of longs representing the shortest path from the node
@@ -39,7 +40,12 @@ public class Router {
         pq.insert(closestNodeIdToStartPointId, 0);
         long nodeId = obtainTheClosestNodeToEndPoint(pq,
                 closestNodeIdToEndPointId, closestNodeIdToStartPointId, g);
-        return listOfNodesId(nodeId, closestNodeIdToStartPointId);
+        if (reached == true) {
+            return listOfNodesId(nodeId, closestNodeIdToStartPointId);
+        } else {
+            return new ArrayList<>();
+        }
+
     }
 
     /* put start distance to each node id in the map. */
@@ -68,6 +74,7 @@ public class Router {
         while (pq.size() > 0) {
             nodeId = pq.removeMin();
             if (nodeId == closestNodeIdToEndPointId) {
+                reached = true;
                 break;
             }
             Iterable<Long> neighbors = g.adjacent(nodeId);
