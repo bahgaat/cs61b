@@ -7,221 +7,117 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import java.util.*;
-
-
-
 /**
-
  * This class provides a shortestPath method for finding routes between two points
-
  * on the map. Start by using Dijkstra's, and if your code isn't fast enough for your
-
  * satisfaction (or the autograder), upgrade your implementation by switching it to A*.
-
  * Your code will probably not be fast enough to pass the autograder unless you use A*.
-
  * The difference between A* and Dijkstra's is only a couple of lines of code, and boils
-
  * down to the priority you use to order your vertices.
-
  */
-
 public class Router {
-
-    private static HashMap<Long, Double> mapNodeIdToBestDist;
-
-    private static HashMap<Long, Long> mapNodeIdToItsParent;
-
-
-
+    private static HashMap<Long, Double> nodeIdToBestDist;
+    private static HashMap<Long, Long> nodeIdToItsParent;
     /**
 
      * Return a List of longs representing the shortest path from the node
-
      * closest to a start location and the node closest to the destination
-
      * location.
-
      * @param g The graph to use.
-
      * @param stlon The longitude of the start location.
-
      * @param stlat The latitude of the start location.
-
      * @param destlon The longitude of the destination location.
-
      * @param destlat The latitude of the destination location.
-
      * @return A list of node id's in the order visited on the shortest path.
-
      */
 
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
-
                                           double destlon, double destlat) {
 
-
-        mapNodeIdToBestDist  = new HashMap<>();
-
-        mapNodeIdToItsParent = new HashMap<>();
-
+        nodeIdToBestDist  = new HashMap<>();
+        nodeIdToItsParent = new HashMap<>();
         long closestNodeIdToStartPointId = g.closest(stlon, stlat);
-
         long closestNodeIdToEndPointId = g.closest(destlon, destlat);
-
         ExtrinsicPQ<Long> pq = new ArrayHeap<> ();
-
-        addToMapNodeIdToBestDist(g, closestNodeIdToStartPointId, pq);
-
-
-        long goalNodeId = closestNodeIdToEndPointId;
-
-        long nodeId = obtainTheClosestNodeToEndPoint(goalNodeId, pq,
-
+        addNodeIdToBestDist(g, closestNodeIdToStartPointId);
+        pq.insert(closestNodeIdToStartPointId, 0);
+        long nodeId = obtainTheClosestNodeToEndPoint(pq,
                 closestNodeIdToEndPointId, closestNodeIdToStartPointId, g);
-
         return listOfNodesId(nodeId, closestNodeIdToStartPointId);
+    }
 
+    /* put start distance to each node id in the map. */
+    private static void addNodeIdToBestDist(GraphDB g, long closestNodeIdToStartPointId) {
+
+        Iterable<Long> vertices = g.vertices();
+        double pInfiniteDouble = Double.POSITIVE_INFINITY;
+        Iterator<Long> iterator = vertices.iterator();
+        long nodeId;
+        while (iterator.hasNext()) {
+            nodeId = iterator.next();
+            if (nodeId == closestNodeIdToStartPointId) {
+                nodeIdToBestDist.put(nodeId, (double) 0);
+            } else {
+                nodeIdToBestDist.put(nodeId, pInfiniteDouble);
+            }
+            nodeIdToItsParent.put(nodeId, 0L);
+        }
     }
 
 
-    private static long obtainTheClosestNodeToEndPoint( long goalNodeId
+    private static long obtainTheClosestNodeToEndPoint(ExtrinsicPQ<Long> pq, long closestNodeIdToEndPointId,
 
-            , ExtrinsicPQ<Long> pq, long closestNodeIdToEndPointId, long closestNodeIdToStartPointId,
+                                                       long closestNodeIdToStartPointId,
 
                                                        GraphDB g) {
 
-            long nodeId = closestNodeIdToStartPointId;
-            while (pq.size() > 0) {
-
-                nodeId = pq.removeMin();
-
-                if (nodeId == closestNodeIdToEndPointId) {
-
-                    break;
-
-                }
-
-                Iterable<Long> neighbors = g.adjacent(nodeId);
-
-                addNeighborsToPq(neighbors, pq, nodeId, g, closestNodeIdToStartPointId,
-
-                        closestNodeIdToEndPointId);
-
-
+        long nodeId = closestNodeIdToStartPointId;
+        while (pq.size() > 0) {
+            nodeId = pq.removeMin();
+            if (nodeId == closestNodeIdToEndPointId) {
+                break;
             }
-
-            return nodeId;
-
-
-
-    }
-
-
-
-    private static void addToMapNodeIdToBestDist(GraphDB g, long closestNodeIdToStartPointId,
-
-                                                 ExtrinsicPQ<Long> pq) {
-
-
-        Iterable<Long> vertices = g.vertices();
-
-        double pInfiniteDouble = Double.POSITIVE_INFINITY;
-
-        Iterator<Long> iterator = vertices.iterator();
-
-        long nodeId;
-
-        while (iterator.hasNext()) {
-
-            nodeId = iterator.next();
-
-            if (nodeId == closestNodeIdToStartPointId) {
-
-                mapNodeIdToBestDist.put(nodeId, (double) 0);
-
-                pq.insert(closestNodeIdToStartPointId, 0);
-
-            } else {
-
-                mapNodeIdToBestDist.put(nodeId, pInfiniteDouble);
-
-                pq.insert(nodeId, pInfiniteDouble);
-
-            }
-
+            Iterable<Long> neighbors = g.adjacent(nodeId);
+            addNeighborsToPq(neighbors, pq, nodeId, g,    closestNodeIdToEndPointId);
         }
-
+        return nodeId;
     }
+
 
 
     private static void addNeighborsToPq(Iterable<Long> neighbors, ExtrinsicPQ<Long> pq,
 
-                                         long parentNodeId,
-
-                                         GraphDB g, long closestNodeIdToStartPointId,
-
-                                         long closestNodeIdToEndPointId) {
+                                         long parentNodeId, GraphDB g, long closestNodeIdToEndPointId) {
 
 
         Iterator<Long> iterator = neighbors.iterator();
-
         while (iterator.hasNext()) {
-
             long nodeId = iterator.next();
-
-            double distFormStartToParen = mapNodeIdToBestDist.get(parentNodeId);
-
+            double distFormStartToParen = nodeIdToBestDist.get(parentNodeId);
             double totalDist = distFormStartToParen + g.distance(parentNodeId, nodeId);
-
-            double bestDist = mapNodeIdToBestDist.get(nodeId);
-
+            double bestDist = nodeIdToBestDist.get(nodeId);
             if (totalDist < bestDist) {
-
-                mapNodeIdToBestDist.replace(nodeId, totalDist);
-
+                nodeIdToBestDist.replace(nodeId, totalDist);
                 double nodeHeuristicDis = g.distance(nodeId, closestNodeIdToEndPointId);
-
                 double priority = totalDist + nodeHeuristicDis;
-
-                pq.changePriority(nodeId, priority);
-
-                mapNodeIdToItsParent.put(nodeId, parentNodeId);
-
+                pq.insert(nodeId, priority);
+                nodeIdToItsParent.replace(nodeId, parentNodeId);
             }
-
         }
-
     }
 
 
+    /* return list of nodes id in the visited order. */
     private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId) {
 
-
-        ArrayList<Long> path = new ArrayList<>();
-
-        try {
-
-            while (nodeId != closestNodeIdToStartPointId) {
-
-                path.add(0, nodeId);
-
-                nodeId = mapNodeIdToItsParent.get(nodeId);
-
-            }
-
-        } catch (Exception e) {
-
-            path.add(0, nodeId);
-
-            return path;
-
+        ArrayList<Long> reversePath = new ArrayList<>();
+        while (nodeId != closestNodeIdToStartPointId && nodeId != 0L) {
+            reversePath.add(nodeId);
+            nodeId = nodeIdToItsParent.get(nodeId);
         }
-
-        path.add(0, nodeId);
-
-        return path;
-
+        reversePath.add(nodeId);
+        Collections.reverse(reversePath);
+        return reversePath;
     }
 
 
@@ -292,7 +188,6 @@ public class Router {
         /** Default name for an unknown way. */
 
         public static final String UNKNOWN_ROAD = "unknown road";
-
 
 
         /** Static initializer. */
