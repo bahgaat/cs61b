@@ -1,11 +1,7 @@
 import java.util.List;
-
 import java.util.Objects;
-
 import java.util.regex.Matcher;
-
 import java.util.regex.Pattern;
-
 import java.util.*;
 /**
  * This class provides a shortestPath method for finding routes between two points
@@ -60,15 +56,12 @@ public class Router {
             } else {
                 nodeIdToBestDist.put(nodeId, pInfiniteDouble);
             }
-            nodeIdToItsParent.put(nodeId, 0L);
         }
     }
 
 
     private static long obtainTheClosestNodeToEndPoint(ExtrinsicPQ<Long> pq, long closestNodeIdToEndPointId,
-
                                                        long closestNodeIdToStartPointId,
-
                                                        GraphDB g) {
 
         long nodeId = closestNodeIdToStartPointId;
@@ -101,7 +94,7 @@ public class Router {
                 double nodeHeuristicDis = g.distance(nodeId, closestNodeIdToEndPointId);
                 double priority = totalDist + nodeHeuristicDis;
                 pq.insert(nodeId, priority);
-                nodeIdToItsParent.replace(nodeId, parentNodeId);
+                nodeIdToItsParent.put(nodeId, parentNodeId);
             }
         }
     }
@@ -111,7 +104,7 @@ public class Router {
     private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId) {
 
         ArrayList<Long> reversePath = new ArrayList<>();
-        while (nodeId != closestNodeIdToStartPointId && nodeId != 0L) {
+        while (nodeId != closestNodeIdToStartPointId) {
             reversePath.add(nodeId);
             nodeId = nodeIdToItsParent.get(nodeId);
         }
