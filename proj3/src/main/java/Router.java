@@ -127,8 +127,6 @@ public class Router {
      * @return A list of NavigatiionDirection objects corresponding to the input
      * route.
      */
-
-    //TODO i think the problem is in the graph handler class.
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
         ArrayList<NavigationDirection> listOfNavigationDirections = new ArrayList<>();
         NavigationDirection navigationDirection;
@@ -137,7 +135,7 @@ public class Router {
         String wayName;
         long previousNodeId = 0;
         int direction = 0;
-        /*long helperNodeId = 0;*/
+        long firstNodeId = 0L;
         for (int i = 0; i < route.size(); i += 1) {
             Long currentNodeId = route.get(i);
             Node currentNode = g.getNodeIdToTheWholeNode(currentNodeId);
@@ -146,23 +144,21 @@ public class Router {
             } else {
                 wayName = currentNode.getWayName();
             }
-            if (i == 0) {
-                direction = 0;
-                /*helperNodeId = currentNodeId;*/
-            } 
+            if (i == 1) {
+                firstNodeId = previousNodeId;
+            }
             if (!wayName.equals(lastWayName) && lastWayName != null) {
                 navigationDirection = new NavigationDirection();
-                totalDistance += g.distance(currentNodeId, previousNodeId);
-                /*direction = seeWhichDirectionToGo(currentNodeId, previousNodeId, g);*/
+                totalDistance += g.distance(previousNodeId, currentNodeId);
                 navigationDirection.direction = direction;
                 navigationDirection.distance = totalDistance;
                 navigationDirection.way = lastWayName;
                 listOfNavigationDirections.add(navigationDirection);
                 totalDistance = 0;
-                direction = seeWhichDirectionToGo(previousNodeId, currentNodeId, g);
-                /*helperNodeId = currentNodeId;*/
+                direction = seeWhichDirectionToGo(firstNodeId, currentNodeId, g);
+                firstNodeId = previousNodeId;
             } else if (lastWayName != null) {
-                totalDistance += g.distance(previousNodeId, currentNodeId);
+                totalDistance += g.distance(currentNodeId, previousNodeId);
             }
             previousNodeId = currentNodeId;
             lastWayName = wayName;
@@ -172,31 +168,28 @@ public class Router {
 
     private static int seeWhichDirectionToGo(long previousNodeId, long currentNodeId, GraphDB g) {
         int direction = 0;
-        double bearing = g.bearing(previousNodeId, currentNodeId);
-        if (bearing > -15 && bearing < 15) {
-            direction = NavigationDirection.STRAIGHT;
-        }
-        else if (bearing >= 15 && bearing < 30) {
-            direction = NavigationDirection.SLIGHT_RIGHT;
-        }
-        else if (bearing <= -15 && bearing > -30) {
-            direction = NavigationDirection.SLIGHT_LEFT;
-        }
-        else if (bearing >= 30 && bearing < 100) {
-            direction = NavigationDirection.RIGHT;
-        }
-        else if (bearing <= -30 && bearing > -100) {
-            direction = NavigationDirection.LEFT;
-        }
-        else if (bearing >= 100) {
-            direction = NavigationDirection.SHARP_RIGHT;
-        }
-        else if (bearing <= -100){
-            direction = NavigationDirection.SHARP_LEFT;
+        double relativeBearing = g.bearing(currentNodeId, previousNodeId);
+        if (relativeBearing >= -15.0 && relativeBearing <= 15.0) {
+            direction = 1;
+        } else if (relativeBearing >= -30.0 && relativeBearing <= 30.0) {
+            direction = setDirection(relativeBearing, 2, 3);
+        } else if (relativeBearing >= -100.0 && relativeBearing <= 100.0) {
+            direction = setDirection(relativeBearing, 5, 4);
+        } else {
+            direction = setDirection(relativeBearing, 6, 7);
         }
         return direction;
     }
 
+    private static int setDirection(double relativeBearing, int left, int right) {
+        int direction = 0;
+        if (relativeBearing < 0.0) {
+            direction = left;
+        } else {
+            direction = right;
+        }
+        return direction;
+    }
 
 
     /**

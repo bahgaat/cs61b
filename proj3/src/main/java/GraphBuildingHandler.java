@@ -125,7 +125,6 @@ public class GraphBuildingHandler extends DefaultHandler {
                 node = graph.getNodeIdToTheWholeNode(Long.parseLong(nodeId));
                 setNodeToItsWayName(node);
                 graph.addWay(way);
-                way = null;
             }
         }
     }
