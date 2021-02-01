@@ -7,6 +7,10 @@ class Way {
     private boolean hasName = false;
     private boolean isValidWay = false;
 
+    boolean hasName() {
+        return hasName;
+    }
+
     boolean isValidWay() {
         return isValidWay;
     }
@@ -25,6 +29,10 @@ class Way {
 
     void setWayName(String wayName) {
         this.wayName = wayName;
+    }
+
+    String getWayName() {
+        return wayName;
     }
 
     public ArrayList<String> getArrayListOfConnectedNodesId() {

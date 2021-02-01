@@ -34,10 +34,10 @@ public class GraphDB {
      */
     private HashMap<Long, ArrayList<Long>> mapNodesIdToTheirAdjId = new HashMap<>();
     private HashMap<Long, Node> mapNodesIdToTheWholeNode = new HashMap<>();
-    /*private ArrayList<Way> arrayListOfWays = new ArrayList<>();*/
+    private ArrayList<Way> arrayListOfWays = new ArrayList<>();
 
-    public HashMap<Long, Node> getMapNodesIdToTheWholeNode() {
-        return (HashMap<Long, Node>) mapNodesIdToTheWholeNode.clone();
+    public Node getNodeIdToTheWholeNode(long l) {
+        return mapNodesIdToTheWholeNode.get(l);
     }
 
     public GraphDB(String dbPath) {
@@ -222,10 +222,10 @@ public class GraphDB {
         arraylistOfAdjNode2Id.add(Long.parseLong(node1Id));
     }
 
-    /*void addWay(Way way) {
+    void addWay(Way way) {
         arrayListOfWays.add(way);
     }
-    */
+
 
     void removeNode(Long vertexId) {
         mapNodesIdToTheWholeNode.remove(vertexId);

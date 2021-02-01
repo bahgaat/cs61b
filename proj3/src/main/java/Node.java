@@ -5,7 +5,24 @@ class Node {
     private String lat;
     private boolean isLocation = false;
     private String locationName;
+    private String wayName;
+    private boolean hasWayName = false;
 
+    boolean hasWayName() {
+        return hasWayName;
+    }
+
+    void setHasWayName(boolean hasWayName) {
+        this.hasWayName = hasWayName;
+    }
+
+    String getWayName() {
+        return wayName;
+    }
+
+    void setWayName(String wayName) {
+        this.wayName = wayName;
+    }
 
     String getId() {
         return id;

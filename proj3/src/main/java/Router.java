@@ -45,7 +45,6 @@ public class Router {
         } else {
             return new ArrayList<>();
         }
-
     }
 
     /* put start distance to each node id in the map. */
@@ -78,7 +77,7 @@ public class Router {
                 break;
             }
             Iterable<Long> neighbors = g.adjacent(nodeId);
-            addNeighborsToPq(neighbors, pq, nodeId, g,    closestNodeIdToEndPointId);
+            addNeighborsToPq(neighbors, pq, nodeId, g, closestNodeIdToEndPointId);
         }
         return nodeId;
     }
@@ -86,7 +85,6 @@ public class Router {
 
 
     private static void addNeighborsToPq(Iterable<Long> neighbors, ExtrinsicPQ<Long> pq,
-
                                          long parentNodeId, GraphDB g, long closestNodeIdToEndPointId) {
 
 
@@ -122,253 +120,207 @@ public class Router {
 
 
     /**
-
      * Create the list of directions corresponding to a route on the graph.
-
      * @param g The graph to use.
-
      * @param route The route to translate into directions. Each element
-
      *              corresponds to a node from the graph in the route.
-
      * @return A list of NavigatiionDirection objects corresponding to the input
-
      * route.
-
      */
 
+    //TODO i think the problem is in the graph handler class.
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
+        ArrayList<NavigationDirection> listOfNavigationDirections = new ArrayList<>();
+        NavigationDirection navigationDirection;
+        double totalDistance = 0.0;
+        String lastWayName = null;
+        String wayName;
+        long previousNodeId = 0;
+        int direction = 0;
+        /*long helperNodeId = 0;*/
+        for (int i = 0; i < route.size(); i += 1) {
+            Long currentNodeId = route.get(i);
+            Node currentNode = g.getNodeIdToTheWholeNode(currentNodeId);
+            if (!currentNode.hasWayName()) {
+                wayName = "unknown road";
+            } else {
+                wayName = currentNode.getWayName();
+            }
+            if (i == 0) {
+                direction = 0;
+                /*helperNodeId = currentNodeId;*/
+            } 
+            if (!wayName.equals(lastWayName) && lastWayName != null) {
+                navigationDirection = new NavigationDirection();
+                totalDistance += g.distance(currentNodeId, previousNodeId);
+                /*direction = seeWhichDirectionToGo(currentNodeId, previousNodeId, g);*/
+                navigationDirection.direction = direction;
+                navigationDirection.distance = totalDistance;
+                navigationDirection.way = lastWayName;
+                listOfNavigationDirections.add(navigationDirection);
+                totalDistance = 0;
+                direction = seeWhichDirectionToGo(previousNodeId, currentNodeId, g);
+                /*helperNodeId = currentNodeId;*/
+            } else if (lastWayName != null) {
+                totalDistance += g.distance(previousNodeId, currentNodeId);
+            }
+            previousNodeId = currentNodeId;
+            lastWayName = wayName;
+        }
+        return listOfNavigationDirections;
+    }
 
-        return null; // FIXME
-
+    private static int seeWhichDirectionToGo(long previousNodeId, long currentNodeId, GraphDB g) {
+        int direction = 0;
+        double bearing = g.bearing(previousNodeId, currentNodeId);
+        if (bearing > -15 && bearing < 15) {
+            direction = NavigationDirection.STRAIGHT;
+        }
+        else if (bearing >= 15 && bearing < 30) {
+            direction = NavigationDirection.SLIGHT_RIGHT;
+        }
+        else if (bearing <= -15 && bearing > -30) {
+            direction = NavigationDirection.SLIGHT_LEFT;
+        }
+        else if (bearing >= 30 && bearing < 100) {
+            direction = NavigationDirection.RIGHT;
+        }
+        else if (bearing <= -30 && bearing > -100) {
+            direction = NavigationDirection.LEFT;
+        }
+        else if (bearing >= 100) {
+            direction = NavigationDirection.SHARP_RIGHT;
+        }
+        else if (bearing <= -100){
+            direction = NavigationDirection.SHARP_LEFT;
+        }
+        return direction;
     }
 
 
 
     /**
-
      * Class to represent a navigation direction, which consists of 3 attributes:
-
      * a direction to go, a way, and the distance to travel for.
-
      */
 
     public static class NavigationDirection {
-
-
         /** Integer constants representing directions. */
-
         public static final int START = 0;
-
         public static final int STRAIGHT = 1;
-
         public static final int SLIGHT_LEFT = 2;
-
         public static final int SLIGHT_RIGHT = 3;
-
         public static final int RIGHT = 4;
-
         public static final int LEFT = 5;
-
         public static final int SHARP_LEFT = 6;
-
         public static final int SHARP_RIGHT = 7;
-
-
         /** Number of directions supported. */
-
         public static final int NUM_DIRECTIONS = 8;
-
-
         /** A mapping of integer values to directions.*/
-
         public static final String[] DIRECTIONS = new String[NUM_DIRECTIONS];
-
-
         /** Default name for an unknown way. */
-
         public static final String UNKNOWN_ROAD = "unknown road";
 
-
         /** Static initializer. */
-
         static {
-
             DIRECTIONS[START] = "Start";
-
             DIRECTIONS[STRAIGHT] = "Go straight";
-
             DIRECTIONS[SLIGHT_LEFT] = "Slight left";
-
             DIRECTIONS[SLIGHT_RIGHT] = "Slight right";
-
             DIRECTIONS[LEFT] = "Turn left";
-
             DIRECTIONS[RIGHT] = "Turn right";
-
             DIRECTIONS[SHARP_LEFT] = "Sharp left";
-
             DIRECTIONS[SHARP_RIGHT] = "Sharp right";
-
         }
 
-
         /** The direction a given NavigationDirection represents.*/
-
         int direction;
 
         /** The name of the way I represent. */
-
         String way;
 
         /** The distance along this way I represent. */
-
         double distance;
 
 
         /**
-
          * Create a default, anonymous NavigationDirection.
-
          */
 
         public NavigationDirection() {
-
             this.direction = STRAIGHT;
-
             this.way = UNKNOWN_ROAD;
-
             this.distance = 0.0;
-
         }
 
 
         public String toString() {
-
             return String.format("%s on %s and continue for %.3f miles.",
-
                     DIRECTIONS[direction], way, distance);
-
         }
 
 
         /**
-
          * Takes the string representation of a navigation direction and converts it into
-
          * a Navigation Direction object.
-
          * @param dirAsString The string representation of the NavigationDirection.
-
          * @return A NavigationDirection object representing the input string.
-
          */
 
         public static NavigationDirection fromString(String dirAsString) {
 
             String regex = "([a-zA-Z\\s]+) on ([\\w\\s]*) and continue for ([0-9\\.]+) miles\\.";
-
             Pattern p = Pattern.compile(regex);
-
             Matcher m = p.matcher(dirAsString);
-
             NavigationDirection nd = new NavigationDirection();
-
             if (m.matches()) {
-
                 String direction = m.group(1);
-
                 if (direction.equals("Start")) {
-
                     nd.direction = NavigationDirection.START;
-
                 } else if (direction.equals("Go straight")) {
-
                     nd.direction = NavigationDirection.STRAIGHT;
-
                 } else if (direction.equals("Slight left")) {
-
                     nd.direction = NavigationDirection.SLIGHT_LEFT;
-
                 } else if (direction.equals("Slight right")) {
-
                     nd.direction = NavigationDirection.SLIGHT_RIGHT;
-
                 } else if (direction.equals("Turn right")) {
-
                     nd.direction = NavigationDirection.RIGHT;
-
                 } else if (direction.equals("Turn left")) {
-
                     nd.direction = NavigationDirection.LEFT;
-
                 } else if (direction.equals("Sharp left")) {
-
                     nd.direction = NavigationDirection.SHARP_LEFT;
-
                 } else if (direction.equals("Sharp right")) {
-
                     nd.direction = NavigationDirection.SHARP_RIGHT;
-
                 } else {
-
                     return null;
-
                 }
-
-
                 nd.way = m.group(2);
-
                 try {
-
                     nd.distance = Double.parseDouble(m.group(3));
-
                 } catch (NumberFormatException e) {
-
                     return null;
-
                 }
-
                 return nd;
-
             } else {
-
                 // not a valid nd
-
                 return null;
-
             }
-
         }
 
 
         @Override
-
         public boolean equals(Object o) {
-
             if (o instanceof NavigationDirection) {
-
                 return direction == ((NavigationDirection) o).direction
-
                         && way.equals(((NavigationDirection) o).way)
-
                         && distance == ((NavigationDirection) o).distance;
-
             }
-
             return false;
-
         }
-
 
         @Override
-
         public int hashCode() {
-
             return Objects.hash(direction, way, distance);
-
         }
-
     }
-
 }
