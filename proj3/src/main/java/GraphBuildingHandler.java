@@ -112,29 +112,17 @@ public class GraphBuildingHandler extends DefaultHandler {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if (qName.equals("way")) {
             if (way.isValidWay()) {
-                Node node;
+                graph.addWay(way);
                 ArrayList<String> arrayOfNodesId = way.getArrayListOfConnectedNodesId();
                 for (int i = 0; i < arrayOfNodesId.size() - 1; i += 1) {
                     String node1Id = arrayOfNodesId.get(i);
                     String node2Id = arrayOfNodesId.get(i + 1);
                     graph.addEdge(node1Id, node2Id);
-                    node = graph.getNodeIdToTheWholeNode(Long.parseLong(node1Id));
-                    setNodeToItsWayName(node);
                 }
-                String nodeId = arrayOfNodesId.get(arrayOfNodesId.size() - 1);
-                node = graph.getNodeIdToTheWholeNode(Long.parseLong(nodeId));
-                setNodeToItsWayName(node);
-                graph.addWay(way);
             }
         }
     }
 
 
-    private void setNodeToItsWayName(Node node) {
-        if (way.hasName()) {
-            node.setHasWayName(true);
-            node.setWayName(way.getWayName());
-        }
-    }
 
 }

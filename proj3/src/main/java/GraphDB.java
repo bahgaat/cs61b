@@ -40,6 +40,10 @@ public class GraphDB {
         return mapNodesIdToTheWholeNode.get(l);
     }
 
+    public ArrayList<Way> getArrayListOfWays() {
+        return  arrayListOfWays;
+    }
+
     public GraphDB(String dbPath) {
         try {
             File inputFile = new File(dbPath);

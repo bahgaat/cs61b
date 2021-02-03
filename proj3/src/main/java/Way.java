@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 
 class Way {
@@ -6,6 +7,10 @@ class Way {
     private ArrayList<String> arrayListOfConnectedNodesId;
     private boolean hasName = false;
     private boolean isValidWay = false;
+
+    public String getId() {
+        return id;
+    }
 
     boolean hasName() {
         return hasName;
@@ -36,7 +41,7 @@ class Way {
     }
 
     public ArrayList<String> getArrayListOfConnectedNodesId() {
-        return (ArrayList<String>) arrayListOfConnectedNodesId.clone();
+        return arrayListOfConnectedNodesId;
     }
 
     Way(String id, ArrayList<String> arrayListOfConnectedNodes) {

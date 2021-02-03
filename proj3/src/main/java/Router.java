@@ -53,10 +53,10 @@ public class Router {
         Iterable<Long> vertices = g.vertices();
         double pInfiniteDouble = Double.POSITIVE_INFINITY;
         Iterator<Long> iterator = vertices.iterator();
-        long nodeId;
+        Long nodeId;
         while (iterator.hasNext()) {
             nodeId = iterator.next();
-            if (nodeId == closestNodeIdToStartPointId) {
+            if (nodeId.equals(closestNodeIdToStartPointId)) {
                 nodeIdToBestDist.put(nodeId, (double) 0);
             } else {
                 nodeIdToBestDist.put(nodeId, pInfiniteDouble);
@@ -69,10 +69,10 @@ public class Router {
                                                        long closestNodeIdToStartPointId,
                                                        GraphDB g) {
 
-        long nodeId = closestNodeIdToStartPointId;
+        Long nodeId = closestNodeIdToStartPointId;
         while (pq.size() > 0) {
             nodeId = pq.removeMin();
-            if (nodeId == closestNodeIdToEndPointId) {
+            if (nodeId.equals(closestNodeIdToEndPointId)) {
                 reached = true;
                 break;
             }
@@ -106,10 +106,10 @@ public class Router {
 
 
     /* return list of nodes id in the visited order. */
-    private static List<Long> listOfNodesId(long nodeId, long closestNodeIdToStartPointId) {
+    private static List<Long> listOfNodesId(Long nodeId, Long closestNodeIdToStartPointId) {
 
         ArrayList<Long> reversePath = new ArrayList<>();
-        while (nodeId != closestNodeIdToStartPointId) {
+        while (!nodeId.equals(closestNodeIdToStartPointId)) {
             reversePath.add(nodeId);
             nodeId = nodeIdToItsParent.get(nodeId);
         }
@@ -127,54 +127,111 @@ public class Router {
      * @return A list of NavigatiionDirection objects corresponding to the input
      * route.
      */
+
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
         ArrayList<NavigationDirection> listOfNavigationDirections = new ArrayList<>();
-        NavigationDirection navigationDirection;
         double totalDistance = 0.0;
-        String lastWayName = null;
-        String wayName;
+        String wayName = "";
         long previousNodeId = 0;
+        long firstId = 0;
         int direction = 0;
-        long firstNodeId = 0L;
         for (int i = 0; i < route.size(); i += 1) {
             Long currentNodeId = route.get(i);
-            Node currentNode = g.getNodeIdToTheWholeNode(currentNodeId);
-            if (!currentNode.hasWayName()) {
-                wayName = "unknown road";
+            if (i == 0) {
+                wayName = findCurrentWayName(currentNodeId, g);
+                firstId = currentNodeId;
             } else {
-                wayName = currentNode.getWayName();
-            }
-            if (i == 1) {
-                firstNodeId = previousNodeId;
-            }
-            if (!wayName.equals(lastWayName) && lastWayName != null) {
-                navigationDirection = new NavigationDirection();
-                totalDistance += g.distance(previousNodeId, currentNodeId);
-                navigationDirection.direction = direction;
-                navigationDirection.distance = totalDistance;
-                navigationDirection.way = lastWayName;
-                listOfNavigationDirections.add(navigationDirection);
-                totalDistance = 0;
-                direction = seeWhichDirectionToGo(firstNodeId, currentNodeId, g);
-                firstNodeId = previousNodeId;
-            } else if (lastWayName != null) {
-                totalDistance += g.distance(currentNodeId, previousNodeId);
+                boolean theyAreInSameWay = checkIfSameWay(currentNodeId, g, wayName);
+                if (theyAreInSameWay && i != (route.size() - 1)) {
+                    totalDistance += g.distance(previousNodeId, currentNodeId);
+                } else if (i == (route.size() - 1)) {
+                    totalDistance += g.distance(previousNodeId, currentNodeId);
+                    addNavigation(listOfNavigationDirections, totalDistance, wayName, direction);
+                } else {
+                    addNavigation(listOfNavigationDirections, totalDistance, wayName, direction);
+                    wayName = findCurrentWayName(currentNodeId, g);
+                    totalDistance = g.distance(previousNodeId, currentNodeId);
+                    direction = seeWhichDirectionToGo(previousNodeId, currentNodeId, g, firstId);
+                    firstId = previousNodeId;
+                }
             }
             previousNodeId = currentNodeId;
-            lastWayName = wayName;
         }
         return listOfNavigationDirections;
+
+
     }
 
-    private static int seeWhichDirectionToGo(long previousNodeId, long currentNodeId, GraphDB g) {
+
+    private static void addNavigation(ArrayList<NavigationDirection> listOfNavigationDirections,
+                                      double totalDistance, String wayName, int direction) {
+
+        NavigationDirection navigationDirection = new NavigationDirection();
+        navigationDirection.direction = direction;
+        navigationDirection.distance = totalDistance;
+        navigationDirection.way = wayName;
+        listOfNavigationDirections.add(navigationDirection);
+    }
+
+    private static boolean checkIfSameWay(Long currentNodeId, GraphDB g, String wayName) {
+
+        ArrayList<Way> arrayListOfWays = g.getArrayListOfWays();
+        for (int i = 0; i < arrayListOfWays.size(); i += 1) {
+            Way way = arrayListOfWays.get(i);
+            ArrayList connectedNodesId = way.getArrayListOfConnectedNodesId();
+            for (int j = 0; j < connectedNodesId.size(); j += 1) {
+                Long nodeId = Long.parseLong((String) connectedNodesId.get(j));
+                if (nodeId.equals(currentNodeId)) {
+                    String newWayName = getWayName(way);
+                    if (newWayName.equals(wayName)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+    private static String findCurrentWayName(Long currentNodeId, GraphDB g) {
+        ArrayList<Way> arrayListOfWays = g.getArrayListOfWays();
+        for (int i = 0; i < arrayListOfWays.size(); i += 1) {
+            Way way = arrayListOfWays.get(i);
+            ArrayList connectedNodesId = way.getArrayListOfConnectedNodesId();
+            for (int j = 0; j < connectedNodesId.size(); j += 1) {
+                Long nodeId = Long.parseLong((String) connectedNodesId.get(j));
+                if (nodeId.equals(currentNodeId)) {
+                    return getWayName(way);
+                }
+            }
+        }
+        return "";
+    }
+
+    private static String getWayName(Way way) {
+        String wayName;
+        if (way.hasName()) {
+            wayName = way.getWayName();
+        } else {
+            wayName = "unknown road";
+        }
+        return wayName;
+    }
+
+
+
+    private static int seeWhichDirectionToGo(long previousNodeId, long currentNodeId,
+                                             GraphDB g, long firstId) {
         int direction = 0;
-        double relativeBearing = g.bearing(currentNodeId, previousNodeId);
-        if (relativeBearing >= -15.0 && relativeBearing <= 15.0) {
+        double preBearing = g.bearing(firstId, previousNodeId);
+        double currBearing = g.bearing(previousNodeId, currentNodeId);
+        double relativeBearing = currBearing - preBearing;
+        if (relativeBearing > -15.0 && relativeBearing < 15.0) {
             direction = 1;
-        } else if (relativeBearing >= -30.0 && relativeBearing <= 30.0) {
-            direction = setDirection(relativeBearing, 2, 3);
-        } else if (relativeBearing >= -100.0 && relativeBearing <= 100.0) {
-            direction = setDirection(relativeBearing, 5, 4);
+        } else if (relativeBearing > -30.0 && relativeBearing < 30.0) {
+            direction = setDirection(relativeBearing, 2, 3); /* this is correct.*/
+        } else if (relativeBearing > -100.0 && relativeBearing < 100.0) {
+            direction = setDirection(relativeBearing, 5, 4); /* this is correct. */
         } else {
             direction = setDirection(relativeBearing, 6, 7);
         }
@@ -190,6 +247,7 @@ public class Router {
         }
         return direction;
     }
+
 
 
     /**
