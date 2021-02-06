@@ -6,6 +6,9 @@ class Node {
     private boolean isLocation = false;
     private String locationName;
 
+    String getLocationName() {
+        return locationName;
+    }
 
     String getId() {
         return id;

@@ -17,6 +17,8 @@ import java.io.IOException;
 
 /* Maven is used to pull in these dependencies. */
 import com.google.gson.Gson;
+import org.eclipse.jetty.util.TreeTrie;
+import org.eclipse.jetty.util.Trie;
 
 import static spark.Spark.*;
 
@@ -285,7 +287,7 @@ public class MapServer {
      * cleaned <code>prefix</code>.
      */
     public static List<String> getLocationsByPrefix(String prefix) {
-        return new LinkedList<>();
+        return GraphBuildingHandler.trie.keyWithPrefix(prefix);
     }
 
     /**
@@ -342,4 +344,6 @@ public class MapServer {
         }
         return sb.toString();
     }
+
+
 }

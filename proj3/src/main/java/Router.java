@@ -158,10 +158,7 @@ public class Router {
             previousNodeId = currentNodeId;
         }
         return listOfNavigationDirections;
-
-
     }
-
 
     private static void addNavigation(ArrayList<NavigationDirection> listOfNavigationDirections,
                                       double totalDistance, String wayName, int direction) {
@@ -193,6 +190,7 @@ public class Router {
     }
 
 
+
     private static String findCurrentWayName(Long currentNodeId, GraphDB g) {
         ArrayList<Way> arrayListOfWays = g.getArrayListOfWays();
         for (int i = 0; i < arrayListOfWays.size(); i += 1) {
@@ -207,6 +205,7 @@ public class Router {
         }
         return "";
     }
+
 
     private static String getWayName(Way way) {
         String wayName;
@@ -226,14 +225,14 @@ public class Router {
         double preBearing = g.bearing(firstId, previousNodeId);
         double currBearing = g.bearing(previousNodeId, currentNodeId);
         double relativeBearing = currBearing - preBearing;
-        if (relativeBearing > -15.0 && relativeBearing < 15.0) {
+        if (relativeBearing >= -15.0 && relativeBearing <= 15.0) {
             direction = 1;
-        } else if (relativeBearing > -30.0 && relativeBearing < 30.0) {
+        } else if (relativeBearing >=30.0 && relativeBearing <=30.0) {
             direction = setDirection(relativeBearing, 2, 3); /* this is correct.*/
-        } else if (relativeBearing > -100.0 && relativeBearing < 100.0) {
+        } else if (relativeBearing >=-100.0 && relativeBearing <=100.0) {
             direction = setDirection(relativeBearing, 5, 4); /* this is correct. */
         } else {
-            direction = setDirection(relativeBearing, 6, 7);
+            direction = setDirection(relativeBearing, 7, 6);
         }
         return direction;
     }
