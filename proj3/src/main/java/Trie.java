@@ -52,50 +52,79 @@ public class Trie {
 
     /* return all the strings in the trie which begin with the specific prefix. */
     public List<String> keyWithPrefix(String prefix) {
-        //TODO return the node with the new prefix in a hashmap. Iam thinking
-        // maybe an alternative solution is to convert the prefix into array and then
-        // change it as i like
-        char[] prefixArray = prefix.toCharArray();
-        Node neededNode = findTheNode(node, prefixArray, 0,
-                prefixArray.length - 1);
+        ArrayList<String> listOfPrefix = new ArrayList();
+        ArrayList<Node> listOfNodes = new ArrayList();
+        findTheNodes(node, prefix, 0,
+                prefix.length() - 1, listOfPrefix, "", listOfNodes);
         ArrayList list = new ArrayList();
-        prefix = String.valueOf(prefixArray);
-        if (neededNode != null) {
-            Iterable iterable = neededNode.next.keySet();
+        for (int i = 0; i < listOfPrefix.size(); i += 1) {
+            Node nodeHelper = listOfNodes.get(i);
+            String prefixHelper = listOfPrefix.get(i);
+            Iterable iterable = nodeHelper.next.keySet();
             Iterator iterator = iterable.iterator();
             while (iterator.hasNext()) {
                 char character = (char) iterator.next();
-                collect(prefix+""+character, list, neededNode.next.get(character));
+                collect(prefixHelper+""+character, list, nodeHelper.next.get(character));
             }
         }
         return list;
     }
 
-    /* find the node of the last matching character in the prefix. */
-    private Node findTheNode(Node node, char[] prefixArray, int charIndex, int lastIndex) {
-        char character = prefixArray[charIndex];
-        Node newNode = findTheNodeHelper(character, node, prefixArray,
-                charIndex, lastIndex);
-        if (newNode == null) {
-            return null;
-        } else if (charIndex == lastIndex) {
-            return newNode;
+    /* find the nodes of the last matching character in the prefix,
+    and add them to listOfNodes. Also, found all the possible prefix. For eg,
+    if the user type "mo" Find if "mo" or "mO" or "Mo" or "mO" exists and add
+    them to the listOfPrefix. */
+    private void findTheNodes(Node node, String prefix, int charIndex,
+                             int lastIndex, List listOfPrefix, String string,
+                             List listOfNodes) {
+        if (charIndex > lastIndex) {
+            listOfPrefix.add(string);
+            listOfNodes.add(node);
         } else {
-            return findTheNode(newNode, prefixArray, charIndex += 1, lastIndex);
+            char character = prefix.charAt(charIndex);
+            Node newNode1 = findTheNodeHelper(Character.toLowerCase(character), node, prefix,
+                    charIndex, lastIndex, string);
+            String string1 = findTheString(Character.toLowerCase(character), node, prefix,
+                    charIndex, lastIndex, string);
+            Node newNode2 = findTheNodeHelper(Character.toUpperCase(character), node,
+                    prefix, charIndex, lastIndex, string);
+            String string2 = findTheString(Character.toUpperCase(character), node, prefix,
+                    charIndex, lastIndex, string);
+            if (newNode1 == null && newNode2 == null) {
+                return;
+            } else if (newNode1 == null) {
+                findTheNodes(newNode2, prefix, charIndex += 1,
+                        lastIndex, listOfPrefix, string+""+string2, listOfNodes);
+            } else if (newNode2 == null) {
+                findTheNodes(newNode1, prefix, charIndex += 1,
+                        lastIndex, listOfPrefix, string+""+string1, listOfNodes);
+            } else {
+                findTheNodes(newNode1, prefix, charIndex += 1,
+                        lastIndex, listOfPrefix, string+""+string1, listOfNodes);
+                findTheNodes(newNode2, prefix, charIndex,
+                        lastIndex, listOfPrefix, string+""+string2, listOfNodes);
+            }
+
         }
     }
 
-    private Node findTheNodeHelper(char character, Node node, char[] prefixArray,
-                                   int charIndex, int lastIndex) {
+    private Node findTheNodeHelper(char character, Node node, String prefix,
+                                   int charIndex, int lastIndex, String string) {
 
         Node newNode = null;
         if (node.next.containsKey(character)) {
             newNode = node.next.get(character);
-        } else if (node.next.containsKey(Character.toUpperCase(character))) {
-            newNode = node.next.get(Character.toUpperCase(character));
-            prefixArray[charIndex] = Character.toUpperCase(character);
         }
         return newNode;
+    }
+
+    private String findTheString(char character, Node node, String prefix,
+                                 int charIndex, int lastIndex, String string) {
+        if (node.next.containsKey(character)) {
+            return String.valueOf(character);
+        } else {
+            return null;
+        }
     }
 
     /* collecting all the keys which starts with s string. */
@@ -125,7 +154,7 @@ public class Trie {
         trie.put("Sea ahead");
         trie.put("sewre");
         trie.put("Tomato");
-        List list = trie.keyWithPrefix("t");
+        List list = trie.keyWithPrefix("s");
     }
 
 }

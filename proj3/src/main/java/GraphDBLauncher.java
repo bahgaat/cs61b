@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * This class provides a main method for experimenting with GraphDB construction.

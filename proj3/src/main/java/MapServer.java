@@ -4,12 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
@@ -97,6 +92,8 @@ public class MapServer {
 
     public static void main(String[] args) {
         initialize();
+        /*List list = getLocations("Top Dog");*/
+
         staticFileLocation("/page");
         /* Allow for all origin requests (since this is not an authenticated server, we do not
          * care about CSRF).  */
@@ -303,7 +300,18 @@ public class MapServer {
      * "id" : Number, The id of the node. <br>
      */
     public static List<Map<String, Object>> getLocations(String locationName) {
-        return new LinkedList<>();
+        List<Map<String, Object>> result = new ArrayList<>();
+        ArrayList<Node> listOfNodes = graph.getListOfNodesOfLocationName(locationName);
+        for (int i = 0; i < listOfNodes.size(); i += 1) {
+            Map<String, Object> map = new HashMap<>();
+            Node node = listOfNodes.get(i);
+            map.put("id", Long.parseLong(node.getId()));
+            map.put("lon", Double.parseDouble(node.getLon()));
+            map.put("lat", Double.parseDouble(node.getLat()));
+            map.put("name", node.getLocationName());
+            result.add(map);
+        }
+        return result;
     }
 
     /**

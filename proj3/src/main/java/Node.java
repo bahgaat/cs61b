@@ -30,12 +30,12 @@ class Node {
         return lat;
     }
 
+
     Node(String id, String lon, String lat) {
         this.id = id;
         this.lon = lon;
         this.lat = lat;
     }
-
 
 
 }

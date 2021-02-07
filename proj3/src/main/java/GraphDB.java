@@ -35,13 +35,14 @@ public class GraphDB {
     private HashMap<Long, ArrayList<Long>> mapNodesIdToTheirAdjId = new HashMap<>();
     private HashMap<Long, Node> mapNodesIdToTheWholeNode = new HashMap<>();
     private ArrayList<Way> arrayListOfWays = new ArrayList<>();
+    private HashMap<String, ArrayList<Node>> mapLocationNameToNodes = new HashMap<>();
 
     public Node getNodeIdToTheWholeNode(long l) {
         return mapNodesIdToTheWholeNode.get(l);
     }
 
     public ArrayList<Way> getArrayListOfWays() {
-        return  arrayListOfWays;
+        return arrayListOfWays;
     }
 
     public GraphDB(String dbPath) {
@@ -234,6 +235,22 @@ public class GraphDB {
     void removeNode(Long vertexId) {
         mapNodesIdToTheWholeNode.remove(vertexId);
         mapNodesIdToTheirAdjId.remove(vertexId);
+    }
+
+    void addLocationNameToNode(String locationName, Node node) {
+        if (mapLocationNameToNodes.containsKey(locationName)) {
+            ArrayList arrayListOfNodes = mapLocationNameToNodes.get(locationName);
+            arrayListOfNodes.add(node);
+        } else {
+            ArrayList arrayListOfNodes = new ArrayList();
+            arrayListOfNodes.add(node);
+            mapLocationNameToNodes.put(locationName, arrayListOfNodes);
+        }
+    }
+
+    ArrayList<Node> getListOfNodesOfLocationName(String locationName) {
+        ArrayList<Node> listOfNodes = mapLocationNameToNodes.get(locationName);
+        return listOfNodes;
     }
 
 }

@@ -90,11 +90,14 @@ public class GraphBuildingHandler extends DefaultHandler {
                 way.setHasName(true);
                 way.setWayName(v);
             }
-        } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
-                .equals("name")) {
+        } else if (activeState.equals("node") && qName.equals("tag") &&
+                attributes.getValue("k").equals("name")) {
+
+            String locationName = attributes.getValue("v");
             node.isLocation();
-            node.setLocationName(attributes.getValue("v"));
+            node.setLocationName(locationName);
             trie.put(node.getLocationName());
+            graph.addLocationNameToNode(locationName, node);
         }
     }
 
