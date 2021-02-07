@@ -36,13 +36,18 @@ public class GraphDB {
     private HashMap<Long, Node> mapNodesIdToTheWholeNode = new HashMap<>();
     private ArrayList<Way> arrayListOfWays = new ArrayList<>();
     private HashMap<String, ArrayList<Node>> mapLocationNameToNodes = new HashMap<>();
+    private Trie trie = new Trie();
 
-    public Node getNodeIdToTheWholeNode(long l) {
+    Node getNodeIdToTheWholeNode(long l) {
         return mapNodesIdToTheWholeNode.get(l);
     }
 
-    public ArrayList<Way> getArrayListOfWays() {
+    ArrayList<Way> getArrayListOfWays() {
         return arrayListOfWays;
+    }
+
+    void addToTrie(String locationName) {
+        trie.put(locationName);
     }
 
     public GraphDB(String dbPath) {
@@ -248,9 +253,33 @@ public class GraphDB {
         }
     }
 
+
     ArrayList<Node> getListOfNodesOfLocationName(String locationName) {
         ArrayList<Node> listOfNodes = mapLocationNameToNodes.get(locationName);
         return listOfNodes;
     }
+
+    /* collect all locations that matches the prefix. */
+    List<String> getLocationsByPrefix(String prefix) {
+        return trie.keyWithPrefix(prefix);
+    }
+
+    /* collect all locations that has this locationName and put all its information
+    in a map. */
+    List<Map<String, Object>> getLocations(String locationName) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        ArrayList<Node> listOfNodes = getListOfNodesOfLocationName(locationName);
+        for (int i = 0; i < listOfNodes.size(); i += 1) {
+            Map<String, Object> map = new HashMap<>();
+            Node node = listOfNodes.get(i);
+            map.put("id", Long.parseLong(node.getId()));
+            map.put("lon", Double.parseDouble(node.getLon()));
+            map.put("lat", Double.parseDouble(node.getLat()));
+            map.put("name", node.getLocationName());
+            result.add(map);
+        }
+        return result;
+    }
+
 
 }

@@ -38,7 +38,7 @@ public class GraphBuildingHandler extends DefaultHandler {
     private final GraphDB graph;
     private Way way = null;
     private Node node = null;
-    static Trie trie = new Trie(); /* trie to put in it the location names. */
+
     /**
      * Create a new GraphBuildingHandler.
      * @param g The graph to populate with the XML data.
@@ -96,7 +96,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             String locationName = attributes.getValue("v");
             node.isLocation();
             node.setLocationName(locationName);
-            trie.put(node.getLocationName());
+            graph.addToTrie(node.getLocationName());
             graph.addLocationNameToNode(locationName, node);
         }
     }

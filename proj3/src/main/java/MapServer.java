@@ -280,7 +280,7 @@ public class MapServer {
      * cleaned <code>prefix</code>.
      */
     public static List<String> getLocationsByPrefix(String prefix) {
-        return GraphBuildingHandler.trie.keyWithPrefix(prefix);
+        return graph.getLocationsByPrefix(prefix);
     }
 
     /**
@@ -296,18 +296,7 @@ public class MapServer {
      * "id" : Number, The id of the node. <br>
      */
     public static List<Map<String, Object>> getLocations(String locationName) {
-        List<Map<String, Object>> result = new ArrayList<>();
-        ArrayList<Node> listOfNodes = graph.getListOfNodesOfLocationName(locationName);
-        for (int i = 0; i < listOfNodes.size(); i += 1) {
-            Map<String, Object> map = new HashMap<>();
-            Node node = listOfNodes.get(i);
-            map.put("id", Long.parseLong(node.getId()));
-            map.put("lon", Double.parseDouble(node.getLon()));
-            map.put("lat", Double.parseDouble(node.getLat()));
-            map.put("name", node.getLocationName());
-            result.add(map);
-        }
-        return result;
+        return graph.getLocations(locationName);
     }
 
     /**

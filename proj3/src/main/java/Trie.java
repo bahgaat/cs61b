@@ -77,8 +77,8 @@ public class Trie {
     if the user type "mo" Find if "mo" or "mO" or "Mo" or "mO" exists and add
     them to the listOfPrefix. */
     private void findTheNodes(Node node, String prefix, int charIndex,
-                             int lastIndex, List listOfPrefix, String string,
-                             List listOfNodes) {
+                              int lastIndex, List listOfPrefix, String string,
+                              List listOfNodes) {
         if (charIndex > lastIndex) {
             listOfPrefix.add(string);
             listOfNodes.add(node);
