@@ -269,14 +269,16 @@ public class GraphDB {
     List<Map<String, Object>> getLocations(String locationName) {
         List<Map<String, Object>> result = new ArrayList<>();
         ArrayList<Node> listOfNodes = getListOfNodesOfLocationName(locationName);
-        for (int i = 0; i < listOfNodes.size(); i += 1) {
-            Map<String, Object> map = new HashMap<>();
-            Node node = listOfNodes.get(i);
-            map.put("id", Long.parseLong(node.getId()));
-            map.put("lon", Double.parseDouble(node.getLon()));
-            map.put("lat", Double.parseDouble(node.getLat()));
-            map.put("name", node.getLocationName());
-            result.add(map);
+        if (listOfNodes != null) {
+            for (int i = 0; i < listOfNodes.size(); i += 1) {
+                Map<String, Object> map = new HashMap<>();
+                Node node = listOfNodes.get(i);
+                map.put("id", Long.parseLong(node.getId()));
+                map.put("lon", Double.parseDouble(node.getLon()));
+                map.put("lat", Double.parseDouble(node.getLat()));
+                map.put("name", node.getLocationName());
+                result.add(map);
+            }
         }
         return result;
     }
