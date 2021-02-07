@@ -12,9 +12,6 @@ import java.io.IOException;
 
 /* Maven is used to pull in these dependencies. */
 import com.google.gson.Gson;
-import org.eclipse.jetty.util.TreeTrie;
-import org.eclipse.jetty.util.Trie;
-
 import static spark.Spark.*;
 
 /**
@@ -92,7 +89,6 @@ public class MapServer {
 
     public static void main(String[] args) {
         initialize();
-        /*List list = getLocations("Top Dog");*/
 
         staticFileLocation("/page");
         /* Allow for all origin requests (since this is not an authenticated server, we do not
