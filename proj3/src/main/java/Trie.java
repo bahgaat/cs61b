@@ -64,6 +64,9 @@ public class Trie {
             String prefixHelper = listOfPrefix.get(i);
             Iterable iterable = nodeHelper.next.keySet();
             Iterator iterator = iterable.iterator();
+            if (!iterator.hasNext()) {
+                list.add(listOfPrefix.get(i));
+            }
             while (iterator.hasNext()) {
                 char character = (char) iterator.next();
                 collect(prefixHelper+""+character, list, nodeHelper.next.get(character));
@@ -79,19 +82,32 @@ public class Trie {
     private void findTheNodes(Node node, String prefix, int charIndex,
                               int lastIndex, List listOfPrefix, String string,
                               List listOfNodes) {
+        Node newNode1;
+        Node newNode2;
+        String string1;
+        String string2;
         if (charIndex > lastIndex) {
             listOfPrefix.add(string);
             listOfNodes.add(node);
         } else {
             char character = prefix.charAt(charIndex);
-            Node newNode1 = findTheNodeHelper(Character.toLowerCase(character), node, prefix,
-                    charIndex, lastIndex, string);
-            String string1 = findTheString(Character.toLowerCase(character), node, prefix,
-                    charIndex, lastIndex, string);
-            Node newNode2 = findTheNodeHelper(Character.toUpperCase(character), node,
-                    prefix, charIndex, lastIndex, string);
-            String string2 = findTheString(Character.toUpperCase(character), node, prefix,
-                    charIndex, lastIndex, string);
+            if (Character.isLetter(character)) {
+                newNode1 = findTheNodeHelper(Character.toUpperCase(character), node, prefix,
+                        charIndex, lastIndex, string);
+                string1 = findTheString(Character.toUpperCase(character), node, prefix,
+                        charIndex, lastIndex, string);
+                newNode2 = findTheNodeHelper(Character.toLowerCase(character), node,
+                        prefix, charIndex, lastIndex, string);
+                string2 = findTheString(Character.toLowerCase(character), node, prefix,
+                        charIndex, lastIndex, string);
+            } else {
+                newNode1 = findTheNodeHelper(character, node, prefix,
+                        charIndex, lastIndex, string);
+                string1 = findTheString(character, node, prefix,
+                        charIndex, lastIndex, string);
+                newNode2 = null;
+                string2 = null;
+            }
             if (newNode1 == null && newNode2 == null) {
                 return;
             } else if (newNode1 == null) {
@@ -144,19 +160,9 @@ public class Trie {
 
     public static void main(String[] args) {
         Trie trie = new Trie();
-        trie.put("She");
-        trie.put("Sells");
-        trie.put("Sells");
-        trie.put("Sea");
-        trie.put("Shells");
-        trie.put("by");
-        trie.put("the");
-        trie.put("Shore");
-        trie.put("Sea");
         trie.put("Sea ahead");
-        trie.put("sewre");
-        trie.put("Tomato");
-        List list = trie.keyWithPrefix("s");
+        trie.put("Sea ahead");
+        List list = trie.keyWithPrefix("sea ahead");
     }
 
 }
