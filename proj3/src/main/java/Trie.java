@@ -162,7 +162,8 @@ public class Trie {
         Trie trie = new Trie();
         trie.put("Sea ahead");
         trie.put("Sea ahead");
-        List list = trie.keyWithPrefix("sea ahead");
+        trie.put("22");
+        List list = trie.keyWithPrefix("2");
     }
 
 }

@@ -256,7 +256,10 @@ public class GraphDB {
 
     ArrayList<Node> getListOfNodesOfLocationName(String locationName) {
         List<String> listOfLocationsName = getLocationsByPrefix(locationName);
-        ArrayList<Node> listOfNodes = mapLocationNameToNodes.get(listOfLocationsName.get(0));
+        if (listOfLocationsName.size() > 0) {
+            locationName = listOfLocationsName.get(0);
+        }
+        ArrayList<Node> listOfNodes = mapLocationNameToNodes.get(locationName);
         return listOfNodes;
     }
     //TODO the problem in the autograder is that my answer has LA at last while in their

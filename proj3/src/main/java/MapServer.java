@@ -89,7 +89,7 @@ public class MapServer {
 
     public static void main(String[] args) {
         initialize();
-        List list = getLocations("university av & curtis st");
+        List list = getLocations("mohammed ahmed salwm");
 
         staticFileLocation("/page");
         /* Allow for all origin requests (since this is not an authenticated server, we do not
