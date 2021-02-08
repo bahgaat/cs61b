@@ -258,6 +258,8 @@ public class GraphDB {
         ArrayList<Node> listOfNodes = mapLocationNameToNodes.get(locationName);
         return listOfNodes;
     }
+    //TODO the problem in the autograder is that my answer has LA at last while in their
+    // answer LA is at first
 
     /* collect all locations that matches the prefix. */
     List<String> getLocationsByPrefix(String prefix) {
