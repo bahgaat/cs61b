@@ -6,7 +6,6 @@ import java.util.List;
  */
 import java.util.*;
 
-
 public class Trie {
     private Node node; /* the root node. */
 
@@ -83,30 +82,22 @@ public class Trie {
                               int lastIndex, List listOfPrefix, String string,
                               List listOfNodes) {
         Node newNode1;
-        Node newNode2;
         String string1;
-        String string2;
+        Node newNode2 = null;
+        String string2 = null;
         if (charIndex > lastIndex) {
             listOfPrefix.add(string);
             listOfNodes.add(node);
         } else {
             char character = prefix.charAt(charIndex);
-            if (Character.isLetter(character)) {
-                newNode1 = findTheNodeHelper(Character.toUpperCase(character), node, prefix,
-                        charIndex, lastIndex, string);
-                string1 = findTheString(Character.toUpperCase(character), node, prefix,
-                        charIndex, lastIndex, string);
-                newNode2 = findTheNodeHelper(Character.toLowerCase(character), node,
-                        prefix, charIndex, lastIndex, string);
-                string2 = findTheString(Character.toLowerCase(character), node, prefix,
-                        charIndex, lastIndex, string);
+            if (Character.isAlphabetic(character)) {
+                newNode1 = findTheNodeHelper(Character.toUpperCase(character), node);
+                string1 = findTheString(Character.toUpperCase(character), node);
+                newNode2 = findTheNodeHelper(Character.toLowerCase(character), node);
+                string2 = findTheString(Character.toLowerCase(character), node);
             } else {
-                newNode1 = findTheNodeHelper(character, node, prefix,
-                        charIndex, lastIndex, string);
-                string1 = findTheString(character, node, prefix,
-                        charIndex, lastIndex, string);
-                newNode2 = null;
-                string2 = null;
+                newNode1 = findTheNodeHelper(character, node);
+                string1 = findTheString(character, node);
             }
             if (newNode1 == null && newNode2 == null) {
                 return;
@@ -126,9 +117,7 @@ public class Trie {
         }
     }
 
-    private Node findTheNodeHelper(char character, Node node, String prefix,
-                                   int charIndex, int lastIndex, String string) {
-
+    private Node findTheNodeHelper(char character, Node node) {
         Node newNode = null;
         if (node.next.containsKey(character)) {
             newNode = node.next.get(character);
@@ -136,8 +125,7 @@ public class Trie {
         return newNode;
     }
 
-    private String findTheString(char character, Node node, String prefix,
-                                 int charIndex, int lastIndex, String string) {
+    private String findTheString(char character, Node node) {
         if (node.next.containsKey(character)) {
             return String.valueOf(character);
         } else {
