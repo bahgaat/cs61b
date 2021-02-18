@@ -17,19 +17,57 @@ public class RadixSort {
      */
     public static String[] sort(String[] asciis) {
         // TODO: Implement LSD Sort
-        return null;
+        String[] arrOfIntStrings = new String[asciis.length];
+        for (int i = 0; i < asciis.length; i += 1) {
+            String ascii = asciis[i];
+            for (int j = 0; j < ascii.length(); j += 1) {
+                char character = ascii.charAt(j);
+                int asc = (int) character;
+                if (arrOfIntStrings[i] != null) {
+                    arrOfIntStrings[i] = arrOfIntStrings[i]+""+asc;
+                } else {
+                    arrOfIntStrings[i] = ""+asc;
+                }
+
+            }
+        }
+        iterateThroughArr(arrOfIntStrings);
+        return arrOfIntStrings;
+    }
+
+    private static void iterateThroughArr(String[] arrOfIntStrings) {
+        int max = Integer.MIN_VALUE;
+        /* find the maximum length of a string. */
+        for (int m = 0; m < arrOfIntStrings.length; m += 1) {
+            int length = arrOfIntStrings[m].length();
+            if (arrOfIntStrings[m].length() > max) {
+                max = length;
+            }
+        }
+
+        for (int i = 0; i < max; i += 1) {
+            sortHelperLSD(arrOfIntStrings, (max - 1) - i);
+        }
     }
 
     /**
      * LSD helper method that performs a destructive counting sort the array of
      * Strings based off characters at a specific index.
-     * @param asciis Input array of Strings
-     * @param index The position to sort the Strings on.
+     * @param arrOfIntStrings Input array of Strings
+     * @param digit
      */
-    private static void sortHelperLSD(String[] asciis, int index) {
-        // Optional LSD helper method for required LSD radix sort
-        return;
+    private static void sortHelperLSD(String[] arrOfIntStrings, int digit) {
+        int[] arrOfInt = new int[arrOfIntStrings.length];
+        for (int i = 0; i < arrOfIntStrings.length; i += 1) {
+
+            arrOfInt[i] = Integer.parseInt(arrOfIntStrings[digit]);
+            arrOfInt = CountingSort.naiveCountingSort(arrOfInt);
+            //TODO make count sorting on each digit
+        }
+
     }
+
+
 
     /**
      * MSD radix sort helper function that recursively calls itself to achieve the sorted array.

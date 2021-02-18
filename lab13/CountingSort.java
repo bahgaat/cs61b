@@ -66,7 +66,64 @@ public class CountingSort {
      * @param arr int array that will be sorted
      */
     public static int[] betterCountingSort(int[] arr) {
-        // TODO make counting sort work with arrays containing negative numbers.
-        return null;
+
+        int firstMax = findMaxValueInArr(arr);
+        makePositiveArr(arr, firstMax);
+        int secondMax = findMaxValueInArr(arr);
+
+        // gather all the counts for each value
+        int[] counts = new int[secondMax + 1];
+        for (int i : arr) {
+            counts[i]++;
+        }
+
+        // counting sort that uses start position calculation
+        int[] starts = new int[secondMax + 1];
+        int pos = 0;
+        for (int i = 0; i < starts.length; i += 1) {
+            starts[i] = pos;
+            pos += counts[i];
+        }
+
+        int[] sorted2 = new int[arr.length];
+        sortTheArr(sorted2, arr, starts);
+        sortTheOriginalArr(sorted2, firstMax);
+
+        return sorted2;
     }
+
+    private static void sortTheOriginalArr(int[] sorted2, int firstMax) {
+        for (int i = 0; i < sorted2.length; i += 1) {
+            sorted2[i] -= firstMax;
+        }
+    }
+
+    private static int findMaxValueInArr(int[] arr) {
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < arr.length; i += 1) {
+            int nonNegativeNum = Math.abs(arr[i]);
+            if (nonNegativeNum > max) {
+                max = nonNegativeNum;
+            }
+        }
+        return max;
+    }
+
+    private static void sortTheArr(int[] sorted2, int[] arr, int[] starts) {
+        for (int i = 0; i < arr.length; i += 1) {
+            int item = arr[i];
+            int place = starts[item];
+            sorted2[place] = item;
+            starts[item] += 1;
+        }
+    }
+
+    /* change all array values to positive numbers. */
+    private static void makePositiveArr(int[] arr, int max) {
+        for (int i = 0; i < arr.length; i += 1) {
+            arr[i] += max;
+        }
+    }
+
+
 }
