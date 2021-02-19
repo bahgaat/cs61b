@@ -17,57 +17,89 @@ public class RadixSort {
      */
     public static String[] sort(String[] asciis) {
         // TODO: Implement LSD Sort
-        String[] arrOfIntStrings = new String[asciis.length];
-        for (int i = 0; i < asciis.length; i += 1) {
-            String ascii = asciis[i];
-            for (int j = 0; j < ascii.length(); j += 1) {
-                char character = ascii.charAt(j);
-                int asc = (int) character;
-                if (arrOfIntStrings[i] != null) {
-                    arrOfIntStrings[i] = arrOfIntStrings[i]+""+asc;
-                } else {
-                    arrOfIntStrings[i] = ""+asc;
-                }
+        String[] updatedAsciis = new String[asciis.length];
+        int max = findMax(asciis);
 
-            }
-        }
-        iterateThroughArr(arrOfIntStrings);
-        return arrOfIntStrings;
+        /* filling the array that i will be using and putting null at the end of each word that is less
+        than the max length. */
+        fillTheArray(asciis, updatedAsciis, max);
+        String[] sortedArr = sortTheArray(updatedAsciis, max, asciis);
+        return sortedArr;
     }
 
-    private static void iterateThroughArr(String[] arrOfIntStrings) {
+    private static int findMax(String[] asciis) {
         int max = Integer.MIN_VALUE;
-        /* find the maximum length of a string. */
-        for (int m = 0; m < arrOfIntStrings.length; m += 1) {
-            int length = arrOfIntStrings[m].length();
-            if (arrOfIntStrings[m].length() > max) {
+        for (int i = 0; i < asciis.length; i += 1) {
+            int length = asciis[i].length();
+            if (length > max) {
                 max = length;
             }
         }
+        return max;
+    }
 
-        for (int i = 0; i < max; i += 1) {
-            sortHelperLSD(arrOfIntStrings, (max - 1) - i);
+    private static String[] sortTheArray(String[] updatedAsciis, int max,
+                                                  String[] asciis) {
+        String[] asciisHelper = asciis;
+        String[] sortedArr = new String[asciis.length];
+        for (int x = 0; x < max; x += 1) {
+            int[] count = new int[256];
+            int[] starts = new int[256];
+
+            /* build count array. */
+            for (int j = 0; j < updatedAsciis.length; j += 1) {
+                String string = updatedAsciis[j];
+                int digit = (updatedAsciis[j].length() - 1) - x;
+                char character = string.charAt(digit);
+                int asc = (int) character;
+                count[asc] += 1;
+            }
+
+            /* build start array. */
+            buildStartArray(starts, count);
+
+            /* build sorted array. */;
+            for (int i = 0; i < asciis.length; i += 1) {
+                String item = asciisHelper[i];
+                String string = updatedAsciis[i];
+                int digit = (updatedAsciis[i].length() - 1) - x;
+                char character = string.charAt(digit);
+                int asc = (int) character;
+                int place = starts[asc];
+                sortedArr[place] = item;
+                starts[asc] += 1;
+            }
+
+            for (int g = 0; g < sortedArr.length; g += 1) {
+                asciisHelper[g] = sortedArr[g];
+            }
+            fillTheArray(asciisHelper, updatedAsciis, max);
+        }
+        return sortedArr;
+    }
+
+    private static void buildStartArray(int[] starts, int[] count) {
+        int pos = 0;
+        for (int y = 0; y < starts.length; y += 1) {
+            starts[y] = pos;
+            pos += count[y];
         }
     }
 
-    /**
-     * LSD helper method that performs a destructive counting sort the array of
-     * Strings based off characters at a specific index.
-     * @param arrOfIntStrings Input array of Strings
-     * @param digit
-     */
-    private static void sortHelperLSD(String[] arrOfIntStrings, int digit) {
-        int[] arrOfInt = new int[arrOfIntStrings.length];
-        for (int i = 0; i < arrOfIntStrings.length; i += 1) {
-
-            arrOfInt[i] = Integer.parseInt(arrOfIntStrings[digit]);
-            arrOfInt = CountingSort.naiveCountingSort(arrOfInt);
-            //TODO make count sorting on each digit
+    private static void fillTheArray(String[] asciis, String[] updatedAsciis, int max) {
+        for (int i = 0; i < asciis.length; i += 1) {
+            String string = asciis[i];
+            for (int y = 0; y < max; y += 1) {
+                if (y >= string.length()) {
+                    updatedAsciis[i] = updatedAsciis[i]+""+"@";
+                } else if (y == 0) {
+                    updatedAsciis[i] = String.valueOf(asciis[i].charAt(y));
+                } else {
+                    updatedAsciis[i] += String.valueOf(asciis[i].charAt(y));
+                }
+            }
         }
-
     }
-
-
 
     /**
      * MSD radix sort helper function that recursively calls itself to achieve the sorted array.

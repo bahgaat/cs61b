@@ -68,12 +68,13 @@ public class CountingSort {
     public static int[] betterCountingSort(int[] arr) {
 
         int firstMax = findMaxValueInArr(arr);
-        makePositiveArr(arr, firstMax);
-        int secondMax = findMaxValueInArr(arr);
+        int[] resultArr = new int[arr.length];
+        makePositiveArr(resultArr, firstMax, arr);
+        int secondMax = findMaxValueInArr(resultArr);
 
         // gather all the counts for each value
         int[] counts = new int[secondMax + 1];
-        for (int i : arr) {
+        for (int i : resultArr) {
             counts[i]++;
         }
 
@@ -85,10 +86,9 @@ public class CountingSort {
             pos += counts[i];
         }
 
-        int[] sorted2 = new int[arr.length];
-        sortTheArr(sorted2, arr, starts);
+        int[] sorted2 = new int[resultArr.length];
+        sortTheArr(sorted2, resultArr, starts);
         sortTheOriginalArr(sorted2, firstMax);
-
         return sorted2;
     }
 
@@ -119,9 +119,9 @@ public class CountingSort {
     }
 
     /* change all array values to positive numbers. */
-    private static void makePositiveArr(int[] arr, int max) {
-        for (int i = 0; i < arr.length; i += 1) {
-            arr[i] += max;
+    private static void makePositiveArr(int[] resultArr, int max, int[] arr) {
+        for (int i = 0; i < resultArr.length; i += 1) {
+            resultArr[i] = arr[i] + max;
         }
     }
 
