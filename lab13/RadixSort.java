@@ -17,13 +17,8 @@ public class RadixSort {
      */
     public static String[] sort(String[] asciis) {
         // TODO: Implement LSD Sort
-        String[] updatedAsciis = new String[asciis.length];
         int max = findMax(asciis);
-
-        /* filling the array that i will be using and putting null at the end of each word that is less
-        than the max length. */
-        fillTheArray(asciis, updatedAsciis, max);
-        String[] sortedArr = sortTheArray(updatedAsciis, max, asciis);
+        String[] sortedArr = sortTheArray(max, asciis);
         return sortedArr;
     }
 
@@ -38,19 +33,27 @@ public class RadixSort {
         return max;
     }
 
-    private static String[] sortTheArray(String[] updatedAsciis, int max,
-                                                  String[] asciis) {
-        String[] asciisHelper = asciis;
+    private static String[] sortTheArray(int max,   String[] asciis) {
+        String[] asciisHelper = new String[asciis.length];
+        for (int u = 0; u < asciisHelper.length; u += 1) {
+            asciisHelper[u] = asciis[u];
+        }
+
         String[] sortedArr = new String[asciis.length];
         for (int x = 0; x < max; x += 1) {
             int[] count = new int[256];
             int[] starts = new int[256];
 
             /* build count array. */
-            for (int j = 0; j < updatedAsciis.length; j += 1) {
-                String string = updatedAsciis[j];
-                int digit = (updatedAsciis[j].length() - 1) - x;
-                char character = string.charAt(digit);
+            for (int j = 0; j < asciisHelper.length; j += 1) {
+                String string = asciisHelper[j];
+                int digit = (max - 1) - x;
+                char character;
+                if (digit >= string.length()) {
+                    character = Character.MIN_VALUE;;
+                } else {
+                    character = string.charAt(digit);
+                }
                 int asc = (int) character;
                 count[asc] += 1;
             }
@@ -61,9 +64,13 @@ public class RadixSort {
             /* build sorted array. */;
             for (int i = 0; i < asciis.length; i += 1) {
                 String item = asciisHelper[i];
-                String string = updatedAsciis[i];
-                int digit = (updatedAsciis[i].length() - 1) - x;
-                char character = string.charAt(digit);
+                int digit = (max - 1) - x;
+                char character;
+                if (digit >= item.length()) {
+                    character = Character.MIN_VALUE;;
+                } else {
+                    character = item.charAt(digit);
+                }
                 int asc = (int) character;
                 int place = starts[asc];
                 sortedArr[place] = item;
@@ -73,7 +80,6 @@ public class RadixSort {
             for (int g = 0; g < sortedArr.length; g += 1) {
                 asciisHelper[g] = sortedArr[g];
             }
-            fillTheArray(asciisHelper, updatedAsciis, max);
         }
         return sortedArr;
     }
@@ -83,21 +89,6 @@ public class RadixSort {
         for (int y = 0; y < starts.length; y += 1) {
             starts[y] = pos;
             pos += count[y];
-        }
-    }
-
-    private static void fillTheArray(String[] asciis, String[] updatedAsciis, int max) {
-        for (int i = 0; i < asciis.length; i += 1) {
-            String string = asciis[i];
-            for (int y = 0; y < max; y += 1) {
-                if (y >= string.length()) {
-                    updatedAsciis[i] = updatedAsciis[i]+""+"@";
-                } else if (y == 0) {
-                    updatedAsciis[i] = String.valueOf(asciis[i].charAt(y));
-                } else {
-                    updatedAsciis[i] += String.valueOf(asciis[i].charAt(y));
-                }
-            }
         }
     }
 

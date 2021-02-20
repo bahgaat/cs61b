@@ -73,7 +73,7 @@ public class CountingSort {
         int secondMax = findMaxValueInArr(resultArr);
 
         // gather all the counts for each value
-        int[] counts = new int[secondMax + 1];
+        int[] counts = new int[Math.abs(secondMax + 1)];
         for (int i : resultArr) {
             counts[i]++;
         }
