@@ -1,4 +1,4 @@
-# cs61b(Object oriented programming, datastructures, and algorithms) from university of Berkeley.
+# CS61B(Object oriented programming, datastructures, and algorithms) from university of Berkeley.
 
 This is my repository for CS61B course from university of berkeley. I have completed all the labs, homeworks, discussions, projects, and exams.
 
