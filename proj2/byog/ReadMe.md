@@ -25,5 +25,5 @@ state that you left the game.
 
 - The second way in which you can play the game is by passing argument to Main.java. For example, Passing the string “N543SSSSSSWW” corresponds to the user starting a game with the seed 543, then moving down 5 times, then up twice. In this way the game will be showed to you static and you can't play like the first way.
 
-for more information
+for more information : https://sp18.datastructur.es/materials/proj/proj2/proj2
 
