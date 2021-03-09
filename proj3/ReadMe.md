@@ -2,6 +2,7 @@
 # CS61B - Project 3.
 
 In this project, I have implemented the back end of a web server. 
+
 Details:
 - I have implemented the Rasterer class which renders map images given a user's requested area and level of zoom.
  
@@ -12,3 +13,5 @@ and each edge represents a road.
  and uses shortest path to generate navigation directions.
  
 - I have implemented an Autocomplete system using a Trie data structure, which allows matching a prefix to valid location.
+
+for more information: https://sp18.datastructur.es/materials/proj/proj3/proj3
