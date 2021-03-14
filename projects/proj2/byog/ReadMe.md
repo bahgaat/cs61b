@@ -1,7 +1,7 @@
 # World Generation Project.
 # CS61B - Project 2.
 
-In this project, I have designed and implemented a 2D tile-based game.
+A 2D tile-based game.
 
 In the first part of the project I have created a world generator (pseudorandomly generated), which means that when every time the user starts the game, the world is 
 generated randomly and different.
