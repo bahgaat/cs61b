@@ -11,7 +11,7 @@
  *  *  % java SeamCarverVisualizer HJoceanSmall.png 150 y
  *  *
  *  ******************************************************************************/
-
+/*
 import edu.princeton.cs.algs4.Picture;
 import java.awt.Color;
 import java.awt.FileDialog;
@@ -120,3 +120,5 @@ public class SeamCarverVisualizer {
         }
     }
 }
+
+ */
